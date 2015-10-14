@@ -1,0 +1,20 @@
+
+<?xml version="1.0" encoding="UTF-8"?>
+<PXML xmlns="http://openpandora.org/namespaces/PXML" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="PXML_schema.xsd">
+<application id="spout">
+  <title lang="en_US">Spout</title>          
+  <exec command="./spout"/>
+  <icon src="./spout.png"/> 
+  <description lang="en_US">"Spout" is a small, abstract shooting game from Japanese developer kuni.  It plays somewhat like Finnish cavefliers, except you have to erode your surroundings with your ship's exhuast.  It's great fun :-)
+This port is thanks to the hard work of noskill and MichaelA for the GP2X port.</description>
+  <info name="Spout Readme" type="txt/html" src="./readme.pandora.txt"/>
+  <author  name="Spout:kuni Port: PokeParadox" email="pokeparadox@gmail.com" website="http://projectinfinity.org.uk/doku.php?id=homebrew:games:spout"/><!--Optional email and website, name required-->
+ 
+  <version major="1" minor="0" release="0" build=""/><!--This programs version-->
+  <categories>
+    <category name="Game"><!--category like "Games", "Graphics", "Internet" etc-->
+    <subcategory name="ArcadeGame"/><!--subcategory, like "Board Games", "Strategy", "First Person Shooters"-->
+    </category>
+  </categories>
+ </application>
+</PXML>      

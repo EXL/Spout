@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="spout" />
+		<Option pch_mode="0" />
+		<Option compiler="armelfgcc" />
+		<Build>
+			<Target title="GP2X">
+				<Option output="spout.gpe" prefix_auto="0" extension_auto="0" />
+				<Option type="0" />
+				<Option compiler="armelfgcc" />
+				<Option projectResourceIncludeDirsRelation="0" />
+				<Compiler>
+					<Add option="-fexpensive-optimizations" />
+					<Add option="-Os" />
+					<Add option="-O3" />
+					<Add option="-DGP2X" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add option="-static -lSDL" />
+				</Linker>
+			</Target>
+			<Target title="Pandora">
+				<Option output="spout" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Pandora/" />
+				<Option type="0" />
+				<Option compiler="pandora" />
+				<Compiler>
+					<Add option="-O3" />
+					<Add option="-Wall" />
+					<Add option="-mcpu=cortex-a8 -mfpu=neon" />
+					<Add option="-ftree-vectorize -mfloat-abi=softfp" />
+					<Add option="-ffast-math" />
+					<Add option="-fsingle-precision-constant" />
+					<Add option="-fno-inline" />
+					<Add option="-DTARGET_PANDORA" />
+					<Add directory="$(#pandora_sdk.include)" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+					<Add library="SDL" />
+					<Add library="ts" />
+					<Add directory="$(#pandora_sdk.lib)" />
+				</Linker>
+			</Target>
+		</Build>
+		<VirtualTargets>
+			<Add alias="All" targets="GP2X;" />
+		</VirtualTargets>
+		<Unit filename="config.h" />
+		<Unit filename="font.h" />
+		<Unit filename="piece.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="piece.h" />
+		<Unit filename="sintable.h" />
+		<Unit filename="spout.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Extensions>
+			<envvars />
+			<code_completion />
+			<lib_finder disable_auto="1" />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
