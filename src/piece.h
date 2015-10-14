@@ -48,7 +48,7 @@
 #define PP_MODE_SINGLE 0
 #define PP_MODE_REPEAT 1
 
-int pceFontPrintf (const char *fmt, ...);
+void pceFontPrintf(const char *fmt, ...);
 void pceFontSetTxColor (int color);
 void pceFontSetBkColor (int color);
 void pceFontSetPos (int x, int y);
@@ -60,11 +60,11 @@ unsigned char *pceLCDSetBuffer (unsigned char *pbuff);
 void pceLCDTrans ();
 
 void pceAppSetProcPeriod (int period);
-void pceAppReqExit (int c);
+void pceAppReqExit ();
 
 int pceFileOpen (FILEACC * pfa, const char *fname, int mode);
-int pceFileReadSct (FILEACC * pfa, void *ptr, int sct, int len);
-int pceFileWriteSct (FILEACC * pfa, const void *ptr, int sct, int len);
+int pceFileReadSct (FILEACC * pfa, void *ptr, int len);
+int pceFileWriteSct (FILEACC * pfa, const void *ptr, int len);
 int pceFileClose (FILEACC * pfa);
 
 int pcePadGet ();

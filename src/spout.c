@@ -4,6 +4,7 @@
 #include <string.h>
 
 #include "piece.h"
+#include "spout.h"
 
 #include "sintable.h"
 
@@ -81,7 +82,7 @@ void pceAppInit (void)
     {
         FILEACC fa;
         if (!pceFileOpen (&fa, "spout.sco", FOMD_RD)) {
-            pceFileReadSct (&fa, (void *) hiScore, 0, 8);
+            pceFileReadSct (&fa, (void *) hiScore, 8);
             pceFileClose (&fa);
         }
     }
@@ -89,7 +90,7 @@ void pceAppInit (void)
     srand (pceTimerGetCount());
 }
 
-void pceAppProc (int cnt)
+void pceAppProc (/*int cnt*/)
 {
     static int gamePhase = 0, gameover;
 
@@ -100,7 +101,7 @@ void pceAppProc (int cnt)
         if (gamePhase >= 2) {
             gamePhase = 0;
         } else {
-            pceAppReqExit (0);
+            pceAppReqExit ();
         }
         pad = 0;
     }
@@ -119,12 +120,12 @@ void pceAppProc (int cnt)
                 hiScore[0] = score;
                 hiScore[1] = height;
                 if (!pceFileOpen (&fa, "spout.sco", FOMD_WR)) {
-                    pceFileWriteSct (&fa, (void *) hiScore, 0, 8);
-                } else if(!pceFileCreate("spout.sco", 8)) {
+                    pceFileWriteSct (&fa, (void *) hiScore, 8);
+                } else /*if(!pceFileCreate("spout.sco", 8)) { */
                     if(!pceFileOpen(&fa, "spout.sco", FOMD_WR)) {
-                        pceFileWriteSct(&fa, (void *)hiScore, 0, 8);
+                        pceFileWriteSct(&fa, (void *)hiScore, 8);
                     }
-                }
+                //}
                 pceFileClose (&fa);
             }
         } else {

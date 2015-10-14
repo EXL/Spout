@@ -8,6 +8,7 @@
 #include <SDL/SDL.h>
 
 #include "piece.h"
+#include "spout.h"
 #include "font.h"
 
 #define GP2X_BUTTON_UP              (0)
@@ -60,7 +61,7 @@ void initSDL () {
     atexit (SDL_Quit);
 
 
-    video = SDL_SetVideoMode (SDL_WIDTH, SDL_HEIGHT, 8, SDL_FULLSCREEN | SDL_SWSURFACE);
+    video = SDL_SetVideoMode (SDL_WIDTH, SDL_HEIGHT, 8, SDL_SWSURFACE);
     SDL_ShowCursor (0);
 
 
@@ -83,10 +84,10 @@ void initSDL () {
     layerRect.h = SDL_HEIGHT;
     {
         static SDL_Color pltTbl[4] = {
-            {255, 255, 255},
-            {170, 170, 170},
-            {85, 85, 85},
-            {0, 0, 0}
+            {255, 255, 255, 0},
+            {170, 170, 170, 0},
+            {85, 85, 85, 0},
+            {0, 0, 0, 0}
         };
         SDL_SetColors (video, pltTbl, 0, 4);
         SDL_SetColors (layer, pltTbl, 0, 4);
@@ -111,7 +112,7 @@ void pceLCDTrans () {
     bi = layer->pixels;
     for (y = 0; y < (88*zoom); y++) {
         vbi = vBuffer +  (y/zoom) * 128;  //the actual line on the pce internal buffer (128x88)
-        bline = (unsigned char*)layer->pixels + layer->pitch * (y + offsety);
+        bline = bi + layer->pitch * (y + offsety);
         bline += offsetx;
         for (x = 0; x < (128*zoom); x++) {
             *bline++ = *(vbi + x/zoom);
@@ -190,7 +191,7 @@ void pceAppSetProcPeriod (int period) {
 
 int exec = 1;
 
-void pceAppReqExit (int c) {
+void pceAppReqExit (/*int c*/) {
     exec = 0;
 }
 
@@ -204,13 +205,13 @@ unsigned char * pceLCDSetBuffer (unsigned char *pbuff)
 
 int font_posX = 0, font_posY = 0, font_width = 4, font_height = 6;
 unsigned char font_fgcolor = 3, font_bgcolor = 0, font_bgclear = 0;
-const char *font_adr = FONT6;
+const char *font_adr = (const char *)FONT6;
 
 void pceFontSetType (int type)
 {
     const int width[] = { 5, 8, 4};
     const int height[] = { 10, 16, 6};
-    const char *adr[] = { FONT6, FONT16, FONT6};
+    const char *adr[] = { (const char *)FONT6, (const char *)FONT16, (const char *)FONT6};
 
     type &= 3;
     font_width = width[type];
@@ -239,7 +240,7 @@ void pceFontSetPos (int x, int y)
     font_posY = y;
 }
 
-int pceFontPrintf (const char *fmt, ...)
+void pceFontPrintf (const char *fmt, ...)
 {
     unsigned char *adr = vBuffer + font_posX + font_posY * 128;
     unsigned char *pC;
@@ -250,7 +251,7 @@ int pceFontPrintf (const char *fmt, ...)
     vsprintf (c, fmt, argp);
     va_end (argp);
 
-    pC = c;
+    pC = (unsigned char*)c;
     while (*pC) {
         int i, x, y;
         const unsigned char *sAdr;
@@ -259,7 +260,7 @@ int pceFontPrintf (const char *fmt, ...)
         } else {
             i = 0;
         }
-        sAdr = font_adr + (i & 15) + (i >> 4) * 16 * 16;
+        sAdr = (const unsigned char *)font_adr + (i & 15) + (i >> 4) * 16 * 16;
         for (y = 0; y < font_height; y++) {
             unsigned char c = *sAdr;
             for (x = 0; x < font_width; x++) {
@@ -294,12 +295,12 @@ int pceFileOpen (FILEACC * pfa, const char *fname, int mode)
     }
 }
 
-int pceFileReadSct (FILEACC * pfa, void *ptr, int sct, int len)
+int pceFileReadSct (FILEACC * pfa, void *ptr, /*int sct,*/ int len)
 {
     return read (*pfa, ptr, len);
 }
 
-int pceFileWriteSct (FILEACC * pfa, const void *ptr, int sct, int len)
+int pceFileWriteSct (FILEACC * pfa, const void *ptr, /*int sct,*/ int len)
 {
     return write (*pfa, ptr, len);
 }
@@ -367,7 +368,7 @@ int main (int argc, char *argv[])
             SDL_Delay (wait);
         }
 
-        pceAppProc (cnt);
+        pceAppProc ();
         //      SDL_Flip(video);
 
         nextTick += interval;
