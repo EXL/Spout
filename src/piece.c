@@ -47,6 +47,8 @@ struct Pixels {
     void *pixels;
 } pix;
 
+static GLfloat texcoord[4];
+
 unsigned char *testP[SDL_HEIGHT * 4 * 2048];
 
 //pix.pixels = pix.pixelData;
@@ -255,6 +257,9 @@ void initSDL () {
 	glMatrixMode(GL_MODELVIEW);
 	glRotatef(5.0, 1.0, 1.0, 1.0);
 
+    if (!global_texture) {
+        global_texture = SDL_GL_LoadTexture_fromPixelData(SDL_WIDTH, SDL_HEIGHT, texcoord, video->pixels);
+    }
 
     if (video == NULL) {
         fprintf (stderr, "Couldn't set video mode: %s\n", SDL_GetError ());
@@ -289,13 +294,8 @@ void initSDL () {
 }
 
 void pceLCDTrans () {
-    GLfloat texcoord[4];
-    static GLfloat texMinX, texMinY;
-    static GLfloat texMaxX, texMaxY;
     static int w, h;
     int x, y;
-    static int x_coord = 0;
-    static int y_coord = 0;
     unsigned char *vbi, *bi;
     unsigned char *bline;
     #ifdef TARGET_PANDORA
@@ -313,8 +313,6 @@ void pceLCDTrans () {
 
     w = SDL_WIDTH;
     h = SDL_HEIGHT;
-
-//    glDrawPixels(w, h, GL_RGB, GL_UNSIGNED_BYTE_3_3_2, layer->pixels);
 
     for (y = 0; y < (88*zoom); y++) {
         vbi = vBuffer +  (y/zoom) * 128;  //the actual line on the pce internal buffer (128x88)
@@ -338,23 +336,24 @@ void pceLCDTrans () {
                   GL_UNSIGNED_BYTE,
                   testP);
 
-    if (!global_texture) {
-        global_texture = SDL_GL_LoadTexture_fromPixelData(SDL_WIDTH, SDL_HEIGHT, texcoord, testP);
-    }
-        texMinX = texcoord[0];
-        texMinY = texcoord[1];
-        texMaxX = texcoord[2];
-        texMaxY = texcoord[3];
+//	glDrawPixels(w, h, GL_RGB, GL_UNSIGNED_BYTE, testP);
 
-//        SDL_GL_Enter2DMode();
-        glBindTexture(GL_TEXTURE_2D, global_texture);
-        glBegin(GL_TRIANGLE_STRIP);
-        glTexCoord2f(texMinX, texMinY); glVertex2i(x_coord,   y_coord  );
-        glTexCoord2f(texMaxX, texMinY); glVertex2i(x_coord+w, y_coord  );
-        glTexCoord2f(texMinX, texMaxY); glVertex2i(x_coord,   y_coord+h);
-        glTexCoord2f(texMaxX, texMaxY); glVertex2i(x_coord+w, y_coord+h);
-        glEnd();
-//        SDL_GL_Leave2DMode();
+    GLfloat texMinX = texcoord[0];
+    GLfloat texMinY = texcoord[1];
+    GLfloat texMaxX = texcoord[2];
+    GLfloat texMaxY = texcoord[3];
+
+    int x_coord = 0;
+    int y_coord = 0;
+
+    glBindTexture(GL_TEXTURE_2D, global_texture);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w, h, GL_RGB, GL_UNSIGNED_BYTE, testP);
+    glBegin(GL_TRIANGLE_STRIP);
+    glTexCoord2f(texMinX, texMinY); glVertex2i(x_coord,   y_coord  );
+    glTexCoord2f(texMaxX, texMinY); glVertex2i(x_coord+w, y_coord  );
+    glTexCoord2f(texMinX, texMaxY); glVertex2i(x_coord,   y_coord+h);
+    glTexCoord2f(texMaxX, texMaxY); glVertex2i(x_coord+w, y_coord+h);
+    glEnd();
 
     //SDL_BlitSurface (layer, NULL, video, &layerRect);
     //SDL_Flip (video);
@@ -370,11 +369,6 @@ void pceLCDTrans () {
     SDL_GL_SwapBuffers();
 
 //    free(testP);
-
-    if (global_texture) {
-        glDeleteTextures(1, &global_texture);
-        global_texture = 0;
-    }
 }
 
 unsigned char *keys;
@@ -634,6 +628,11 @@ int main (int argc, char *argv[])
     }
 
     pceAppExit ();
+
+    if (global_texture) {
+        glDeleteTextures(1, &global_texture);
+        global_texture = 0;
+    }
 
 #ifdef GP2X
     chdir("/usr/gp2x");
