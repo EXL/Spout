@@ -8,15 +8,8 @@
 #include <string.h>
 #include "config.h"
 
-//#define SDL_WIDTH (128 * zoom)
-//#define SDL_HEIGHT (88 * zoom)
-#ifdef TARGET_PANDORA
-    #define SDL_WIDTH (640)
-    #define SDL_HEIGHT (480)
-#else
-    #define SDL_WIDTH (320)
-    #define SDL_HEIGHT (240)
-#endif
+#define SDL_WIDTH (320)
+#define SDL_HEIGHT (240)
 
 #define PAD_RI 0x01
 #define PAD_LF 0x02

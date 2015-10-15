@@ -12,50 +12,24 @@
 #include "spout.h"
 #include "font.h"
 
-#define GP2X_BUTTON_UP              (0)
-#define GP2X_BUTTON_DOWN            (4)
-#define GP2X_BUTTON_LEFT            (2)
-#define GP2X_BUTTON_RIGHT           (6)
-#define GP2X_BUTTON_UPLEFT          (1)
-#define GP2X_BUTTON_UPRIGHT         (7)
-#define GP2X_BUTTON_DOWNLEFT        (3)
-#define GP2X_BUTTON_DOWNRIGHT       (5)
-#define GP2X_BUTTON_CLICK           (18)
-#define GP2X_BUTTON_A               (12)
-#define GP2X_BUTTON_B               (13)
-#define GP2X_BUTTON_X               (14)
-#define GP2X_BUTTON_Y               (15)
-#define GP2X_BUTTON_L               (10)
-#define GP2X_BUTTON_R               (11)
-#define GP2X_BUTTON_START           (8)
-#define GP2X_BUTTON_SELECT          (9)
-#define GP2X_BUTTON_VOLUP           (16)
-#define GP2X_BUTTON_VOLDOWN         (17)
-
-
-unsigned char joykeys[256];
-
 SDL_Surface *video;
 
 static GLuint global_texture = 0;
+static GLfloat texcoord[4];
 
 unsigned char *vBuffer = NULL;
-
 unsigned char pixelData[SDL_WIDTH * SDL_HEIGHT];
 unsigned short testP[SDL_WIDTH * SDL_HEIGHT];
 
-static GLfloat texcoord[4];
+unsigned char *keys;
 
-void pceLCDDispStop ()
-{
-}
+/***********************************************/
 
-void pceLCDDispStart ()
-{
-}
+void pceLCDDispStop () { }
 
-void SDL_GL_Enter2DMode()
-{
+void pceLCDDispStart () { }
+
+void SDL_GL_Enter2DMode () {
 	SDL_Surface *screen = SDL_GetVideoSurface();
 
 	/* Note, there may be other things you need to change,
@@ -85,8 +59,7 @@ void SDL_GL_Enter2DMode()
 	//glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
 }
 
-void SDL_GL_Leave2DMode()
-{
+void SDL_GL_Leave2DMode () {
 	glMatrixMode(GL_MODELVIEW);
 	glPopMatrix();
 
@@ -96,8 +69,7 @@ void SDL_GL_Leave2DMode()
 	glPopAttrib();
 }
 
-GLuint SDL_GL_LoadTexture_fromPixelData(int w, int h, GLfloat *texcoord, void *pixels)
-{
+GLuint SDL_GL_LoadTexture_fromPixelData (int w, int h, GLfloat *texcoord, void *pixels) {
     GLuint texture;
 
     texcoord[0] = 0.0f;         /* Min X */
@@ -115,13 +87,11 @@ GLuint SDL_GL_LoadTexture_fromPixelData(int w, int h, GLfloat *texcoord, void *p
 }
 
 void initSDL () {
-    int i;
-    if (SDL_Init (SDL_INIT_JOYSTICK | SDL_INIT_VIDEO) < 0) {
+    if (SDL_Init (SDL_INIT_VIDEO) < 0) {
         fprintf (stderr, "Couldn't initialize SDL: %s\n", SDL_GetError ());
         exit (1);
     }
 
-    SDL_JoystickOpen(0);
     atexit (SDL_Quit);
 
     video = SDL_SetVideoMode (SDL_WIDTH, SDL_HEIGHT, 16, SDL_OPENGL | SDL_SWSURFACE);
@@ -143,12 +113,9 @@ void initSDL () {
     if (!global_texture) {
         global_texture = SDL_GL_LoadTexture_fromPixelData(SDL_WIDTH, SDL_HEIGHT, texcoord, video->pixels);
     }
-
-    for (i=0;i<256;i++)
-        joykeys[i] = 0;
 }
 
-int rgb(unsigned char r, unsigned char g, unsigned char b) {
+int rgb (unsigned char r, unsigned char g, unsigned char b) {
     unsigned char red = r >> 3;
     unsigned char green = g >> 2;
     unsigned char blue = b >> 3;
@@ -230,8 +197,6 @@ void pceLCDTrans () {
     SDL_GL_SwapBuffers();
 }
 
-unsigned char *keys;
-
 int pcePadGet () {
     static int pad = 0;
     int i = 0, op = pad & 0x00ff;
@@ -255,19 +220,6 @@ int pcePadGet () {
         PAD_C, PAD_D, PAD_D, -1
     };
 
-
-    int gp[] = {
-        GP2X_BUTTON_UP,
-        GP2X_BUTTON_DOWN,
-        GP2X_BUTTON_LEFT, GP2X_BUTTON_UPLEFT, GP2X_BUTTON_DOWNLEFT, GP2X_BUTTON_RIGHT, GP2X_BUTTON_UPRIGHT, GP2X_BUTTON_DOWNRIGHT,
-        GP2X_BUTTON_A, GP2X_BUTTON_B, GP2X_BUTTON_X, GP2X_BUTTON_Y, GP2X_BUTTON_START
-        -1
-    };
-
-    int gpp[] = {
-        PAD_UP, PAD_DN, PAD_LF, PAD_LF, PAD_LF, PAD_RI, PAD_RI, PAD_RI, PAD_B, PAD_B, PAD_B, PAD_B, PAD_D
-    };
-
     pad = 0;
 
     do {
@@ -276,14 +228,6 @@ int pcePadGet () {
         }
         i++;
     } while (p[i] >= 0);
-
-    i=0;
-    for (i=0;i<13;i++) {
-        if (joykeys[gp[i]] == 1) {
-            pad |= gpp[i];
-        }
-    }
-
 
     pad |= (pad & (~op)) << 8;
 
@@ -420,55 +364,22 @@ int pceFileClose (FILEACC * pfa)
 
 
 
-int main (int argc, char *argv[])
+int main (/*int argc, char *argv[]*/)
 {
     SDL_Event event;
     int nextTick, wait;
     int cnt = 0;
-    int pzoom;
-    char *tail;
     zoom = 1;
     fullscreen = 0;
-    if (argc > 1) {
-        if (strcmp (argv[1], "f") == 0)
-            fullscreen = 1;
-        else {
-            pzoom = strtol (argv[1], &tail, 0);
-            if (pzoom >= 1)
-                zoom = pzoom;
-        }
-    }
 
     initSDL ();
     pceAppInit ();
-
-    //SDL_WM_SetCaption (PACKAGE_STRING, NULL);
 
     nextTick = SDL_GetTicks () + interval;
     while (exec) {
         keys = SDL_GetKeyState (NULL);
 
-        while (SDL_PollEvent(&event)) {
-            switch (event.type) {
-            case SDL_JOYBUTTONDOWN:
-                if (event.jbutton.button == GP2X_BUTTON_SELECT)
-                    exec = 0;
-                joykeys[event.jbutton.button] = 1;
-                break;
-
-            case SDL_JOYBUTTONUP:
-                joykeys[event.jbutton.button] = 0;
-                break;
-
-            case SDL_KEYDOWN:
-                if (event.key.keysym.sym == SDLK_ESCAPE)
-                    exec = 0;
-                break;
-                // other event types
-            }
-        }
-
-
+        while (SDL_PollEvent(&event)) { }
 
         wait = nextTick - SDL_GetTicks ();
         if (wait > 0) {
@@ -476,7 +387,6 @@ int main (int argc, char *argv[])
         }
 
         pceAppProc ();
-        //      SDL_Flip(video);
 
         nextTick += interval;
         cnt++;
@@ -492,11 +402,6 @@ int main (int argc, char *argv[])
         glDeleteTextures(1, &global_texture);
         global_texture = 0;
     }
-
-#ifdef GP2X
-    chdir("/usr/gp2x");
-    execl("/usr/gp2x/gp2xmenu", "/usr/gp2x/gp2xmenu", NULL);
-#endif
 
     return 0;
 }
