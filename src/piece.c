@@ -42,14 +42,15 @@ static GLuint global_texture = 0;
 
 unsigned char *vBuffer = NULL;
 
-struct Pixels {
-    int pixelData[SDL_WIDTH * SDL_HEIGHT];
-    void *pixels;
-} pix;
+//struct Pixels {
+//    unsigned int pixelData[SDL_WIDTH * SDL_HEIGHT];
+//    void *pixels;
+//} pix;
+
+unsigned char pixelData[SDL_WIDTH * SDL_HEIGHT];
+unsigned short testP[SDL_WIDTH * SDL_HEIGHT];
 
 static GLfloat texcoord[4];
-
-unsigned char *testP[SDL_HEIGHT * 4 * 2048];
 
 //pix.pixels = pix.pixelData;
 
@@ -226,7 +227,7 @@ void initSDL () {
     atexit (SDL_Quit);
 
 
-    video = SDL_SetVideoMode (SDL_WIDTH, SDL_HEIGHT, 16, SDL_OPENGL|SDL_SWSURFACE);
+    video = SDL_SetVideoMode (SDL_WIDTH, SDL_HEIGHT, 24, SDL_OPENGL|SDL_SWSURFACE);
     SDL_ShowCursor (0);
 
 	SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 3 );
@@ -251,7 +252,7 @@ void initSDL () {
 
 	glShadeModel(GL_SMOOTH);
 
-	glClearColor( 0.0, 0.0, 0.0, 1.0 );
+	glClearColor( 255.0f, 255.0f, 255.0f, 1.0 );
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glMatrixMode(GL_MODELVIEW);
@@ -285,12 +286,31 @@ void initSDL () {
             {85, 85, 85, 0},
             {0, 0, 0, 0}
         };
-        SDL_SetColors (video, pltTbl, 0, 4);
+//        SDL_SetColors (video, pltTbl, 0, 4);
         SDL_SetColors (layer, pltTbl, 0, 4);
     }
 
     for (i=0;i<256;i++)
         joykeys[i] = 0;
+}
+
+int rgb(unsigned char r, unsigned char g, unsigned char b) {
+    if (r < 0 || 255 < r || g < 0 || 255 < g || b < 0 || b > 255)
+        return -1;
+
+    unsigned char red = r >> 3;
+    unsigned char green = g >> 2;
+    unsigned char blue = b >> 3;
+
+    int result = (red << (5 + 6)) | (green << 5) | blue;
+
+//tests
+    printf("red: %x\n", red);
+    printf("green: %x\n", green);
+    printf("blue: %x\n", blue);
+    printf("result: %x\n", result);
+
+    return result;
 }
 
 void pceLCDTrans () {
@@ -306,8 +326,7 @@ void pceLCDTrans () {
     const int offsetx = SDL_WIDTH/2 - 128*zoom/2;
     const int offsety = SDL_HEIGHT/2 - 88*zoom/2;
 
-    pix.pixels = pix.pixelData;
-    bi = pix.pixels;
+    bi = (unsigned char*)pixelData;
 
     SDL_GL_Enter2DMode();
 
@@ -326,15 +345,43 @@ void pceLCDTrans () {
 //    glDrawPixels(w, h, GL_RGB, GL_UNSIGNED_BYTE_3_3_2, pix.pixels);
 
 //    unsigned char *testP = malloc(SDL_HEIGHT * 4 * 2048);
-    gluScaleImage(GL_RGB,
-                  w,
-                  h,
-                  GL_UNSIGNED_BYTE_3_3_2,
-                  pix.pixels,
-                  w,
-                  h,
-                  GL_UNSIGNED_BYTE,
-                  testP);
+//    gluScaleImage(GL_RGB,
+//                  w,
+//                  h,
+//                  GL_UNSIGNED_BYTE_3_3_2,
+//                  pixelData,
+//                  w,
+//                  h,
+//                  GL_UNSIGNED_SHORT_5_6_5,
+//                  testP);
+
+    int rz;
+    for (rz = 0; rz < SDL_HEIGHT * SDL_WIDTH; ++rz) {
+        switch (pixelData[rz]) {
+        case 0x1:
+            testP[rz] = 0xAD55;
+            break;
+        case 0x2:
+            testP[rz] = 0x52AA; //
+            break;
+        case 0x3:
+            testP[rz] = 0x0000; // Black 00000 000000 00000
+            break;
+        case 0x0:
+            testP[rz] = 0xFFFF; // White 11111 111111 11111
+            break;
+        }
+    }
+
+//    FILE *f = fopen("2.txt", "w");
+//    int z;
+//    for (z= 0; z < SDL_HEIGHT * SDL_WIDTH; ++z) {
+//        fprintf(f, "0x%x\n", pixelData[z]);
+////        if (pixelData[z] == 0xff0000ff) {
+////            pixelData[z] = 0xff288b28;
+////        }
+//    }
+//    fclose(f);
 
 //	glDrawPixels(w, h, GL_RGB, GL_UNSIGNED_BYTE, testP);
 
@@ -346,8 +393,9 @@ void pceLCDTrans () {
     int x_coord = 0;
     int y_coord = 0;
 
+    glClearColor( 255.0f, 255.0f, 255.0f, 1.0 );
     glBindTexture(GL_TEXTURE_2D, global_texture);
-    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w, h, GL_RGB, GL_UNSIGNED_BYTE, testP);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w, h, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, testP);
     glBegin(GL_TRIANGLE_STRIP);
     glTexCoord2f(texMinX, texMinY); glVertex2i(x_coord,   y_coord  );
     glTexCoord2f(texMaxX, texMinY); glVertex2i(x_coord+w, y_coord  );

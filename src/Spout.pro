@@ -9,7 +9,7 @@ TARGET = Spout
 INCLUDEPATH += .
 
 QMAKE_CFLAGS = $$system(sdl-config --cflags)
-LIBS = $$system(sdl-config --libs) -lGL -lGLU
+LIBS = $$system(sdl-config --libs) -lGL
 
 # Input
 HEADERS += config.h font.h piece.h sintable.h \
