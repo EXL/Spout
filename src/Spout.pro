@@ -8,8 +8,8 @@ TEMPLATE = app
 TARGET = Spout
 INCLUDEPATH += .
 
-QMAKE_CFLAGS = -m32 $$system(sdl-config --cflags)
-LIBS = -m32 -lSDL #$$system(sdl-config --libs)
+QMAKE_CFLAGS = $$system(sdl-config --cflags)
+LIBS = $$system(sdl-config --libs)
 
 # Input
 HEADERS += config.h font.h piece.h sintable.h \

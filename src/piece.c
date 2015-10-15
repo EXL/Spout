@@ -316,7 +316,7 @@ int pceFileClose (FILEACC * pfa)
 int main (int argc, char *argv[])
 {
     SDL_Event event;
-    long nextTick, wait;
+    int nextTick, wait;
     int cnt = 0;
     int pzoom;
     char *tail;
