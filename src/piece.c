@@ -18,10 +18,19 @@ static GLuint global_texture = 0;
 static GLfloat texcoord[4];
 
 unsigned char *vBuffer = NULL;
-unsigned char pixelData[SDL_WIDTH * SDL_HEIGHT];
-unsigned short testP[SDL_WIDTH * SDL_HEIGHT];
+unsigned char pixelData[TEXTURE_WIDTH * TEXTURE_HEIGHT];
+unsigned short testP[TEXTURE_WIDTH * TEXTURE_HEIGHT];
 
 unsigned char *keys;
+
+// 128 256 384 512
+// 88  176 264 352
+
+int display_w = 640;
+int display_h = 480;
+int x_off = 20;
+int y_off = 20;
+int fullscreen = 0;
 
 /***********************************************/
 
@@ -35,9 +44,9 @@ void SDL_GL_Enter2DMode () {
 	/* Note, there may be other things you need to change,
 	   depending on how you have your OpenGL state set up.
 	*/
-	//glPushAttrib(GL_ENABLE_BIT);
-	//glDisable(GL_DEPTH_TEST);
-	//glDisable(GL_CULL_FACE);
+	glPushAttrib(GL_ENABLE_BIT);
+	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_CULL_FACE);
 	glEnable(GL_TEXTURE_2D);
 
 	/* This allows alpha blending of 2D textures with the scene */
@@ -56,7 +65,7 @@ void SDL_GL_Enter2DMode () {
 	glPushMatrix();
 	glLoadIdentity();
 
-	//glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
 }
 
 void SDL_GL_Leave2DMode () {
@@ -94,7 +103,12 @@ void initSDL () {
 
     atexit (SDL_Quit);
 
-    video = SDL_SetVideoMode (SDL_WIDTH, SDL_HEIGHT, 16, SDL_OPENGL | SDL_SWSURFACE);
+    Uint32 flags = SDL_OPENGL | SDL_SWSURFACE;
+    if (fullscreen) {
+        flags |= SDL_FULLSCREEN;
+    }
+
+    video = SDL_SetVideoMode (display_w, display_h, 16, flags);
     if (video == NULL) {
         fprintf (stderr, "Couldn't set video mode: %s\n", SDL_GetError ());
         exit (1);
@@ -108,10 +122,13 @@ void initSDL () {
     SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
     SDL_GL_SetAttribute( SDL_GL_SWAP_CONTROL, 0 ); // ?
 
+	glClearColor( 255.0, 255.0, 255.0, 1.0 );
+	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
     SDL_ShowCursor (0);
 
     if (!global_texture) {
-        global_texture = SDL_GL_LoadTexture_fromPixelData(SDL_WIDTH, SDL_HEIGHT, texcoord, video->pixels);
+        global_texture = SDL_GL_LoadTexture_fromPixelData(TEXTURE_WIDTH, TEXTURE_HEIGHT, texcoord, video->pixels);
     }
 }
 
@@ -135,19 +152,19 @@ void pceLCDTrans () {
     int x, y;
     unsigned char *vbi, *bi;
     unsigned char *bline;
-    const int zoom = 2;
+    const int zoom = 1;
 
-    const int offsetx = SDL_WIDTH/2 - 128*zoom/2;
-    const int offsety = SDL_HEIGHT/2 - 88*zoom/2;
+    const int offsetx = TEXTURE_WIDTH/2 - 128*zoom/2;
+    const int offsety = TEXTURE_HEIGHT/2 - 88*zoom/2;
 
     bi = pixelData;
 
-    w = SDL_WIDTH;
-    h = SDL_HEIGHT;
+    w = TEXTURE_WIDTH;
+    h = TEXTURE_HEIGHT;
 
     for (y = 0; y < (88*zoom); y++) {
         vbi = vBuffer +  (y/zoom) * 128;  //the actual line on the pce internal buffer (128x88)
-        bline = bi + SDL_WIDTH * (y + offsety);
+        bline = bi + TEXTURE_WIDTH * (y + offsety);
         bline += offsetx;
         for (x = 0; x < (128*zoom); x++) {
             *bline++ = *(vbi + x/zoom);
@@ -156,13 +173,13 @@ void pceLCDTrans () {
 
     // Convert buffer to RGB565
     int rz;
-    for (rz = 0; rz < SDL_HEIGHT * SDL_WIDTH; ++rz) {
+    for (rz = 0; rz < TEXTURE_HEIGHT * TEXTURE_WIDTH; ++rz) {
         switch (pixelData[rz]) {
         case 0x1:
-            testP[rz] = 0xAD55;
+            testP[rz] = 0xAD55; // Gray #1
             break;
         case 0x2:
-            testP[rz] = 0x52AA; //
+            testP[rz] = 0x52AA; // Gray #2
             break;
         case 0x3:
             testP[rz] = 0x0000; // Black 00000 000000 00000
@@ -173,6 +190,8 @@ void pceLCDTrans () {
         }
     }
 
+    glClearColor( 255.0, 255.0, 255.0, 1.0 );
+    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     SDL_GL_Enter2DMode();
 
@@ -186,10 +205,10 @@ void pceLCDTrans () {
 
     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w, h, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, testP);
     glBegin(GL_TRIANGLE_STRIP);
-    glTexCoord2f(texMinX, texMinY); glVertex2i(x_coord,   y_coord  );
-    glTexCoord2f(texMaxX, texMinY); glVertex2i(x_coord+w, y_coord  );
-    glTexCoord2f(texMinX, texMaxY); glVertex2i(x_coord,   y_coord+h);
-    glTexCoord2f(texMaxX, texMaxY); glVertex2i(x_coord+w, y_coord+h);
+    glTexCoord2f(texMinX, texMinY); glVertex2i(x_coord + x_off,                   y_coord + y_off );
+    glTexCoord2f(texMaxX, texMinY); glVertex2i(x_coord + display_w - x_off * 2,   y_coord + y_off );
+    glTexCoord2f(texMinX, texMaxY); glVertex2i(x_coord + x_off,                   y_coord + display_h - y_off);
+    glTexCoord2f(texMaxX, texMaxY); glVertex2i(x_coord + display_w - x_off * 2,   y_coord + display_h - y_off);
     glEnd();
 
     SDL_GL_Leave2DMode();
@@ -262,7 +281,7 @@ void pceFontSetType (int type)
 {
     const int width[] = { 5, 8, 4};
     const int height[] = { 10, 16, 6};
-    const char *adr[] = { (const char *)FONT6, (const char *)FONT16, (const char *)FONT6};
+    const char *adr[] = { (const char *)FONT6, (const char *)FONT16, (const char *)FONT6 };
 
     type &= 3;
     font_width = width[type];
@@ -362,15 +381,11 @@ int pceFileClose (FILEACC * pfa)
     return 0;
 }
 
-
-
 int main (/*int argc, char *argv[]*/)
 {
     SDL_Event event;
     int nextTick, wait;
     int cnt = 0;
-    zoom = 1;
-    fullscreen = 0;
 
     initSDL ();
     pceAppInit ();

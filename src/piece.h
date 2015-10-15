@@ -8,8 +8,8 @@
 #include <string.h>
 #include "config.h"
 
-#define SDL_WIDTH (320)
-#define SDL_HEIGHT (240)
+#define TEXTURE_WIDTH (128)
+#define TEXTURE_HEIGHT (88)
 
 #define PAD_RI 0x01
 #define PAD_LF 0x02
@@ -61,5 +61,3 @@ int pceFileWriteSct (FILEACC * pfa, const void *ptr, int len);
 int pceFileClose (FILEACC * pfa);
 
 int pcePadGet ();
-
-int zoom, fullscreen;
