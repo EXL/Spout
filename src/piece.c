@@ -35,24 +35,16 @@
 
 unsigned char joykeys[256];
 
-SDL_Surface *video, *layer;
-SDL_Rect layerRect;
+SDL_Surface *video;
 
 static GLuint global_texture = 0;
 
 unsigned char *vBuffer = NULL;
 
-//struct Pixels {
-//    unsigned int pixelData[SDL_WIDTH * SDL_HEIGHT];
-//    void *pixels;
-//} pix;
-
 unsigned char pixelData[SDL_WIDTH * SDL_HEIGHT];
 unsigned short testP[SDL_WIDTH * SDL_HEIGHT];
 
 static GLfloat texcoord[4];
-
-//pix.pixels = pix.pixelData;
 
 void pceLCDDispStop ()
 {
@@ -69,16 +61,16 @@ void SDL_GL_Enter2DMode()
 	/* Note, there may be other things you need to change,
 	   depending on how you have your OpenGL state set up.
 	*/
-	glPushAttrib(GL_ENABLE_BIT);
-	glDisable(GL_DEPTH_TEST);
-	glDisable(GL_CULL_FACE);
+	//glPushAttrib(GL_ENABLE_BIT);
+	//glDisable(GL_DEPTH_TEST);
+	//glDisable(GL_CULL_FACE);
 	glEnable(GL_TEXTURE_2D);
 
 	/* This allows alpha blending of 2D textures with the scene */
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	//glEnable(GL_BLEND);
+	//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	glViewport(0, 0, screen->w, screen->h);
+	//glViewport(0, 0, screen->w, screen->h);
 
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();
@@ -90,7 +82,7 @@ void SDL_GL_Enter2DMode()
 	glPushMatrix();
 	glLoadIdentity();
 
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+	//glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
 }
 
 void SDL_GL_Leave2DMode()
@@ -104,190 +96,52 @@ void SDL_GL_Leave2DMode()
 	glPopAttrib();
 }
 
-/* Quick utility function for texture creation */
-static int power_of_two(int input)
-{
-	int value = 1;
-
-	while ( value < input ) {
-		value <<= 1;
-	}
-	return value;
-}
-
-GLuint SDL_GL_LoadTexture(SDL_Surface *surface, GLfloat *texcoord)
-{
-	GLuint texture;
-	int w, h;
-	SDL_Surface *image;
-	SDL_Rect area;
-	Uint32 saved_flags;
-	Uint8  saved_alpha;
-
-	/* Use the surface width and height expanded to powers of 2 */
-	w = power_of_two(surface->w);
-	h = power_of_two(surface->h);
-	texcoord[0] = 0.0f;			/* Min X */
-	texcoord[1] = 0.0f;			/* Min Y */
-	texcoord[2] = (GLfloat)surface->w / w;	/* Max X */
-	texcoord[3] = (GLfloat)surface->h / h;	/* Max Y */
-
-	image = SDL_CreateRGBSurface(
-			SDL_SWSURFACE,
-			w, h,
-			32,
-#if SDL_BYTEORDER == SDL_LIL_ENDIAN /* OpenGL RGBA masks */
-			0x000000FF,
-			0x0000FF00,
-			0x00FF0000,
-			0xFF000000
-#else
-			0xFF000000,
-			0x00FF0000,
-			0x0000FF00,
-			0x000000FF
-#endif
-			   );
-	if ( image == NULL ) {
-		return 0;
-	}
-
-	/* Save the alpha blending attributes */
-	saved_flags = surface->flags&(SDL_SRCALPHA|SDL_RLEACCELOK);
-	saved_alpha = surface->format->alpha;
-	if ( (saved_flags & SDL_SRCALPHA) == SDL_SRCALPHA ) {
-		SDL_SetAlpha(surface, 0, 0);
-	}
-
-	/* Copy the surface into the GL texture image */
-	area.x = 0;
-	area.y = 0;
-	area.w = surface->w;
-	area.h = surface->h;
-	SDL_BlitSurface(surface, &area, image, &area);
-
-	/* Restore the alpha blending attributes */
-	if ( (saved_flags & SDL_SRCALPHA) == SDL_SRCALPHA ) {
-		SDL_SetAlpha(surface, saved_flags, saved_alpha);
-	}
-
-	/* Create an OpenGL texture for the image */
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D,
-			 0,
-			 GL_RGBA,
-			 w, h,
-			 0,
-			 GL_RGBA,
-			 GL_UNSIGNED_BYTE,
-			 image->pixels);
-	SDL_FreeSurface(image); /* No longer needed */
-
-	return texture;
-}
-
 GLuint SDL_GL_LoadTexture_fromPixelData(int w, int h, GLfloat *texcoord, void *pixels)
 {
     GLuint texture;
-//    int my_w, my_h;
-//    my_w = power_of_two(w);
-//    my_h = power_of_two(h);
-    texcoord[0] = 0.0f;			/* Min X */
-    texcoord[1] = 0.0f;			/* Min Y */
-    texcoord[2] = 1.0f; //(GLfloat)w / my_w;	/* Max X */
-    texcoord[3] = 1.0f; //(GLfloat)h / my_h;	/* Max Y */
+
+    texcoord[0] = 0.0f;         /* Min X */
+    texcoord[1] = 0.0f;         /* Min Y */
+    texcoord[2] = 1.0f;         /* Max X */
+    texcoord[3] = 1.0f;         /* Max Y */
 
     glGenTextures(1, &texture);
     glBindTexture(GL_TEXTURE_2D, texture);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexImage2D(GL_TEXTURE_2D,
-             0,
-             GL_RGB,
-             w, h,
-             0,
-             GL_RGB,
-             GL_UNSIGNED_BYTE,
-             pixels);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGB, GL_UNSIGNED_BYTE, pixels);
+
     return texture;
 }
 
 void initSDL () {
     int i;
-    SDL_PixelFormat *pfrm;
-
     if (SDL_Init (SDL_INIT_JOYSTICK | SDL_INIT_VIDEO) < 0) {
         fprintf (stderr, "Couldn't initialize SDL: %s\n", SDL_GetError ());
         exit (1);
     }
+
     SDL_JoystickOpen(0);
     atexit (SDL_Quit);
 
-
-    video = SDL_SetVideoMode (SDL_WIDTH, SDL_HEIGHT, 24, SDL_OPENGL|SDL_SWSURFACE);
-    SDL_ShowCursor (0);
-
-	SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 3 );
-	SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, 3 );
-	SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, 2 );
-	SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 16 );
-	SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
-	SDL_GL_SetAttribute( SDL_GL_SWAP_CONTROL, 0 ); // ?
-
-	glViewport( 0, 0, SDL_WIDTH, SDL_HEIGHT );
-	glMatrixMode( GL_PROJECTION );
-	glLoadIdentity( );
-
-	glOrtho( -2.0, 2.0, -2.0, 2.0, -20.0, 20.0 );
-
-	glMatrixMode( GL_MODELVIEW );
-	glLoadIdentity( );
-
-	glEnable(GL_DEPTH_TEST);
-
-	glDepthFunc(GL_LESS);
-
-	glShadeModel(GL_SMOOTH);
-
-	glClearColor( 255.0f, 255.0f, 255.0f, 1.0 );
-	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	glMatrixMode(GL_MODELVIEW);
-	glRotatef(5.0, 1.0, 1.0, 1.0);
-
-    if (!global_texture) {
-        global_texture = SDL_GL_LoadTexture_fromPixelData(SDL_WIDTH, SDL_HEIGHT, texcoord, video->pixels);
-    }
-
+    video = SDL_SetVideoMode (SDL_WIDTH, SDL_HEIGHT, 16, SDL_OPENGL | SDL_SWSURFACE);
     if (video == NULL) {
         fprintf (stderr, "Couldn't set video mode: %s\n", SDL_GetError ());
         exit (1);
     }
 
-    pfrm = video->format;
-    layer = SDL_CreateRGBSurface (SDL_SWSURFACE, SDL_WIDTH, SDL_HEIGHT, 8, pfrm->Rmask, pfrm->Gmask, pfrm->Bmask, pfrm->Amask);
+    /* OpenGL Init */
+    SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 3 );
+    SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, 3 );
+    SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, 2 );
+    SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 16 );
+    SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+    SDL_GL_SetAttribute( SDL_GL_SWAP_CONTROL, 0 ); // ?
 
-    if (layer == NULL) {
-        fprintf (stderr, "Couldn't create surface: %s\n", SDL_GetError ());
-        exit (1);
-    }
+    SDL_ShowCursor (0);
 
-    layerRect.x = 0;
-    layerRect.y = 0;
-    layerRect.w = SDL_WIDTH;
-    layerRect.h = SDL_HEIGHT;
-    {
-        static SDL_Color pltTbl[4] = {
-            {255, 255, 255, 0},
-            {170, 170, 170, 0},
-            {85, 85, 85, 0},
-            {0, 0, 0, 0}
-        };
-//        SDL_SetColors (video, pltTbl, 0, 4);
-        SDL_SetColors (layer, pltTbl, 0, 4);
+    if (!global_texture) {
+        global_texture = SDL_GL_LoadTexture_fromPixelData(SDL_WIDTH, SDL_HEIGHT, texcoord, video->pixels);
     }
 
     for (i=0;i<256;i++)
@@ -295,16 +149,12 @@ void initSDL () {
 }
 
 int rgb(unsigned char r, unsigned char g, unsigned char b) {
-    if (r < 0 || 255 < r || g < 0 || 255 < g || b < 0 || b > 255)
-        return -1;
-
     unsigned char red = r >> 3;
     unsigned char green = g >> 2;
     unsigned char blue = b >> 3;
 
     int result = (red << (5 + 6)) | (green << 5) | blue;
 
-//tests
     printf("red: %x\n", red);
     printf("green: %x\n", green);
     printf("blue: %x\n", blue);
@@ -318,17 +168,12 @@ void pceLCDTrans () {
     int x, y;
     unsigned char *vbi, *bi;
     unsigned char *bline;
-    #ifdef TARGET_PANDORA
-        const int zoom = 4;
-    #else
-        const int zoom = 2;
-    #endif
+    const int zoom = 2;
+
     const int offsetx = SDL_WIDTH/2 - 128*zoom/2;
     const int offsety = SDL_HEIGHT/2 - 88*zoom/2;
 
-    bi = (unsigned char*)pixelData;
-
-    SDL_GL_Enter2DMode();
+    bi = pixelData;
 
     w = SDL_WIDTH;
     h = SDL_HEIGHT;
@@ -342,19 +187,7 @@ void pceLCDTrans () {
         }
     }
 
-//    glDrawPixels(w, h, GL_RGB, GL_UNSIGNED_BYTE_3_3_2, pix.pixels);
-
-//    unsigned char *testP = malloc(SDL_HEIGHT * 4 * 2048);
-//    gluScaleImage(GL_RGB,
-//                  w,
-//                  h,
-//                  GL_UNSIGNED_BYTE_3_3_2,
-//                  pixelData,
-//                  w,
-//                  h,
-//                  GL_UNSIGNED_SHORT_5_6_5,
-//                  testP);
-
+    // Convert buffer to RGB565
     int rz;
     for (rz = 0; rz < SDL_HEIGHT * SDL_WIDTH; ++rz) {
         switch (pixelData[rz]) {
@@ -373,17 +206,8 @@ void pceLCDTrans () {
         }
     }
 
-//    FILE *f = fopen("2.txt", "w");
-//    int z;
-//    for (z= 0; z < SDL_HEIGHT * SDL_WIDTH; ++z) {
-//        fprintf(f, "0x%x\n", pixelData[z]);
-////        if (pixelData[z] == 0xff0000ff) {
-////            pixelData[z] = 0xff288b28;
-////        }
-//    }
-//    fclose(f);
 
-//	glDrawPixels(w, h, GL_RGB, GL_UNSIGNED_BYTE, testP);
+    SDL_GL_Enter2DMode();
 
     GLfloat texMinX = texcoord[0];
     GLfloat texMinY = texcoord[1];
@@ -393,8 +217,6 @@ void pceLCDTrans () {
     int x_coord = 0;
     int y_coord = 0;
 
-    glClearColor( 255.0f, 255.0f, 255.0f, 1.0 );
-    glBindTexture(GL_TEXTURE_2D, global_texture);
     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w, h, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, testP);
     glBegin(GL_TRIANGLE_STRIP);
     glTexCoord2f(texMinX, texMinY); glVertex2i(x_coord,   y_coord  );
@@ -403,20 +225,9 @@ void pceLCDTrans () {
     glTexCoord2f(texMaxX, texMaxY); glVertex2i(x_coord+w, y_coord+h);
     glEnd();
 
-    //SDL_BlitSurface (layer, NULL, video, &layerRect);
-    //SDL_Flip (video);
-
-//    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w, h, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, layer->pixels);
-
-    //SDL_GL_Enter2DMode();
-    //glDrawPixels(w, h, GL_RGB, GL_UNSIGNED_BYTE_3_3_2, layer->pixels);
-//    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w, h, GL_RGB, GL_UNSIGNED_BYTE_3_3_2, pix.pixels);
     SDL_GL_Leave2DMode();
-//    fprintf(stderr, "Test");
 
     SDL_GL_SwapBuffers();
-
-//    free(testP);
 }
 
 unsigned char *keys;
@@ -428,11 +239,11 @@ int pcePadGet () {
     int k[] = {
         SDLK_PAGEUP, SDLK_PAGEDOWN, SDLK_LEFT, SDLK_RIGHT,
         SDLK_KP4, SDLK_KP6,
-        #ifdef TARGET_PANDORA
+    #ifdef TARGET_PANDORA
         SDLK_PAGEUP, SDLK_PAGEDOWN, SDLK_HOME, SDLK_END,
-        #else
+    #else
         SDLK_x, SDLK_z, SDLK_SPACE, SDLK_RETURN,
-        #endif
+    #endif
         SDLK_ESCAPE, SDLK_LSHIFT, SDLK_RSHIFT,
         SDLK_PLUS, SDLK_MINUS
     };
