@@ -47,6 +47,8 @@ struct Pixels {
     void *pixels;
 } pix;
 
+unsigned char *testP[SDL_HEIGHT * 4 * 2048];
+
 //pix.pixels = pix.pixelData;
 
 void pceLCDDispStop ()
@@ -205,7 +207,7 @@ GLuint SDL_GL_LoadTexture_fromPixelData(int w, int h, GLfloat *texcoord, void *p
              w, h,
              0,
              GL_RGB,
-             GL_UNSIGNED_BYTE_3_3_2,
+             GL_UNSIGNED_BYTE,
              pixels);
     return texture;
 }
@@ -325,8 +327,19 @@ void pceLCDTrans () {
 
 //    glDrawPixels(w, h, GL_RGB, GL_UNSIGNED_BYTE_3_3_2, pix.pixels);
 
+//    unsigned char *testP = malloc(SDL_HEIGHT * 4 * 2048);
+    gluScaleImage(GL_RGB,
+                  w,
+                  h,
+                  GL_UNSIGNED_BYTE_3_3_2,
+                  pix.pixels,
+                  w,
+                  h,
+                  GL_UNSIGNED_BYTE,
+                  testP);
+
     if (!global_texture) {
-        global_texture = SDL_GL_LoadTexture_fromPixelData(SDL_WIDTH, SDL_HEIGHT, texcoord, pix.pixels);
+        global_texture = SDL_GL_LoadTexture_fromPixelData(SDL_WIDTH, SDL_HEIGHT, texcoord, testP);
     }
         texMinX = texcoord[0];
         texMinY = texcoord[1];
@@ -355,6 +368,8 @@ void pceLCDTrans () {
 //    fprintf(stderr, "Test");
 
     SDL_GL_SwapBuffers();
+
+//    free(testP);
 
     if (global_texture) {
         glDeleteTextures(1, &global_texture);
