@@ -6,6 +6,7 @@
 #include <math.h>
 
 #include <SDL/SDL.h>
+#include <SDL/SDL_opengl.h>
 
 #include "piece.h"
 #include "spout.h"
@@ -39,6 +40,8 @@ unsigned char joykeys[256];
 SDL_Surface *video, *layer;
 SDL_Rect layerRect;
 
+static GLuint global_texture = 0;
+
 unsigned char *vBuffer = NULL;
 
 void pceLCDDispStop ()
@@ -47,6 +50,133 @@ void pceLCDDispStop ()
 
 void pceLCDDispStart ()
 {
+}
+
+void SDL_GL_Enter2DMode()
+{
+	SDL_Surface *screen = SDL_GetVideoSurface();
+
+	/* Note, there may be other things you need to change,
+	   depending on how you have your OpenGL state set up.
+	*/
+	glPushAttrib(GL_ENABLE_BIT);
+	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_CULL_FACE);
+	glEnable(GL_TEXTURE_2D);
+
+	/* This allows alpha blending of 2D textures with the scene */
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	glViewport(0, 0, screen->w, screen->h);
+
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
+	glLoadIdentity();
+
+	glOrtho(0.0, (GLdouble)screen->w, (GLdouble)screen->h, 0.0, 0.0, 1.0);
+
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	glLoadIdentity();
+
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+}
+
+void SDL_GL_Leave2DMode()
+{
+	glMatrixMode(GL_MODELVIEW);
+	glPopMatrix();
+
+	glMatrixMode(GL_PROJECTION);
+	glPopMatrix();
+
+	glPopAttrib();
+}
+
+/* Quick utility function for texture creation */
+static int power_of_two(int input)
+{
+	int value = 1;
+
+	while ( value < input ) {
+		value <<= 1;
+	}
+	return value;
+}
+
+GLuint SDL_GL_LoadTexture(SDL_Surface *surface, GLfloat *texcoord)
+{
+	GLuint texture;
+	int w, h;
+	SDL_Surface *image;
+	SDL_Rect area;
+	Uint32 saved_flags;
+	Uint8  saved_alpha;
+
+	/* Use the surface width and height expanded to powers of 2 */
+	w = power_of_two(surface->w);
+	h = power_of_two(surface->h);
+	texcoord[0] = 0.0f;			/* Min X */
+	texcoord[1] = 0.0f;			/* Min Y */
+	texcoord[2] = (GLfloat)surface->w / w;	/* Max X */
+	texcoord[3] = (GLfloat)surface->h / h;	/* Max Y */
+
+	image = SDL_CreateRGBSurface(
+			SDL_SWSURFACE,
+			w, h,
+			32,
+#if SDL_BYTEORDER == SDL_LIL_ENDIAN /* OpenGL RGBA masks */
+			0x000000FF,
+			0x0000FF00,
+			0x00FF0000,
+			0xFF000000
+#else
+			0xFF000000,
+			0x00FF0000,
+			0x0000FF00,
+			0x000000FF
+#endif
+			   );
+	if ( image == NULL ) {
+		return 0;
+	}
+
+	/* Save the alpha blending attributes */
+	saved_flags = surface->flags&(SDL_SRCALPHA|SDL_RLEACCELOK);
+	saved_alpha = surface->format->alpha;
+	if ( (saved_flags & SDL_SRCALPHA) == SDL_SRCALPHA ) {
+		SDL_SetAlpha(surface, 0, 0);
+	}
+
+	/* Copy the surface into the GL texture image */
+	area.x = 0;
+	area.y = 0;
+	area.w = surface->w;
+	area.h = surface->h;
+	SDL_BlitSurface(surface, &area, image, &area);
+
+	/* Restore the alpha blending attributes */
+	if ( (saved_flags & SDL_SRCALPHA) == SDL_SRCALPHA ) {
+		SDL_SetAlpha(surface, saved_flags, saved_alpha);
+	}
+
+	/* Create an OpenGL texture for the image */
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D,
+			 0,
+			 GL_RGBA,
+			 w, h,
+			 0,
+			 GL_RGBA,
+			 GL_UNSIGNED_BYTE,
+			 image->pixels);
+	SDL_FreeSurface(image); /* No longer needed */
+
+	return texture;
 }
 
 void initSDL () {
@@ -61,9 +191,36 @@ void initSDL () {
     atexit (SDL_Quit);
 
 
-    video = SDL_SetVideoMode (SDL_WIDTH, SDL_HEIGHT, 8, SDL_SWSURFACE);
+    video = SDL_SetVideoMode (SDL_WIDTH, SDL_HEIGHT, 8, SDL_OPENGL|SDL_SWSURFACE);
     SDL_ShowCursor (0);
 
+	SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 3 );
+	SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, 3 );
+	SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, 2 );
+	SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 16 );
+	SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+	SDL_GL_SetAttribute( SDL_GL_SWAP_CONTROL, 0 ); // ?
+
+	glViewport( 0, 0, SDL_WIDTH, SDL_HEIGHT );
+	glMatrixMode( GL_PROJECTION );
+	glLoadIdentity( );
+
+	glOrtho( -2.0, 2.0, -2.0, 2.0, -20.0, 20.0 );
+
+	glMatrixMode( GL_MODELVIEW );
+	glLoadIdentity( );
+
+	glEnable(GL_DEPTH_TEST);
+
+	glDepthFunc(GL_LESS);
+
+	glShadeModel(GL_SMOOTH);
+
+	glClearColor( 0.0, 0.0, 0.0, 1.0 );
+	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glMatrixMode(GL_MODELVIEW);
+	glRotatef(5.0, 1.0, 1.0, 1.0);
 
     if (video == NULL) {
         fprintf (stderr, "Couldn't set video mode: %s\n", SDL_GetError ());
@@ -98,7 +255,13 @@ void initSDL () {
 }
 
 void pceLCDTrans () {
+    GLfloat texcoord[4];
+    static GLfloat texMinX, texMinY;
+    static GLfloat texMaxX, texMaxY;
+    static int w, h;
     int x, y;
+    static int x_coord = 0;
+    static int y_coord = 0;
     unsigned char *vbi, *bi;
     unsigned char *bline;
     #ifdef TARGET_PANDORA
@@ -119,8 +282,37 @@ void pceLCDTrans () {
         }
     }
 
-    SDL_BlitSurface (layer, NULL, video, &layerRect);
-    SDL_Flip (video);
+    w = layer->w;
+    h = layer->h;
+
+    if (!global_texture) {
+        global_texture = SDL_GL_LoadTexture(layer, texcoord);
+    }
+
+    texMinX = texcoord[0];
+    texMinY = texcoord[1];
+    texMaxX = texcoord[2];
+    texMaxY = texcoord[3];
+
+	SDL_GL_Enter2DMode();
+	glBindTexture(GL_TEXTURE_2D, global_texture);
+	glBegin(GL_TRIANGLE_STRIP);
+	glTexCoord2f(texMinX, texMinY); glVertex2i(x_coord,   y_coord  );
+	glTexCoord2f(texMaxX, texMinY); glVertex2i(x_coord+w, y_coord  );
+	glTexCoord2f(texMinX, texMaxY); glVertex2i(x_coord,   y_coord+h);
+	glTexCoord2f(texMaxX, texMaxY); glVertex2i(x_coord+w, y_coord+h);
+	glEnd();
+	SDL_GL_Leave2DMode();
+
+    //SDL_BlitSurface (layer, NULL, video, &layerRect);
+    //SDL_Flip (video);
+
+    SDL_GL_SwapBuffers();
+
+    if (global_texture) {
+        glDeleteTextures(1, &global_texture);
+        global_texture = 0;
+    }
 }
 
 unsigned char *keys;
