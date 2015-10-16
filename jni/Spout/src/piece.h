@@ -1,4 +1,10 @@
+#ifndef PIECE_H
+#define PIECE_H
+
+#ifndef ANDROID_NDK
 #include <SDL/SDL.h>
+#endif // ANDROID_NDK
+
 #ifdef _WIN32
 #   pragma comment(lib, "SDL.lib")
 #   pragma comment(lib, "SDLmain.lib")
@@ -36,7 +42,12 @@
 #define FOMD_WR 1
 #define pceFileCreate
 
+#ifndef ANDROID_NDK
 #define pceTimerGetCount SDL_GetTicks
+#else
+// TODO: check this
+#define pceTimerGetCount rand
+#endif // ANDROID_NDK
 
 #define PP_MODE_SINGLE 0
 #define PP_MODE_REPEAT 1
@@ -61,3 +72,4 @@ void pceFileWriteSct(const void *ptr, int len);
 int pceFileClose (FILEACC * pfa);
 
 int pcePadGet ();
+#endif // PIECE_H

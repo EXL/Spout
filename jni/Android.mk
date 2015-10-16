@@ -11,8 +11,8 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH)/Spout/src
 LOCAL_CPP_INCLUDES := $(LOCAL_C_INCLUDES)
 
 LOCAL_MODULE    := Spout
-LOCAL_SRC_FILES := SpoutNativeLibProxy.cpp Spout/src/piece.c Spout/src/spout.c
+LOCAL_SRC_FILES := SpoutNativeLibProxy.cpp Spout/src/spout.c Spout/src/piece.c
 
-LOCAL_LDLIBS    += -llog
+LOCAL_LDLIBS    += -llog -lGLESv1_CM
 
 include $(BUILD_SHARED_LIBRARY)

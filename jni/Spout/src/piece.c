@@ -5,14 +5,25 @@
 #include <fcntl.h>
 #include <math.h>
 
+#ifndef ANDROID_NDK
 #include <SDL/SDL.h>
 #include <SDL/SDL_opengl.h>
+#else
+#include <GLES/gl.h>
+#include <GLES/glext.h>
+
+#include "../../SpoutNativeLibProxy.h" // For Keys
+#endif // ANDROID_NDK
 
 #include "piece.h"
 #include "spout.h"
 #include "font.h"
 
+#ifndef ANDROID_NDK
 SDL_Surface *video;
+#else
+// TODO: ????
+#endif // ANDROID_NDK
 
 static GLuint global_texture = 0;
 static GLfloat texcoord[4];
@@ -46,12 +57,14 @@ void pceLCDDispStop () { }
 void pceLCDDispStart () { }
 
 void SDL_GL_Enter2DMode () {
+#ifndef ANDROID_NDK
 	SDL_Surface *screen = SDL_GetVideoSurface();
 
 	/* Note, there may be other things you need to change,
 	   depending on how you have your OpenGL state set up.
 	*/
 	glPushAttrib(GL_ENABLE_BIT);
+#endif // ANDROID_NDK
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
 	glEnable(GL_TEXTURE_2D);
@@ -66,8 +79,11 @@ void SDL_GL_Enter2DMode () {
 	glPushMatrix();
 	glLoadIdentity();
 
+#ifndef ANDROID_NDK
 	glOrtho(0.0, (GLdouble)screen->w, (GLdouble)screen->h, 0.0, 0.0, 1.0);
-
+#else
+	glOrthof(0.0, display_w, display_h, 0.0, 0.0, 1.0);
+#endif // ANDROID_NDK
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	glLoadIdentity();
@@ -81,8 +97,9 @@ void SDL_GL_Leave2DMode () {
 
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();
-
+#ifndef ANDROID_NDK
 	glPopAttrib();
+#endif // ANDROID_NDK
 }
 
 GLuint SDL_GL_LoadTexture_fromPixelData (int w, int h, GLfloat *texcoord, void *pixels) {
@@ -102,6 +119,7 @@ GLuint SDL_GL_LoadTexture_fromPixelData (int w, int h, GLfloat *texcoord, void *
     return texture;
 }
 
+#ifndef ANDROID_NDK
 void initSDL () {
     if (SDL_Init (SDL_INIT_VIDEO) < 0) {
         fprintf (stderr, "Couldn't initialize SDL: %s\n", SDL_GetError ());
@@ -138,6 +156,12 @@ void initSDL () {
         global_texture = SDL_GL_LoadTexture_fromPixelData(TEXTURE_WIDTH, TEXTURE_HEIGHT, texcoord, video->pixels);
     }
 }
+#else
+void initSpoutGLES() {
+	glClearColor( 255.0, 255.0, 255.0, 1.0 );
+	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+#endif //ANDROID_NDK
 
 int rgb (unsigned char r, unsigned char g, unsigned char b) {
     unsigned char red = r >> 3;
@@ -211,22 +235,63 @@ void pceLCDTrans () {
     int y_coord = 0;
 
     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w, h, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, testP);
+
+#ifndef ANDROID_NDK
     glBegin(GL_TRIANGLE_STRIP);
     glTexCoord2f(texMinX, texMinY); glVertex2i(x_coord + x_off,                   y_coord + y_off );
     glTexCoord2f(texMaxX, texMinY); glVertex2i(x_coord + display_w - x_off * 2,   y_coord + y_off );
-    glTexCoord2f(texMinX, texMaxY); glVertex2i(x_coord + x_off,                   y_coord + display_h - y_off);
-    glTexCoord2f(texMaxX, texMaxY); glVertex2i(x_coord + display_w - x_off * 2,   y_coord + display_h - y_off);
+    glTexCoord2f(texMinX, texMaxY); glVertex2i(x_coord + x_off,                   y_coord + display_h - y_off * 2);
+    glTexCoord2f(texMaxX, texMaxY); glVertex2i(x_coord + display_w - x_off * 2,   y_coord + display_h - y_off * 2);
     glEnd();
+#else
+    GLfloat texC[] = {
+        texMinX, texMinY,
+        texMaxX, texMinY,
+        texMinX, texMaxY,
+        texMaxX, texMaxY
+    };
+
+    GLfloat vtxC[] = {
+        x_coord + x_off, y_coord + y_off, 0,
+        x_coord + display_w - x_off * 2, y_coord + y_off, 0,
+        x_coord + x_off, y_coord + display_h - y_off * 2, 0,
+        x_coord + display_w - x_off * 2, y_coord + display_h - y_off * 2, 0
+    };
+
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+    glVertexPointer(3, GL_FLOAT, 0, vtxC);
+    glTexCoordPointer(2, GL_FLOAT, 0, texC);
+    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
+    glDisableClientState(GL_VERTEX_ARRAY);
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+#endif // ANDROID_NDK
 
     SDL_GL_Leave2DMode();
-
+#ifndef ANDROID_NDK
     SDL_GL_SwapBuffers();
+#else
+    //TODO: swapbuffers ???
+    glEnable(GL_TEXTURE_2D);
+    glActiveTexture(GL_TEXTURE0);
+    glClientActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, global_texture);
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+    glEnable(GL_BLEND);
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnableClientState(GL_COLOR_ARRAY);
+
+#endif // ANDROID_NDK
 }
 
 int pcePadGet () {
     static int pad = 0;
     int i = 0, op = pad & 0x00ff;
 
+#ifndef ANDROID_NDK
     int k[] = {
         SDLK_PAGEUP, SDLK_PAGEDOWN, SDLK_LEFT, SDLK_RIGHT,
         SDLK_KP4, SDLK_KP6,
@@ -238,6 +303,15 @@ int pcePadGet () {
         SDLK_ESCAPE, SDLK_LSHIFT, SDLK_RSHIFT,
         SDLK_PLUS, SDLK_MINUS
     };
+#else
+    int k[] = {
+        KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT,
+        KEY_LEFT, KEY_RIGHT,
+        KEY_FIRE, KEY_FIRE, KEY_FIRE, KEY_FIRE,
+		KEY_PAUSE, KEY_QUIT, KEY_UNKNOWN,
+		KEY_FIRE, KEY_FIRE
+    };
+#endif // ANDROID_NDK
 
     int p[] = {
         PAD_UP, PAD_DN, PAD_LF, PAD_RI,
@@ -249,7 +323,11 @@ int pcePadGet () {
     pad = 0;
 
     do {
+#ifndef ANDROID_NDK
         if (keys[k[i]] == SDL_PRESSED) {
+#else
+        if (keys[k[i]] == 1) { // TODO: check this
+#endif // ANDROID_NDK
             pad |= p[i];
         }
         i++;
@@ -349,6 +427,7 @@ void pceFontPrintf (const char *fmt, ...)
     }
 }
 
+#ifndef ANDROID_NDK
 int pceFileOpen (FILEACC * pfa, const char *fname, int mode)
 {
     fprintf(stderr, "Openning file: %s\n", fname);
@@ -365,6 +444,7 @@ int pceFileOpen (FILEACC * pfa, const char *fname, int mode)
         return 1;
     }
 }
+#endif // ANDROID NDK
 
 void pceFileReadSct (void *ptr, /*int sct,*/ int len)
 {
@@ -387,6 +467,7 @@ int pceFileClose (FILEACC * pfa)
     return 0;
 }
 
+#ifndef ANDROID_NDK
 int main (/*int argc, char *argv[]*/)
 {
     SDL_Event event;
@@ -426,3 +507,8 @@ int main (/*int argc, char *argv[]*/)
 
     return 0;
 }
+#else
+void initAll() {
+	// TODO: check this
+}
+#endif //ANDROID_NDK

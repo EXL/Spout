@@ -2,16 +2,7 @@
 #include <android/log.h>
 
 #include "ru_exlmoto_spout_SpoutNativeLibProxy.h" // JNI header
-
-enum KeyCodes {
-	KEY_LEFT	=	0x01,
-	KEY_RIGHT	=	0x02,
-	KEY_UP		=	0x03,
-	KEY_DOWN	=	0x04,
-	KEY_FIRE	=	0x05,
-	KEY_QUIT	=	0x06,
-	KEY_PAUSE	=	0x07
-};
+#include "SpoutNativeLibProxy.h"                  // Keys
 
 static int appRunning = 0;
 
@@ -75,6 +66,6 @@ void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutNativePushScore
 JNIEXPORT
 jintArray JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutNativeGetScore
   (JNIEnv *env, jclass c) {
-	jintArray a[4] = {0, 1, 2, 3 };
-	return a;
+//	int a[4] = {0, 1, 2, 3 };
+//	return a;
 }
