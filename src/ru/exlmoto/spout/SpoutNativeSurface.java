@@ -9,13 +9,13 @@ import android.view.KeyEvent;
 
 public class SpoutNativeSurface extends GLSurfaceView implements android.opengl.GLSurfaceView.Renderer {
 
-	private final int KEY_LEFT	=	0x1;
-	private final int KEY_RIGHT	=	0x2;
-	private final int KEY_UP	=	0x3;
-	private final int KEY_DOWN	=	0x4;
-	private final int KEY_FIRE	=	0x6;
-	private final int KEY_QUIT	=	0x7;
-	private final int KEY_PAUSE	=	0x8;
+	private final int KEY_LEFT	=	0x01;
+	private final int KEY_RIGHT	=	0x02;
+	private final int KEY_UP	=	0x03;
+	private final int KEY_DOWN	=	0x04;
+	private final int KEY_FIRE	=	0x05;
+	private final int KEY_QUIT	=	0x06;
+	private final int KEY_PAUSE	=	0x07;
 
 	public SpoutNativeSurface(Context context) {
 		super(context);
