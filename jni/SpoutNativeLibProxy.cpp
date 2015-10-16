@@ -55,9 +55,7 @@ void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutNativeSurfaceChanged
 JNIEXPORT
 void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutNativeDraw
   (JNIEnv *env, jclass c) {
-	a_printf("Now to Step");
 	stepSpoutGLES();
-	a_printf("Now to LCD");
 	//pceLCDTrans();
 }
 

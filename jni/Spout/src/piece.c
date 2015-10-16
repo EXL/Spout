@@ -23,7 +23,30 @@
 SDL_Surface *video;
 #else
 // TODO: ????
-unsigned int *allDisplayPixelMap;
+
+#define TEXTURE_WIDTH_A 512
+#define TEXTURE_HEIGHT_A 256
+#define S_PIXELS_SIZE (sizeof(texture_map[0]) * TEXTURE_WIDTH_A * TEXTURE_HEIGHT_A)
+#define RGB565(r, g, b)  (((r) << (5+6)) | ((g) << 6) | (b))
+
+static uint16_t *texture_map = 0;
+
+static int s_x = 10;
+static int s_y = 50;
+
+static GLuint s_disable_caps[] = {
+	GL_FOG,
+	GL_LIGHTING,
+	GL_CULL_FACE,
+	GL_ALPHA_TEST,
+	GL_BLEND,
+	GL_COLOR_LOGIC_OP,
+	GL_DITHER,
+	GL_STENCIL_TEST,
+	GL_DEPTH_TEST,
+	GL_COLOR_MATERIAL,
+	0
+};
 #endif // ANDROID_NDK
 
 static GLuint global_texture = 0;
@@ -163,16 +186,47 @@ void initSpoutGLES() {
 	pceAppInit ();
 
 	// TODO: ???
-	allDisplayPixelMap = (int *)malloc(TEXTURE_WIDTH * TEXTURE_HEIGHT);
+	//allDisplayPixelMap = (int *)malloc(TEXTURE_WIDTH * TEXTURE_HEIGHT);
 
-	if (!global_texture) {
-		global_texture = SDL_GL_LoadTexture_fromPixelData(TEXTURE_WIDTH, TEXTURE_HEIGHT, texcoord, allDisplayPixelMap);
-	}
+	texture_map = malloc(S_PIXELS_SIZE);
 
-	glClearColor( 255.0, 255.0, 255.0, 1.0 );
-	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+//	if (!global_texture) {
+//		global_texture = SDL_GL_LoadTexture_fromPixelData(TEXTURE_WIDTH, TEXTURE_HEIGHT, texcoord, allDisplayPixelMap);
+//	}
+//
+//	glClearColor( 255.0, 255.0, 255.0, 1.0 );
+//	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	reshapeSpoutGLES(display_w, display_h);
+}
+
+static void render_pixels(uint16_t *pixels, uint16_t *from_pixels)
+{
+	int x, y;
+	/* fill in a square of 5 x 5 at s_x, s_y */
+	for (y = s_y; y < s_y + TEXTURE_HEIGHT; y++) {
+		for (x = s_x; x < s_x + TEXTURE_WIDTH; x++) {
+			int idx = x + y * TEXTURE_WIDTH_A;
+			int ry = y - s_y;
+			int rx = x - s_x;
+			int idx2 = rx + ry * TEXTURE_WIDTH;
+			pixels[idx++] = from_pixels[idx2];
+		}
+	}
+
+//	for (x = 0; x < TEXTURE_WIDTH * TEXTURE_HEIGHT; ++x) {
+//		pixels[x] = from_pixels[x];
+//	}
+
+//	int xx, yy;
+//	for (yy = s_y; yy < s_y)
+}
+
+static void check_gl_error(const char* op)
+{
+	GLint error;
+	for (error = glGetError(); error; error = glGetError())
+		a_printf("after %s() glError (0x%x)\n", op, error);
 }
 
 void deinitSpoutGLES() {
@@ -183,16 +237,41 @@ void deinitSpoutGLES() {
 		global_texture = 0;
 	}
 
-	free(allDisplayPixelMap);
+	free(texture_map);
 }
 
 void reshapeSpoutGLES(int w, int h) {
-	glViewport(0, 0, (GLint) w, (GLint) h);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
 
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
+	a_printf("To GL: %d, %d", w, h);
+
+	glDeleteTextures(1, &global_texture);
+	GLuint *start = s_disable_caps;
+	while (*start) {
+		glDisable(*start++);
+	}
+
+	glEnable(GL_TEXTURE_2D);
+	glGenTextures(1, &global_texture);
+	glBindTexture(GL_TEXTURE_2D, global_texture);
+
+	glTexParameterf(GL_TEXTURE_2D,
+			GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D,
+			GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glShadeModel(GL_FLAT);
+	check_gl_error("glShadeModel");
+
+	glColor4x(0x10000, 0x10000, 0x10000, 0x10000);
+	check_gl_error("glColor4x");
+
+	int rect[4] = { 0, TEXTURE_HEIGHT_A, TEXTURE_WIDTH_A, -TEXTURE_HEIGHT_A };
+
+	glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_CROP_RECT_OES, rect);
+	check_gl_error("glTexParameteriv");
+
+	display_w = w;
+	display_h = h;
 }
 #endif // !ANDROID_NDK
 
@@ -254,6 +333,7 @@ void pceLCDTrans () {
         }
     }
 
+#ifndef ANDROID_NDK
     glClearColor( 255.0, 255.0, 255.0, 1.0 );
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -269,7 +349,6 @@ void pceLCDTrans () {
 
     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w, h, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, testP);
 
-#ifndef ANDROID_NDK
     glBegin(GL_TRIANGLE_STRIP);
     glTexCoord2f(texMinX, texMinY); glVertex2i(x_coord + x_off,                   y_coord + y_off );
     glTexCoord2f(texMaxX, texMinY); glVertex2i(x_coord + display_w - x_off * 2,   y_coord + y_off );
@@ -277,45 +356,61 @@ void pceLCDTrans () {
     glTexCoord2f(texMaxX, texMaxY); glVertex2i(x_coord + display_w - x_off * 2,   y_coord + display_h - y_off * 2);
     glEnd();
 #else
-    GLfloat texC[] = {
-        texMinX, texMinY,
-        texMaxX, texMinY,
-        texMinX, texMaxY,
-        texMaxX, texMaxY
-    };
+    memset(texture_map, 0, S_PIXELS_SIZE);
+    render_pixels(texture_map, testP);
+    glClear(GL_COLOR_BUFFER_BIT);
+    glTexImage2D(GL_TEXTURE_2D,
+			0,
+			GL_RGB,
+			TEXTURE_WIDTH_A,
+			TEXTURE_HEIGHT_A,
+			0,
+			GL_RGB,
+			GL_UNSIGNED_SHORT_5_6_5,
+			texture_map);
+    check_gl_error("glTexImage2D");
+    glDrawTexiOES(0, 0, 0, display_w, display_h);
+    check_gl_error("glDrawTexiOES");
 
-    GLfloat vtxC[] = {
-        x_coord + x_off, y_coord + y_off, 0,
-        x_coord + display_w - x_off * 2, y_coord + y_off, 0,
-        x_coord + x_off, y_coord + display_h - y_off * 2, 0,
-        x_coord + display_w - x_off * 2, y_coord + display_h - y_off * 2, 0
-    };
-
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-    glVertexPointer(3, GL_FLOAT, 0, vtxC);
-    glTexCoordPointer(2, GL_FLOAT, 0, texC);
-    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-
-    glDisableClientState(GL_VERTEX_ARRAY);
-    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+//    GLfloat texC[] = {
+//        texMinX, texMinY,
+//        texMaxX, texMinY,
+//        texMinX, texMaxY,
+//        texMaxX, texMaxY
+//    };
+//
+//    GLfloat vtxC[] = {
+//        x_coord + x_off, y_coord + y_off, 0,
+//        x_coord + display_w - x_off * 2, y_coord + y_off, 0,
+//        x_coord + x_off, y_coord + display_h - y_off * 2, 0,
+//        x_coord + display_w - x_off * 2, y_coord + display_h - y_off * 2, 0
+//    };
+//
+//    glEnableClientState(GL_VERTEX_ARRAY);
+//    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+//
+//    glVertexPointer(3, GL_FLOAT, 0, vtxC);
+//    glTexCoordPointer(2, GL_FLOAT, 0, texC);
+//    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+//
+//    glDisableClientState(GL_VERTEX_ARRAY);
+//    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 #endif // ANDROID_NDK
 
-    SDL_GL_Leave2DMode();
 #ifndef ANDROID_NDK
+    SDL_GL_Leave2DMode();
     SDL_GL_SwapBuffers();
 #else
-    //TODO: swapbuffers ???
-    glEnable(GL_TEXTURE_2D);
-    glActiveTexture(GL_TEXTURE0);
-    glClientActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, global_texture);
-    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-    glEnable(GL_BLEND);
-    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnableClientState(GL_COLOR_ARRAY);
+//    //TODO: swapbuffers ???
+//    glEnable(GL_TEXTURE_2D);
+//    glActiveTexture(GL_TEXTURE0);
+//    glClientActiveTexture(GL_TEXTURE0);
+//    glBindTexture(GL_TEXTURE_2D, global_texture);
+//    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+//    glEnable(GL_BLEND);
+//    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+//    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//    glEnableClientState(GL_COLOR_ARRAY);
 
 #endif // !ANDROID_NDK
 }
