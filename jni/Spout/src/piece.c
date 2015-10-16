@@ -23,6 +23,7 @@
 SDL_Surface *video;
 #else
 // TODO: ????
+unsigned int *allDisplayPixelMap;
 #endif // ANDROID_NDK
 
 static GLuint global_texture = 0;
@@ -158,10 +159,42 @@ void initSDL () {
 }
 #else
 void initSpoutGLES() {
+
+	pceAppInit ();
+
+	// TODO: ???
+	allDisplayPixelMap = (int *)malloc(TEXTURE_WIDTH * TEXTURE_HEIGHT);
+
+	if (!global_texture) {
+		global_texture = SDL_GL_LoadTexture_fromPixelData(TEXTURE_WIDTH, TEXTURE_HEIGHT, texcoord, allDisplayPixelMap);
+	}
+
 	glClearColor( 255.0, 255.0, 255.0, 1.0 );
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	reshapeSpoutGLES(display_w, display_h);
 }
-#endif //ANDROID_NDK
+
+void deinitSpoutGLES() {
+	pceAppExit ();
+
+	if (global_texture) {
+		glDeleteTextures(1, &global_texture);
+		global_texture = 0;
+	}
+
+	free(allDisplayPixelMap);
+}
+
+void reshapeSpoutGLES(int w, int h) {
+	glViewport(0, 0, (GLint) w, (GLint) h);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+}
+#endif // !ANDROID_NDK
 
 int rgb (unsigned char r, unsigned char g, unsigned char b) {
     unsigned char red = r >> 3;
@@ -284,7 +317,7 @@ void pceLCDTrans () {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnableClientState(GL_COLOR_ARRAY);
 
-#endif // ANDROID_NDK
+#endif // !ANDROID_NDK
 }
 
 int pcePadGet () {
@@ -311,7 +344,7 @@ int pcePadGet () {
 		KEY_PAUSE, KEY_QUIT, KEY_UNKNOWN,
 		KEY_FIRE, KEY_FIRE
     };
-#endif // ANDROID_NDK
+#endif // !ANDROID_NDK
 
     int p[] = {
         PAD_UP, PAD_DN, PAD_LF, PAD_RI,
@@ -327,7 +360,7 @@ int pcePadGet () {
         if (keys[k[i]] == SDL_PRESSED) {
 #else
         if (keys[k[i]] == 1) { // TODO: check this
-#endif // ANDROID_NDK
+#endif // !ANDROID_NDK
             pad |= p[i];
         }
         i++;
@@ -444,7 +477,7 @@ int pceFileOpen (FILEACC * pfa, const char *fname, int mode)
         return 1;
     }
 }
-#endif // ANDROID NDK
+#endif // !ANDROID NDK
 
 void pceFileReadSct (void *ptr, /*int sct,*/ int len)
 {
@@ -507,8 +540,4 @@ int main (/*int argc, char *argv[]*/)
 
     return 0;
 }
-#else
-void initAll() {
-	// TODO: check this
-}
-#endif //ANDROID_NDK
+#endif // !ANDROID_NDK

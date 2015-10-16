@@ -72,4 +72,8 @@ void pceFileWriteSct(const void *ptr, int len);
 int pceFileClose (FILEACC * pfa);
 
 int pcePadGet ();
+
+void initSpoutGLES();
+void deinitSpoutGLES();
+void reshapeSpoutGLES(int w, int h);
 #endif // PIECE_H
