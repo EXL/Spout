@@ -542,6 +542,10 @@ int main (/*int argc, char *argv[]*/)
 }
 #else
 void stepSpoutGLES() {
+	// TODO: check keys state
+
+	unsigned char testKeys[] = { '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0' };
+	keys = testKeys;
 	pceAppProc();
 }
 #endif // !ANDROID_NDK
