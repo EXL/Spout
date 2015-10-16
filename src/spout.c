@@ -79,13 +79,13 @@ void pceAppInit (void)
 
     pceLCDDispStart ();
 
-    {
-        FILEACC fa;
-        if (!pceFileOpen (&fa, "spout.sco", FOMD_RD)) {
-            pceFileReadSct (&fa, (void *) hiScore, 8);
-            pceFileClose (&fa);
-        }
-    }
+//    {
+//        FILEACC fa;
+//        if (!pceFileOpen (&fa, "spout.sco", FOMD_RD)) {
+            pceFileReadSct ((void *) hiScore, 8);
+//            pceFileClose (&fa);
+//        }
+//    }
 
     srand (pceTimerGetCount());
 }
@@ -116,17 +116,17 @@ void pceAppProc (/*int cnt*/)
     if (!(gamePhase & 1)) {
         if (gamePhase == 0) {
             if (score > hiScore[0] || (score == hiScore[0] && height > hiScore[1])) {
-                FILEACC fa;
+//                FILEACC fa;
                 hiScore[0] = score;
                 hiScore[1] = height;
-                if (!pceFileOpen (&fa, "spout.sco", FOMD_WR)) {
-                    pceFileWriteSct (&fa, (void *) hiScore, 8);
-                } else /*if(!pceFileCreate("spout.sco", 8)) { */
-                    if(!pceFileOpen(&fa, "spout.sco", FOMD_WR)) {
-                        pceFileWriteSct(&fa, (void *)hiScore, 8);
-                    }
+//                if (!pceFileOpen (&fa, "spout.sco", FOMD_WR)) {
+                    pceFileWriteSct ((void *) hiScore, 8);
+//                } else /*if(!pceFileCreate("spout.sco", 8)) { */
+//                    if(!pceFileOpen(&fa, "spout.sco", FOMD_WR)) {
+//                        pceFileWriteSct(&fa, (void *)hiScore, 8);
+//                    }
                 //}
-                pceFileClose (&fa);
+//                pceFileClose (&fa);
             }
         } else {
             score = 0;

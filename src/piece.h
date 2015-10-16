@@ -56,8 +56,8 @@ void pceAppSetProcPeriod (int period);
 void pceAppReqExit ();
 
 int pceFileOpen (FILEACC * pfa, const char *fname, int mode);
-int pceFileReadSct (FILEACC * pfa, void *ptr, int len);
-int pceFileWriteSct (FILEACC * pfa, const void *ptr, int len);
+void pceFileReadSct(void *ptr, int len);
+void pceFileWriteSct(const void *ptr, int len);
 int pceFileClose (FILEACC * pfa);
 
 int pcePadGet ();

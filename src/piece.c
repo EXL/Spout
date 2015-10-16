@@ -32,6 +32,13 @@ int x_off = 20;
 int y_off = 20;
 int fullscreen = 0;
 
+int interval = 0;
+int exec = 1;
+
+int font_posX = 0, font_posY = 0, font_width = 4, font_height = 6;
+unsigned char font_fgcolor = 3, font_bgcolor = 0, font_bgclear = 0;
+const char *font_adr = (const char *)FONT6;
+
 /***********************************************/
 
 void pceLCDDispStop () { }
@@ -253,13 +260,9 @@ int pcePadGet () {
     return pad;
 }
 
-int interval = 0;
-
 void pceAppSetProcPeriod (int period) {
     interval = period;
 }
-
-int exec = 1;
 
 void pceAppReqExit (/*int c*/) {
     exec = 0;
@@ -272,10 +275,6 @@ unsigned char * pceLCDSetBuffer (unsigned char *pbuff)
     }
     return vBuffer;
 }
-
-int font_posX = 0, font_posY = 0, font_width = 4, font_height = 6;
-unsigned char font_fgcolor = 3, font_bgcolor = 0, font_bgclear = 0;
-const char *font_adr = (const char *)FONT6;
 
 void pceFontSetType (int type)
 {
@@ -352,6 +351,8 @@ void pceFontPrintf (const char *fmt, ...)
 
 int pceFileOpen (FILEACC * pfa, const char *fname, int mode)
 {
+    fprintf(stderr, "Openning file: %s\n", fname);
+
     if (mode == FOMD_RD) {
         *pfa = open (fname, O_RDONLY);
     } else if (mode == FOMD_WR) {
@@ -365,14 +366,19 @@ int pceFileOpen (FILEACC * pfa, const char *fname, int mode)
     }
 }
 
-int pceFileReadSct (FILEACC * pfa, void *ptr, /*int sct,*/ int len)
+void pceFileReadSct (void *ptr, /*int sct,*/ int len)
 {
-    return read (*pfa, ptr, len);
+    fprintf(stderr, "Getting score, length: %d\n", len);
+
+    int *toScrore = (int *)(ptr);
+    toScrore[0] = 55;
+    toScrore[1] = 77;
 }
 
-int pceFileWriteSct (FILEACC * pfa, const void *ptr, /*int sct,*/ int len)
+void pceFileWriteSct (const void *ptr, /*int sct,*/ int len)
 {
-    return write (*pfa, ptr, len);
+    const int *hiScore = (const int *)(ptr);
+    fprintf(stderr, "Pushing score: %d and %d, Len: %d\n", hiScore[0], hiScore[1], len);
 }
 
 int pceFileClose (FILEACC * pfa)
