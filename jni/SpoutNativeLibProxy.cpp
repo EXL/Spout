@@ -2,10 +2,10 @@
 #include <android/log.h>
 
 #include "ru_exlmoto_spout_SpoutNativeLibProxy.h" // JNI header
-#include "SpoutNativeLibProxy.h"                  // Keys
 
 extern "C" {
 #include "piece.h"
+#include "SpoutNativeLibProxy.h"
 
 void a_printf(char const * const format, ...) {
 	va_list ap;
@@ -55,7 +55,10 @@ void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutNativeSurfaceChanged
 JNIEXPORT
 void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutNativeDraw
   (JNIEnv *env, jclass c) {
-	// TODO: display code here
+	a_printf("Now to Step");
+	stepSpoutGLES();
+	a_printf("Now to LCD");
+	//pceLCDTrans();
 }
 
 // KeyDown

@@ -76,4 +76,5 @@ int pcePadGet ();
 void initSpoutGLES();
 void deinitSpoutGLES();
 void reshapeSpoutGLES(int w, int h);
+void stepSpoutGLES();
 #endif // PIECE_H

@@ -8,6 +8,10 @@
 
 #include "sintable.h"
 
+#ifdef ANDROID_NDK
+#include "../../SpoutNativeLibProxy.h"
+#endif // !ANDROID_NDK
+
 #define FRAMERATE 60
 #define MAX_GRAIN 500
 
@@ -202,8 +206,9 @@ void pceAppProc (/*int cnt*/)
         pceFontSetType (0);
 
         gamePhase = 4;
-
+//#ifndef ANDROID_NDK
         pceLCDTrans ();
+//#endif // !ANDROID_NDK
         return;
     }
 
@@ -707,7 +712,9 @@ void pceAppProc (/*int cnt*/)
         pceFontSetType (0);
     }
 
+//#ifndef ANDROID_NDK
     pceLCDTrans ();
+//#endif // !ANDROID_NDK
 }
 
 

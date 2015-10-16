@@ -19,4 +19,6 @@ enum KeyCodes {
 	KEY_UNKNOWN	=	0x08
 };
 
+void a_printf(char const * const format, ...);
+
 #endif /* SPOUTNATIVELIBPROXY_H_ */

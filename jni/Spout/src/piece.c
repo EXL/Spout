@@ -540,4 +540,8 @@ int main (/*int argc, char *argv[]*/)
 
     return 0;
 }
+#else
+void stepSpoutGLES() {
+	pceAppProc();
+}
 #endif // !ANDROID_NDK

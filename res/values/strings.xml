@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">Spout</string>
-    <string name="title_activity_spout">Spout Activity</string>
+    <string name="title_activity_spout">Spout</string>
     <string name="hello_world">Hello world!</string>
 
 </resources>
