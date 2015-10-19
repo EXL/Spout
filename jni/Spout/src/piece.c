@@ -71,8 +71,6 @@ unsigned char *vBuffer = NULL;
 unsigned char pixelData[IN_SCREEN_WIDTH * IN_SCREEN_HEIGHT];
 unsigned short pixelDataRGB565[IN_SCREEN_WIDTH * IN_SCREEN_HEIGHT];
 
-unsigned char *keys;
-
 // 128 256 384 512
 // 88 176 264 352
 
@@ -81,6 +79,8 @@ int display_h = 480;
 
 int interval = 0;
 int exec = 1;
+
+unsigned char *keys;
 
 int font_posX = 0, font_posY = 0, font_width = 4, font_height = 6;
 unsigned char font_fgcolor = 3, font_bgcolor = 0, font_bgclear = 0;
@@ -608,8 +608,8 @@ int main (/*int argc, char *argv[]*/)
 void stepSpoutGLES() {
 	// TODO: check keys state
 
-	unsigned char testKeys[] = { '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0' };
-	keys = testKeys;
+	//unsigned char testKeys[] = { '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0' };
+	keys = keysState;
 	pceAppProc();
 	pceLCDTrans();
 }

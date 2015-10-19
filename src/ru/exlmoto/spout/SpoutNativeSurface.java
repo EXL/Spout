@@ -51,7 +51,7 @@ public class SpoutNativeSurface extends GLSurfaceView implements android.opengl.
 		switch (keyCode) {
 		case KeyEvent.KEYCODE_A:
 		case KeyEvent.KEYCODE_DPAD_LEFT: {
-			SpoutNativeLibProxy.SpoutNativeKeyDown(KEY_UP);
+			SpoutNativeLibProxy.SpoutNativeKeyDown(KEY_LEFT);
 			break;
 		}
 		case KeyEvent.KEYCODE_D:
@@ -61,7 +61,7 @@ public class SpoutNativeSurface extends GLSurfaceView implements android.opengl.
 		}
 		case KeyEvent.KEYCODE_W:
 		case KeyEvent.KEYCODE_DPAD_UP: {
-			SpoutNativeLibProxy.SpoutNativeKeyDown(KEY_LEFT);
+			SpoutNativeLibProxy.SpoutNativeKeyDown(KEY_UP);
 			break;
 		}
 		case KeyEvent.KEYCODE_S:
@@ -97,7 +97,7 @@ public class SpoutNativeSurface extends GLSurfaceView implements android.opengl.
 		switch (keyCode) {
 		case KeyEvent.KEYCODE_A:
 		case KeyEvent.KEYCODE_DPAD_LEFT: {
-			SpoutNativeLibProxy.SpoutNativeKeyUp(KEY_UP);
+			SpoutNativeLibProxy.SpoutNativeKeyUp(KEY_LEFT);
 			break;
 		}
 		case KeyEvent.KEYCODE_D:
@@ -107,7 +107,7 @@ public class SpoutNativeSurface extends GLSurfaceView implements android.opengl.
 		}
 		case KeyEvent.KEYCODE_W:
 		case KeyEvent.KEYCODE_DPAD_UP: {
-			SpoutNativeLibProxy.SpoutNativeKeyUp(KEY_LEFT);
+			SpoutNativeLibProxy.SpoutNativeKeyUp(KEY_UP);
 			break;
 		}
 		case KeyEvent.KEYCODE_S:

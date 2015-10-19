@@ -6,6 +6,18 @@
 extern "C" {
 #include "piece.h"
 #include "SpoutNativeLibProxy.h"
+
+unsigned char keysState[] = {
+		0,
+		0, // KEY_LEFT
+		0, // KEY_RIGHT
+		0, // KEY_UP
+		0, // KEY_DOWN
+		0, // KEY_FIRE
+		0, // KEY_QUIT
+		0, // KEY_PAUSE
+		0  // KEY_UNKNOWN
+};
 } // end extern "C"
 
 static int appRunning = 0;
@@ -48,21 +60,22 @@ JNIEXPORT
 void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutNativeDraw
   (JNIEnv *env, jclass c) {
 	stepSpoutGLES();
-	//pceLCDTrans();
+
+	// pceLCDTrans();
 }
 
 // KeyDown
 JNIEXPORT
 void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutNativeKeyDown
   (JNIEnv *env, jclass c, jint keyCode) {
-
+	keysState[keyCode] = 1;
 }
 
 // KeyUp
 JNIEXPORT
 void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutNativeKeyUp
   (JNIEnv *env, jclass c, jint keyCode) {
-
+	keysState[keyCode] = 0;
 }
 
 // Push Score

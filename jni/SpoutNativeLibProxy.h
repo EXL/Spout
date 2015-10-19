@@ -24,4 +24,6 @@ enum KeyCodes {
 #define LOG_TAG "Spout_App"
 #define LOGI(...)  __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
 
+extern unsigned char keysState[];
+
 #endif /* SPOUTNATIVELIBPROXY_H_ */
