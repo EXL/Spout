@@ -188,6 +188,8 @@ void initSDL () {
 #else
 void initSpoutGLES() {
 
+	keys = keysState;
+
 	pceAppInit ();
 
 	texture_map = malloc(S_PIXELS_SIZE);
@@ -606,10 +608,6 @@ int main (/*int argc, char *argv[]*/)
 }
 #else
 void stepSpoutGLES() {
-	// TODO: check keys state
-
-	//unsigned char testKeys[] = { '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0' };
-	keys = keysState;
 	pceAppProc();
 	pceLCDTrans();
 }

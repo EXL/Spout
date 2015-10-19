@@ -5,9 +5,12 @@ import javax.microedition.khronos.opengles.GL10;
 
 import android.content.Context;
 import android.opengl.GLSurfaceView;
+import android.os.SystemClock;
 import android.view.KeyEvent;
 
 public class SpoutNativeSurface extends GLSurfaceView implements android.opengl.GLSurfaceView.Renderer {
+
+	private static final int FPS_RATE = 60;
 
 	private final int KEY_LEFT	=	0x01;
 	private final int KEY_RIGHT	=	0x02;
@@ -16,6 +19,9 @@ public class SpoutNativeSurface extends GLSurfaceView implements android.opengl.
 	private final int KEY_FIRE	=	0x05;
 	private final int KEY_QUIT	=	0x06;
 	private final int KEY_PAUSE	=	0x07;
+	private final int KEY_UNKNOWN =	0x08;
+
+	private long m_lastFrame = 0;
 
 	public SpoutNativeSurface(Context context) {
 		super(context);
@@ -38,7 +44,16 @@ public class SpoutNativeSurface extends GLSurfaceView implements android.opengl.
 
 	@Override
 	public void onDrawFrame(GL10 gl) {
+		long currentFrame = SystemClock.uptimeMillis();
+		long diff = currentFrame - m_lastFrame;
+		m_lastFrame = currentFrame;
 		SpoutNativeLibProxy.SpoutNativeDraw();
+		try {
+			long sleepfor = (1000 / FPS_RATE) - diff;
+			if (sleepfor > 0) {
+				Thread.sleep(sleepfor);
+			}
+		} catch (InterruptedException ex) { }
 	}
 
 	@Override
@@ -87,6 +102,10 @@ public class SpoutNativeSurface extends GLSurfaceView implements android.opengl.
 			SpoutNativeLibProxy.SpoutNativeKeyDown(KEY_PAUSE);
 			break;
 		}
+		default: {
+			SpoutNativeLibProxy.SpoutNativeKeyDown(KEY_UNKNOWN);
+			break;
+		}
 		}
 
 		return super.onKeyDown(keyCode, event);
@@ -131,6 +150,10 @@ public class SpoutNativeSurface extends GLSurfaceView implements android.opengl.
 		}
 		case KeyEvent.KEYCODE_P: {
 			SpoutNativeLibProxy.SpoutNativeKeyUp(KEY_PAUSE);
+			break;
+		}
+		default: {
+			SpoutNativeLibProxy.SpoutNativeKeyUp(KEY_UNKNOWN);
 			break;
 		}
 		}
