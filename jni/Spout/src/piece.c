@@ -37,6 +37,8 @@ static int s_y = 0;
 int dis_x = 25;
 int dis_y = 25;
 
+int filter = GL_NEAREST;
+
 static GLuint s_disable_caps[] = {
 	GL_FOG,
 	GL_LIGHTING,
@@ -258,9 +260,9 @@ void reshapeSpoutGLES(int w, int h) {
 	glBindTexture(GL_TEXTURE_2D, global_texture);
 
 	glTexParameterf(GL_TEXTURE_2D,
-			GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			GL_TEXTURE_MIN_FILTER, filter);
 	glTexParameterf(GL_TEXTURE_2D,
-			GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			GL_TEXTURE_MAG_FILTER, filter);
 
 	glShadeModel(GL_FLAT);
 	check_gl_error("glShadeModel");
