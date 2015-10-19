@@ -63,7 +63,7 @@ int mR;
 
 int nGrain;
 
-int time = FRAMERATE * 60, score = 0, height = 0, dispscore = 0;
+int m_time = FRAMERATE * 60, score = 0, height = 0, dispscore = 0;
 int hiScore[2] = { 0, 0};
 int dispPos, upperLine, rollCount;
 
@@ -90,8 +90,11 @@ void pceAppInit (void)
 //            pceFileClose (&fa);
 //        }
 //    }
-
+#ifndef ANDROID_NDK
     srand (pceTimerGetCount());
+#else
+    srand (pceTimerGetCount(0));
+#endif // !ANDROID_NDK
 }
 
 void pceAppProc (/*int cnt*/)
@@ -136,7 +139,7 @@ void pceAppProc (/*int cnt*/)
             score = 0;
             dispscore = 0;
             height = -58;
-            time = 60 * FRAMERATE;
+            m_time = 60 * FRAMERATE;
         }
 
         {
@@ -192,9 +195,9 @@ void pceAppProc (/*int cnt*/)
         pceFontSetType (2 + 128);
         pceFontSetPos (0, 82);
         if (height > 0) {
-            pceFontPrintf ("time:%2d height:%4d score:%6d", (time + FRAMERATE - 1) / FRAMERATE, height % 10000, score % 1000000);
+            pceFontPrintf ("time:%2d height:%4d score:%6d", (m_time + FRAMERATE - 1) / FRAMERATE, height % 10000, score % 1000000);
         } else {
-            pceFontPrintf ("time:%2d height:   0 score:%6d", (time + FRAMERATE - 1) / FRAMERATE, score % 1000000);
+            pceFontPrintf ("time:%2d height:   0 score:%6d", (m_time + FRAMERATE - 1) / FRAMERATE, score % 1000000);
         }
         pceFontSetType (0);
     }
@@ -261,14 +264,14 @@ void pceAppProc (/*int cnt*/)
                 if (height > 0) {
                     score++;
                     if ((height & 127) == 0) {
-                        score += (time + FRAMERATE - 1) / FRAMERATE * 10;
-                        time += 60 * FRAMERATE;
-                        if (time > 99 * FRAMERATE) {
-                            time = 99 * FRAMERATE;
+                        score += (m_time + FRAMERATE - 1) / FRAMERATE * 10;
+                        m_time += 60 * FRAMERATE;
+                        if (m_time > 99 * FRAMERATE) {
+                            m_time = 99 * FRAMERATE;
                         }
                         pceFontSetType (2 + 128);
                         pceFontSetPos (4 * 5, 82);
-                        pceFontPrintf ("%2d", (time + FRAMERATE - 1) / FRAMERATE);
+                        pceFontPrintf ("%2d", (m_time + FRAMERATE - 1) / FRAMERATE);
                         pceFontSetType (0);
                     }
                     pceFontSetType (2 + 128);
@@ -681,15 +684,15 @@ void pceAppProc (/*int cnt*/)
         }
     }
 
-    if ((gamePhase & 2) && time && gameover == 0) {
-        time--;
-        if ((time % FRAMERATE) == 0) {
+    if ((gamePhase & 2) && m_time && gameover == 0) {
+        m_time--;
+        if ((m_time % FRAMERATE) == 0) {
             pceFontSetType (2 + 128);
             pceFontSetPos (4 * 5, 82);
-            pceFontPrintf ("%2d", (time + FRAMERATE - 1) / FRAMERATE);
+            pceFontPrintf ("%2d", (m_time + FRAMERATE - 1) / FRAMERATE);
             pceFontSetType (0);
         }
-        if (time == 0) {
+        if (m_time == 0) {
             gameover = 1;
         }
     }

@@ -46,7 +46,7 @@
 #define pceTimerGetCount SDL_GetTicks
 #else
 // TODO: check this
-#define pceTimerGetCount rand
+#define pceTimerGetCount time
 #endif // ANDROID_NDK
 
 #define PP_MODE_SINGLE 0
