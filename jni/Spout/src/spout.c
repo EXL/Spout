@@ -93,7 +93,7 @@ void pceAppInit (void)
 #ifndef ANDROID_NDK
     srand (pceTimerGetCount());
 #else
-    srand (pceTimerGetCount(0));
+    srand (time(0));
 #endif // !ANDROID_NDK
 }
 

@@ -6,12 +6,6 @@
 extern "C" {
 #include "piece.h"
 #include "SpoutNativeLibProxy.h"
-
-void a_printf(char const * const format, ...) {
-	va_list ap;
-	va_start(ap, format);
-	__android_log_print(ANDROID_LOG_WARN, "Spout_App", format, ap);
-}
 } // end extern "C"
 
 static int appRunning = 0;
@@ -21,9 +15,8 @@ JNIEXPORT
 void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutNativeInit
   (JNIEnv *env, jclass c) {
 	if (appRunning == 0) {
-		a_printf("Spout_Native_Init...");
+		LOGI("Spout_Native_Init...");
 
-		// TODO: here all GL and other inits
 		initSpoutGLES();
 
 		appRunning = 1;
@@ -35,9 +28,8 @@ JNIEXPORT
 void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutNativeDeinit
   (JNIEnv *env, jclass c) {
 	if (appRunning == 1) {
-		a_printf("Spout_Native_Deinit...");
+		LOGI("Spout_Native_Deinit...");
 
-		// TODO: deinits code here
 		deinitSpoutGLES();
 
 		appRunning = 0;
@@ -48,7 +40,7 @@ void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutNativeDeinit
 JNIEXPORT
 void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutNativeSurfaceChanged
   (JNIEnv *env, jclass c, jint width, jint height) {
-	reshapeSpoutGLES(width, height);
+	resizeSpoutGLES(width, height);
 }
 
 // Draw

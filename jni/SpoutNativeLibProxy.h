@@ -8,6 +8,8 @@
 #ifndef SPOUTNATIVELIBPROXY_H_
 #define SPOUTNATIVELIBPROXY_H_
 
+#include <android/log.h>
+
 enum KeyCodes {
 	KEY_LEFT	=	0x01,
 	KEY_RIGHT	=	0x02,
@@ -19,6 +21,7 @@ enum KeyCodes {
 	KEY_UNKNOWN	=	0x08
 };
 
-void a_printf(char const * const format, ...);
+#define LOG_TAG "Spout_App"
+#define LOGI(...)  __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
 
 #endif /* SPOUTNATIVELIBPROXY_H_ */

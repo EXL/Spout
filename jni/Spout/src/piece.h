@@ -14,8 +14,8 @@
 #include <string.h>
 #include "config.h"
 
-#define TEXTURE_WIDTH (128)
-#define TEXTURE_HEIGHT (88)
+#define IN_SCREEN_WIDTH (128)
+#define IN_SCREEN_HEIGHT (88)
 
 #define PAD_RI 0x01
 #define PAD_LF 0x02
@@ -44,10 +44,7 @@
 
 #ifndef ANDROID_NDK
 #define pceTimerGetCount SDL_GetTicks
-#else
-// TODO: check this
-#define pceTimerGetCount time
-#endif // ANDROID_NDK
+#endif // !ANDROID_NDK
 
 #define PP_MODE_SINGLE 0
 #define PP_MODE_REPEAT 1
@@ -75,6 +72,6 @@ int pcePadGet ();
 
 void initSpoutGLES();
 void deinitSpoutGLES();
-void reshapeSpoutGLES(int w, int h);
+void resizeSpoutGLES(int w, int h);
 void stepSpoutGLES();
 #endif // PIECE_H
