@@ -24,15 +24,18 @@ SDL_Surface *video;
 #else
 // TODO: ????
 
-#define TEXTURE_WIDTH_A 512
-#define TEXTURE_HEIGHT_A 256
+#define TEXTURE_WIDTH_A 128
+#define TEXTURE_HEIGHT_A 88
 #define S_PIXELS_SIZE (sizeof(texture_map[0]) * TEXTURE_WIDTH_A * TEXTURE_HEIGHT_A)
 #define RGB565(r, g, b)  (((r) << (5+6)) | ((g) << 6) | (b))
 
 static uint16_t *texture_map = 0;
 
-static int s_x = 10;
-static int s_y = 50;
+static int s_x = 0;
+static int s_y = 0;
+
+int dis_x = 25;
+int dis_y = 25;
 
 static GLuint s_disable_caps[] = {
 	GL_FOG,
@@ -270,6 +273,20 @@ void reshapeSpoutGLES(int w, int h) {
 	glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_CROP_RECT_OES, rect);
 	check_gl_error("glTexParameteriv");
 
+    glTexImage2D(GL_TEXTURE_2D,
+			0,
+			GL_RGB,
+			TEXTURE_WIDTH_A,
+			TEXTURE_HEIGHT_A,
+			0,
+			GL_RGB,
+			GL_UNSIGNED_SHORT_5_6_5,
+			NULL);
+    check_gl_error("glTexImage2D");
+
+    glClearColor(0, 0, 0, 0);
+    check_gl_error("glClearColor");
+
 	display_w = w;
 	display_h = h;
 }
@@ -359,17 +376,18 @@ void pceLCDTrans () {
     memset(texture_map, 0, S_PIXELS_SIZE);
     render_pixels(texture_map, testP);
     glClear(GL_COLOR_BUFFER_BIT);
-    glTexImage2D(GL_TEXTURE_2D,
+    glTexSubImage2D(GL_TEXTURE_2D,
 			0,
-			GL_RGB,
+			0,
+			0,
 			TEXTURE_WIDTH_A,
 			TEXTURE_HEIGHT_A,
-			0,
 			GL_RGB,
 			GL_UNSIGNED_SHORT_5_6_5,
 			texture_map);
-    check_gl_error("glTexImage2D");
-    glDrawTexiOES(0, 0, 0, display_w, display_h);
+    check_gl_error("glTexSubImage2D");
+
+    glDrawTexiOES(dis_x, dis_y, 0, display_w - dis_x * 2, display_h - dis_y * 2);
     check_gl_error("glDrawTexiOES");
 
 //    GLfloat texC[] = {
@@ -642,5 +660,6 @@ void stepSpoutGLES() {
 	unsigned char testKeys[] = { '\0', '\0', '\0', '\0', '\0', '\0', '\0', '\0' };
 	keys = testKeys;
 	pceAppProc();
+	pceLCDTrans();
 }
 #endif // !ANDROID_NDK

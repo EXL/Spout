@@ -209,9 +209,9 @@ void pceAppProc (/*int cnt*/)
         pceFontSetType (0);
 
         gamePhase = 4;
-//#ifndef ANDROID_NDK
+#ifndef ANDROID_NDK
         pceLCDTrans ();
-//#endif // !ANDROID_NDK
+#endif // !ANDROID_NDK
         return;
     }
 
@@ -715,9 +715,9 @@ void pceAppProc (/*int cnt*/)
         pceFontSetType (0);
     }
 
-//#ifndef ANDROID_NDK
+#ifndef ANDROID_NDK
     pceLCDTrans ();
-//#endif // !ANDROID_NDK
+#endif // !ANDROID_NDK
 }
 
 
