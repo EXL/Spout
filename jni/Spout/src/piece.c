@@ -24,8 +24,8 @@ SDL_Surface *video;
 #else
 // TODO: ????
 
-#define TEXTURE_WIDTH_A 128
-#define TEXTURE_HEIGHT_A 88
+#define TEXTURE_WIDTH_A 256
+#define TEXTURE_HEIGHT_A 128
 #define S_PIXELS_SIZE (sizeof(texture_map[0]) * TEXTURE_WIDTH_A * TEXTURE_HEIGHT_A)
 #define RGB565(r, g, b)  (((r) << (5+6)) | ((g) << 6) | (b))
 
@@ -270,7 +270,7 @@ void reshapeSpoutGLES(int w, int h) {
 	glColor4x(0x10000, 0x10000, 0x10000, 0x10000);
 	check_gl_error("glColor4x");
 
-	int rect[4] = { 0, TEXTURE_HEIGHT_A, TEXTURE_WIDTH_A, -TEXTURE_HEIGHT_A };
+	int rect[4] = { 0, TEXTURE_HEIGHT, TEXTURE_WIDTH, -TEXTURE_HEIGHT };
 
 	glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_CROP_RECT_OES, rect);
 	check_gl_error("glTexParameteriv");
@@ -389,7 +389,9 @@ void pceLCDTrans () {
 			texture_map);
     check_gl_error("glTexSubImage2D");
 
-    glDrawTexiOES(dis_x, dis_y, 0, display_w - dis_x * 2, display_h - dis_y * 2);
+    glDrawTexiOES(dis_x, dis_y, 0,
+			display_w - dis_x * 2,
+			display_h - dis_y * 2);
     check_gl_error("glDrawTexiOES");
 
 //    GLfloat texC[] = {
