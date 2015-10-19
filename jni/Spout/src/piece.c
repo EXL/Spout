@@ -221,14 +221,18 @@ static void check_gl_error(const char* op)
 
 void deinitSpoutGLES() {
 
-	pceAppExit ();
+	// pceAppExit ();
 
-	if (global_texture) {
-		glDeleteTextures(1, &global_texture);
-		global_texture = 0;
+// TODO: check this
+//	if (global_texture) {
+//		glDeleteTextures(1, &global_texture);
+//		global_texture = 0;
+//	}
+
+	if (texture_map) {
+		LOGI("Free texture_map...");
+		free(texture_map);
 	}
-
-	free(texture_map);
 }
 
 void resizeSpoutGLES(int w, int h) {

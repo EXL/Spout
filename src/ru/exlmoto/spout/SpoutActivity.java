@@ -29,8 +29,9 @@ public class SpoutActivity extends Activity {
 	@Override
 	protected void onDestroy() {
 		toDebug("Destroying...");
-		//TODO: call score save method
-		m_spoutNativeSurface.onClose();
+		//TODO: call score save method ?
+		//m_spoutNativeSurface.onClose();
+		super.onDestroy();
 	}
 
 	@Override
