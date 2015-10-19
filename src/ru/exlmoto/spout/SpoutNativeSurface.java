@@ -7,6 +7,7 @@ import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.os.SystemClock;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 
 public class SpoutNativeSurface extends GLSurfaceView implements android.opengl.GLSurfaceView.Renderer {
 
@@ -159,5 +160,37 @@ public class SpoutNativeSurface extends GLSurfaceView implements android.opengl.
 		}
 
 		return super.onKeyUp(keyCode, event);
+	}
+
+	@Override
+	public boolean onTouchEvent(MotionEvent event) {
+		float x = event.getX();
+//		float y = event.getY();
+
+		float chunk = getWidth() / 4.0f;
+		boolean first = x <= chunk;
+		boolean second = (x > chunk) && (x <= chunk * 3);
+		boolean third = ((x > chunk * 3) && (x <= chunk * 4));
+
+		if (event.getAction() == MotionEvent.ACTION_DOWN) {
+			if (first) {
+				SpoutNativeLibProxy.SpoutNativeKeyDown(KEY_LEFT);
+			} else if (second) {
+				SpoutNativeLibProxy.SpoutNativeKeyDown(KEY_FIRE);
+			} else if (third) {
+				SpoutNativeLibProxy.SpoutNativeKeyDown(KEY_RIGHT);
+			}
+		}
+		else if (event.getAction() == MotionEvent.ACTION_UP) {
+			if (first) {
+				SpoutNativeLibProxy.SpoutNativeKeyUp(KEY_LEFT);
+			} else if (second) {
+				SpoutNativeLibProxy.SpoutNativeKeyUp(KEY_FIRE);
+			} else if (third) {
+				SpoutNativeLibProxy.SpoutNativeKeyUp(KEY_RIGHT);
+			}
+		}
+
+		return true;
 	}
 }
