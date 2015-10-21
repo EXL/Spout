@@ -15,6 +15,7 @@
         android:id="@+id/checkBoxScreenButtons"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:checked="true"
         android:text="@string/OnScreenText" />
 
     <LinearLayout
@@ -89,8 +90,22 @@
             android:id="@+id/checkBoxTail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="50dp"
+            android:layout_marginLeft="5dp"
             android:text="@string/LongTailText" />
+
+        <CheckBox
+            android:id="@+id/checkBoxSound"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:text="@string/SoundText" />
+
+        <CheckBox
+            android:id="@+id/checkBoxVibro"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:text="@string/VibroText" />
 
     </LinearLayout>
 

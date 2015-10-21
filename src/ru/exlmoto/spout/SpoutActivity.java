@@ -3,6 +3,8 @@ package ru.exlmoto.spout;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Window;
+import android.view.WindowManager;
 
 public class SpoutActivity extends Activity {
 
@@ -13,10 +15,32 @@ public class SpoutActivity extends Activity {
 	private int scoreHeight = 45;
 	private int scoreScore = 65;
 
+	private static boolean applyFilter = false;
+
+	private void fillSettings() {
+		Bundle extras = getIntent().getExtras();
+
+		setApplyFilter(extras.getBoolean("filter"));
+	}
+
+	public static boolean getApplyFilter() {
+		return applyFilter;
+	}
+
+	private void setApplyFilter(boolean applyFilter) {
+		SpoutActivity.applyFilter = applyFilter;
+	}
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		/* We like to be fullscreen */
+		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+				WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+
 		super.onCreate(savedInstanceState);
-		//setContentView(R.layout.activity_spout);
+
+		fillSettings();
 
 		m_spoutNativeSurface = new SpoutNativeSurface(this);
 		setContentView(m_spoutNativeSurface);

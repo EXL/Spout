@@ -57,6 +57,14 @@ JNIEXPORT void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutNativeKeyU
 
 /*
  * Class:     ru_exlmoto_spout_SpoutNativeLibProxy
+ * Method:    SpoutFilter
+ * Signature: (Z)V
+ */
+JNIEXPORT void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutFilter
+  (JNIEnv *, jclass, jboolean);
+
+/*
+ * Class:     ru_exlmoto_spout_SpoutNativeLibProxy
  * Method:    SpoutNativePushScore
  * Signature: (II)V
  */

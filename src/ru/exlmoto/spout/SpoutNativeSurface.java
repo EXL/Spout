@@ -37,6 +37,8 @@ public class SpoutNativeSurface extends GLSurfaceView implements android.opengl.
 	@Override
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 		SpoutNativeLibProxy.SpoutNativeInit();
+
+		SpoutNativeLibProxy.SpoutFilter(SpoutActivity.getApplyFilter());
 	}
 
 	public void onClose() {

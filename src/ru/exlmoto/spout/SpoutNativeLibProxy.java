@@ -16,6 +16,8 @@ public class SpoutNativeLibProxy {
 	public native static void SpoutNativeKeyDown(int keyCode);
 	public native static void SpoutNativeKeyUp(int keyCode);
 
+	public native static void SpoutFilter(boolean filterGLES);
+
 	public native static void SpoutNativePushScore(int height, int score);
 
 	// TODO: return what? ByteBuffer?

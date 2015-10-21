@@ -1,9 +1,9 @@
 #include <jni.h>
 #include <android/log.h>
+#include <GLES/gl.h>
+#include <GLES/glext.h>
 
 #include <ctime>
-#include <cmath>
-#include <cfloat>
 
 #include "ru_exlmoto_spout_SpoutNativeLibProxy.h" // JNI header
 
@@ -193,6 +193,16 @@ JNIEXPORT
 void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutNativeKeyUp
   (JNIEnv *env, jclass c, jint keyCode) {
 	keysState[keyCode] = 0;
+}
+
+// Filter
+JNIEXPORT void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutFilter
+  (JNIEnv *env, jclass c, jboolean applyFilter) {
+	if (applyFilter) {
+		filter = GL_LINEAR;
+	} else {
+		filter = GL_NEAREST;
+	}
 }
 
 // Push Score

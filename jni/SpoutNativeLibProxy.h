@@ -26,5 +26,6 @@ enum KeyCodes {
 
 extern unsigned char keysState[];
 extern int interval;
+extern int filter;
 
 #endif /* SPOUTNATIVELIBPROXY_H_ */
