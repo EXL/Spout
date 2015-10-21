@@ -3,6 +3,14 @@
 
     <string name="app_name">Spout</string>
     <string name="title_activity_spout">Spout</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="RunSpoutButton">Run Spout!</string>
+    <string name="LongTailText">Long Tail</string>
+    <string name="ColorText">Colorize</string>
+    <string name="OnScreenText">Show on-screen buttons</string>
+    <string name="FilterText">Apply Filter (smooth)</string>
+    <string name="ScreenOffsetXText">Screen Offset \'x\':</string>
+    <string name="ScreenOffsetYText">\'y\':</string>
+    <string name="AspectRatioText">Aspect Ratio</string>
+    <string name="TweaksText">Tweaks:</string>
 
 </resources>
