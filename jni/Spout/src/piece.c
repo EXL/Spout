@@ -46,6 +46,13 @@ static int s_y = 0;
 int dis_x = 25;
 int dis_y = 25;
 
+// Vibration
+int vibrate_now = 0;
+
+// Scores
+int score_height = 0;
+int score_score = 0;
+
 // Filter
 int filter = GL_NEAREST;
 
@@ -553,9 +560,9 @@ void pceFileReadSct (void *ptr, /*int sct,*/ int len)
 {
     fprintf(stderr, "Getting score, length: %d\n", len);
 
-    int *toScrore = (int *)(ptr);
-    toScrore[0] = 55;
-    toScrore[1] = 77;
+    int *toScore = (int *)(ptr);
+    toScore[0] = score_score;
+    toScore[1] = score_height;
 }
 
 void pceFileWriteSct (const void *ptr, /*int sct,*/ int len)

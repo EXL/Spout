@@ -73,6 +73,14 @@ JNIEXPORT void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutNativePush
 
 /*
  * Class:     ru_exlmoto_spout_SpoutNativeLibProxy
+ * Method:    SpoutVibrate
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutVibrate
+  (JNIEnv *, jclass);
+
+/*
+ * Class:     ru_exlmoto_spout_SpoutNativeLibProxy
  * Method:    SpoutDisplayOffsetX
  * Signature: (I)V
  */

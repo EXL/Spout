@@ -120,29 +120,32 @@ public class SpoutLauncher extends Activity {
 				CheckBox checkBoxVar = (CheckBox)findViewById(R.id.checkBoxFilter);
 				intent.putExtra("filter", checkBoxVar.isChecked());
 
+				// TODO:
 				checkBoxVar = (CheckBox)findViewById(R.id.checkBoxScreenButtons);
 				intent.putExtra("buttons", checkBoxVar.isChecked());
 
 //				checkBoxVar = (CheckBox)findViewById(R.id.checkBoxAspect);
 //				intent.putExtra("aspect", checkBoxVar.isChecked());
 
+				// TODO:
 				checkBoxVar = (CheckBox)findViewById(R.id.checkBoxColor);
 				intent.putExtra("color", checkBoxVar.isChecked());
 
+				// TODO:
 				checkBoxVar = (CheckBox)findViewById(R.id.checkBoxTail);
 				intent.putExtra("tail", checkBoxVar.isChecked());
 
+				// TODO:
 				checkBoxVar = (CheckBox)findViewById(R.id.checkBoxSound);
 				intent.putExtra("sound", checkBoxVar.isChecked());
 
+				// TODO:
 				checkBoxVar = (CheckBox)findViewById(R.id.checkBoxVibro);
 				intent.putExtra("vibro", checkBoxVar.isChecked());
 
-				EditText editTextVar = (EditText)findViewById(R.id.editTextX);
-				intent.putExtra("offset_x", editTextVar.getText().toString());
+				intent.putExtra("offset_x", editTextOffsetX.getText().toString());
 
-				editTextVar = (EditText)findViewById(R.id.editTextY);
-				intent.putExtra("offset_y", editTextVar.getText().toString());
+				intent.putExtra("offset_y", editTextOffsetY.getText().toString());
 
 				startActivity(intent);
 			}

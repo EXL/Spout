@@ -205,6 +205,12 @@ JNIEXPORT void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutFilter
 	}
 }
 
+// Vibrate
+JNIEXPORT jboolean JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutVibrate
+  (JNIEnv *env, jclass c) {
+	return (jboolean)vibrate_now;
+}
+
 // Display offset X
 JNIEXPORT void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutDisplayOffsetX
   (JNIEnv *env, jclass c, jint offset_x) {
@@ -221,7 +227,8 @@ JNIEXPORT void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutDisplayOff
 JNIEXPORT
 void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutNativePushScore
   (JNIEnv *env, jclass c, jint scoreHeight, jint scoreScore) {
-
+	score_score = scoreScore;
+	score_height = scoreHeight;
 }
 
 // Get Score

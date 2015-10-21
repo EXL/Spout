@@ -32,4 +32,7 @@ extern int filter;
 extern int dis_x;
 extern int dis_y;
 
+extern int score_height;
+extern int score_score;
+
 #endif /* SPOUTNATIVELIBPROXY_H_ */

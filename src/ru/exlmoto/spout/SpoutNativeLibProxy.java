@@ -20,6 +20,8 @@ public class SpoutNativeLibProxy {
 
 	public native static void SpoutNativePushScore(int height, int score);
 
+	public native static boolean SpoutVibrate();
+
 	public native static void SpoutDisplayOffsetX(int offset_x);
 	public native static void SpoutDisplayOffsetY(int offset_y);
 

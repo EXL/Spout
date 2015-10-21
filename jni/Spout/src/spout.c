@@ -10,6 +10,7 @@
 
 #ifdef ANDROID_NDK
 #include "../../SpoutNativeLibProxy.h"
+int vibFlag = 0;
 #endif // !ANDROID_NDK
 
 #define FRAMERATE 60
@@ -100,6 +101,10 @@ void pceAppInit (void)
 void pceAppProc (/*int cnt*/)
 {
     static int gamePhase = 0, gameover;
+
+#ifdef ANDROID_NDK
+	vibrate_now = 0;
+#endif // ANDROID_NDK
 
     int pad = pcePadGet ();
 
@@ -707,12 +712,23 @@ void pceAppProc (/*int cnt*/)
         pceFontPrintf ("%6d", dispscore % 1000000);
         pceFontSetType (0);
     }
-
+#ifdef ANDROID_NDK
+    if (!gameover) {
+    	vibFlag = 0;
+    }
+#endif // ANDROID_NDK
     if (gamePhase == 3 && gameover != 0) {
         pceFontSetType (2 + 128);
         pceFontSetPos (64 - 11 * 4 / 2, 33);
         pceFontPrintf (" game over ");
         pceFontSetType (0);
+
+#ifdef ANDROID_NDK
+        if (vibrate_now == 0 && vibFlag == 0) {
+        	vibrate_now = 1;
+        	vibFlag = 1;
+        }
+#endif // ANDROID_NDK
     }
 
 #ifndef ANDROID_NDK
