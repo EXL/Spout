@@ -14,5 +14,6 @@
     <string name="TweaksText">Tweaks:</string>
     <string name="VibroText">Vibro</string>
     <string name="SoundText">Sound</string>
+    <string name="FullscreenText">Fullscreen</string>
 
 </resources>

@@ -63,9 +63,18 @@
             android:id="@+id/checkBoxAspect"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="50dp"
+            android:layout_marginLeft="5dp"
             android:layout_weight="0"
             android:text="@string/AspectRatioText" />
+
+        <CheckBox
+            android:id="@+id/checkBoxFullscreen"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_weight="0"
+            android:text="@string/FullscreenText" />
+
     </LinearLayout>
 
     <LinearLayout

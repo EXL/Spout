@@ -205,6 +205,18 @@ JNIEXPORT void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutFilter
 	}
 }
 
+// Display offset X
+JNIEXPORT void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutDisplayOffsetX
+  (JNIEnv *env, jclass c, jint offset_x) {
+	dis_x = offset_x;
+}
+
+// Display offset Y
+JNIEXPORT void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutDisplayOffsetY
+  (JNIEnv *env, jclass c, jint offset_y) {
+	dis_y = offset_y;
+}
+
 // Push Score
 JNIEXPORT
 void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutNativePushScore
