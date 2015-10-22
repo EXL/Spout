@@ -35,6 +35,8 @@ int fullscreen = 0;
 #define TEXTURE_HEIGHT 128
 #define S_PIXELS_SIZE (sizeof(texture_map[0]) * TEXTURE_WIDTH * TEXTURE_HEIGHT)
 #define RGB565(r, g, b)  (((r) << (5+6)) | ((g) << 6) | (b))
+#define KEY_UNPRESSED 0
+#define KEY_PRESSED 1
 
 static uint16_t *texture_map = 0;
 
@@ -436,7 +438,7 @@ int pcePadGet () {
 #ifndef ANDROID_NDK
         if (keys[k[i]] == SDL_PRESSED) {
 #else
-        if (keys[k[i]] == 1) { // TODO: check this
+        if (keys[k[i]] == KEY_PRESSED) {
 #endif // !ANDROID_NDK
             pad |= p[i];
         }

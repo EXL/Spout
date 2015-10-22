@@ -2,21 +2,46 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:focusableInTouchMode="true"
     android:orientation="vertical"
     tools:context="${relativePackage}.${activityClass}" >
 
-    <CheckBox
-        android:id="@+id/checkBoxFilter"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/FilterText" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
 
-    <CheckBox
-        android:id="@+id/checkBoxScreenButtons"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:checked="true"
-        android:text="@string/OnScreenText" />
+        <CheckBox
+            android:id="@+id/checkBoxFilter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/FilterText" />
+
+        <CheckBox
+            android:id="@+id/checkBoxCube"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:text="@string/CubeText" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <CheckBox
+            android:id="@+id/checkBoxScreenButtons"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="false"
+            android:text="@string/OnScreenText" />
+
+        <CheckBox
+            android:id="@+id/checkBoxSensor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:text="@string/SensorText" />
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -74,7 +99,6 @@
             android:layout_marginLeft="5dp"
             android:layout_weight="0"
             android:text="@string/FullscreenText" />
-
     </LinearLayout>
 
     <LinearLayout
@@ -115,7 +139,6 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
             android:text="@string/VibroText" />
-
     </LinearLayout>
 
     <Button

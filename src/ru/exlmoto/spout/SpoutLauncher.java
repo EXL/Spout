@@ -1,7 +1,13 @@
 package ru.exlmoto.spout;
 
+import java.lang.Integer;
+
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -15,14 +21,41 @@ public class SpoutLauncher extends Activity {
 
 	private static final int originalWidth = 128;
 	private static final int originalHeight = 88;
+	private static int displayW;
+	private static int displayH;
 
-	private static int offX = 0;
-	private static int offY = 0;
 	private static int offX_saved = 0;
 	private static int offY_saved = 0;
 
+	private static final int OFFSET_ERROR = 0;
+
+	// DEFAULT SETTINGS CLASS
+	public static class SpoutSettings {
+		public static boolean s_Filter = false;
+		public static boolean s_CubeDemo = false;
+		public static boolean s_ShowButtons = true;
+		public static boolean s_Sensor = false;
+		public static int s_OffsetX = 25;
+		public static int s_OffsetY = 25;
+		public static boolean s_AspectRatio = false;
+		public static boolean s_Fullscreen = false;
+		public static boolean s_Color = false;
+		public static boolean s_Tail = false;
+		public static boolean s_Sound = false;
+		public static boolean s_Vibro = true;
+
+		public static int s_scoreHeight = 5;
+		public static int s_scoreScore = 10;
+	}
+	// END DEFAULT SETTINGS CLASS
+
 	private CheckBox checkBoxFullscreen;
 	private CheckBox checkBoxAspect;
+
+	private EditText editTextOffsetX;
+	private EditText editTextOffsetY;
+
+	private SharedPreferences settings = null;
 
 	private int getAspectSideScaler(int original, int display) {
 		int i = 1;
@@ -44,111 +77,290 @@ public class SpoutLauncher extends Activity {
 		int scaledWidth = originalWidth * scaler;
 		int scaledHeight = originalHeight * scaler;
 
-		offX = (displayW - scaledWidth) / 2;
-		offY = (displayH - scaledHeight) / 2;
+		SpoutSettings.s_OffsetX = (displayW - scaledWidth) / 2;
+		SpoutSettings.s_OffsetY = (displayH - scaledHeight) / 2;
+	}
+
+	private boolean testOffsets(int offsetX, int offsetY, int displayWidth, int displayHeight) {
+		int result = 0;
+		if (offsetX > ((displayWidth / 2) - (originalWidth / 2))) {
+			result++;
+		}
+		if (offsetY > ((displayHeight / 2) - (originalHeight / 2))) {
+			result++;
+		}
+		return (result == 0);
+	}
+
+	private void setOffsetTextViewsState(boolean enable) {
+		editTextOffsetX.setEnabled(enable);
+		editTextOffsetY.setEnabled(enable);
+	}
+
+	private void readSettings() {
+		SpoutSettings.s_AspectRatio = settings.getBoolean("s_AspectRatio", SpoutSettings.s_AspectRatio);
+		SpoutSettings.s_Color = settings.getBoolean("s_Color", SpoutSettings.s_Color);
+		SpoutSettings.s_CubeDemo = settings.getBoolean("s_CubeDemo", SpoutSettings.s_CubeDemo);
+		SpoutSettings.s_Filter = settings.getBoolean("s_Filter", SpoutSettings.s_Filter);
+		SpoutSettings.s_Fullscreen = settings.getBoolean("s_Fullscreen", SpoutSettings.s_Fullscreen);
+		SpoutSettings.s_OffsetX = settings.getInt("s_OffsetX", SpoutSettings.s_OffsetX);
+		SpoutSettings.s_OffsetY = settings.getInt("s_OffsetY", SpoutSettings.s_OffsetY);
+		SpoutSettings.s_Sensor = settings.getBoolean("s_Sensor", SpoutSettings.s_Sensor);
+		SpoutSettings.s_ShowButtons = settings.getBoolean("s_ShowButtons", SpoutSettings.s_ShowButtons);
+		SpoutSettings.s_Sound = settings.getBoolean("s_Sound", SpoutSettings.s_Sound);
+		SpoutSettings.s_Tail = settings.getBoolean("s_Tail", SpoutSettings.s_Tail);
+		SpoutSettings.s_Vibro = settings.getBoolean("s_Vibro", SpoutSettings.s_Vibro);
+
+		SpoutSettings.s_scoreHeight = settings.getInt("s_scoreHeight", SpoutSettings.s_scoreHeight);
+		SpoutSettings.s_scoreScore = settings.getInt("s_scoreScore", SpoutSettings.s_scoreScore);
+	}
+
+	private void writeSettings() {
+
+		fillSettingsByLayout();
+
+		SharedPreferences.Editor editor = settings.edit();
+
+		editor.putBoolean("s_AspectRatio", SpoutSettings.s_AspectRatio);
+		editor.putBoolean("s_Color", SpoutSettings.s_Color);
+		editor.putBoolean("s_CubeDemo", SpoutSettings.s_CubeDemo);
+		editor.putBoolean("s_Filter", SpoutSettings.s_Filter);
+		editor.putBoolean("s_Fullscreen", SpoutSettings.s_Fullscreen);
+
+		if (testOffsets(SpoutSettings.s_OffsetX, SpoutSettings.s_OffsetY,
+				displayW, displayH)) {
+			editor.putInt("s_OffsetX", SpoutSettings.s_OffsetX);
+			editor.putInt("s_OffsetY", SpoutSettings.s_OffsetY);
+		} else {
+			SpoutActivity.toDebug("Error: what's wrong! oX: " + SpoutSettings.s_OffsetX +
+					" oY: " + SpoutSettings.s_OffsetY);
+		}
+
+		editor.putBoolean("s_Sensor", SpoutSettings.s_Sensor);
+		editor.putBoolean("s_ShowButtons", SpoutSettings.s_ShowButtons);
+		editor.putBoolean("s_Sound", SpoutSettings.s_Sound);
+		editor.putBoolean("s_Tail", SpoutSettings.s_Tail);
+		editor.putBoolean("s_Vibro", SpoutSettings.s_Vibro);
+
+		editor.putInt("s_scoreHeight", SpoutSettings.s_scoreHeight);
+		editor.putInt("s_scoreScore", SpoutSettings.s_scoreScore);
+
+		editor.commit();
+	}
+
+	private void fillSettingsByLayout() {
+		SpoutSettings.s_OffsetX = Integer.parseInt(editTextOffsetX.getText().toString());
+
+		SpoutSettings.s_OffsetY = Integer.parseInt(editTextOffsetY.getText().toString());
+
+		SpoutSettings.s_AspectRatio = checkBoxAspect.isChecked();
+
+		SpoutSettings.s_Fullscreen = checkBoxFullscreen.isChecked();
+
+		CheckBox generalCheckBox = (CheckBox)findViewById(R.id.checkBoxColor);
+		SpoutSettings.s_Color = generalCheckBox.isChecked();
+
+		generalCheckBox = (CheckBox)findViewById(R.id.checkBoxCube);
+		SpoutSettings.s_CubeDemo = generalCheckBox.isChecked();
+
+		generalCheckBox = (CheckBox)findViewById(R.id.checkBoxFilter);
+		SpoutSettings.s_Filter = generalCheckBox.isChecked();
+
+		generalCheckBox = (CheckBox)findViewById(R.id.checkBoxSensor);
+		SpoutSettings.s_Sensor = generalCheckBox.isChecked();
+
+		generalCheckBox = (CheckBox)findViewById(R.id.checkBoxScreenButtons);
+		SpoutSettings.s_ShowButtons = generalCheckBox.isChecked();
+
+		generalCheckBox = (CheckBox)findViewById(R.id.checkBoxSound);
+		SpoutSettings.s_Sound = generalCheckBox.isChecked();
+
+		generalCheckBox = (CheckBox)findViewById(R.id.checkBoxTail);
+		SpoutSettings.s_Tail = generalCheckBox.isChecked();
+
+		generalCheckBox = (CheckBox)findViewById(R.id.checkBoxVibro);
+		SpoutSettings.s_Vibro = generalCheckBox.isChecked();
+	}
+
+	private void fillLayoutBySettings() {
+		// Fill offsets
+		offX_saved = SpoutSettings.s_OffsetX;
+		editTextOffsetX.setText(Integer.toString(SpoutSettings.s_OffsetX));
+
+		offY_saved = SpoutSettings.s_OffsetY;
+		editTextOffsetY.setText(Integer.toString(SpoutSettings.s_OffsetY));
+
+		// Fill checkbox's
+		checkBoxFullscreen.setChecked(SpoutSettings.s_Fullscreen);
+
+		checkBoxAspect.setChecked(SpoutSettings.s_AspectRatio);
+
+		CheckBox generalCheckBox = (CheckBox)findViewById(R.id.checkBoxColor);
+		generalCheckBox.setChecked(SpoutSettings.s_Color);
+
+		generalCheckBox = (CheckBox)findViewById(R.id.checkBoxCube);
+		generalCheckBox.setChecked(SpoutSettings.s_CubeDemo);
+
+		generalCheckBox = (CheckBox)findViewById(R.id.checkBoxFilter);
+		generalCheckBox.setChecked(SpoutSettings.s_Filter);
+
+		generalCheckBox = (CheckBox)findViewById(R.id.checkBoxScreenButtons);
+		generalCheckBox.setChecked(SpoutSettings.s_ShowButtons);
+
+		generalCheckBox = (CheckBox)findViewById(R.id.checkBoxSensor);
+		generalCheckBox.setChecked(SpoutSettings.s_Sensor);
+
+		generalCheckBox = (CheckBox)findViewById(R.id.checkBoxSound);
+		generalCheckBox.setChecked(SpoutSettings.s_Sound);
+
+		generalCheckBox = (CheckBox)findViewById(R.id.checkBoxTail);
+		generalCheckBox.setChecked(SpoutSettings.s_Tail);
+
+		generalCheckBox = (CheckBox)findViewById(R.id.checkBoxVibro);
+		generalCheckBox.setChecked(SpoutSettings.s_Vibro);
+
+		if (checkBoxFullscreen.isChecked()) {
+			setOffsetTextViewsState(false);
+			checkBoxAspect.setChecked(false);
+			checkBoxAspect.setEnabled(false);
+			SpoutSettings.s_AspectRatio = false;
+		}
+
+		if (checkBoxAspect.isChecked()) {
+			setOffsetTextViewsState(false);
+			checkBoxFullscreen.setChecked(false);
+			checkBoxFullscreen.setEnabled(false);
+			SpoutSettings.s_Fullscreen = false;
+		}
 	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		displayW = getWindowManager().getDefaultDisplay().getWidth();
+		displayH = getWindowManager().getDefaultDisplay().getHeight();
+
+		settings = getSharedPreferences("ru.exlmoto.spout", MODE_PRIVATE);
+		// Check the first run
+		if (settings.getBoolean("firstrun", true)) {
+			// The first run, fill GUI layout with default values
+			settings.edit().putBoolean("firstrun", false).commit();
+		} else {
+			// Read settings from Shared Preferences
+			readSettings();
+		}
+
 		setContentView(R.layout.spout_launcher);
 
-		final EditText editTextOffsetX = (EditText)findViewById(R.id.editTextX);
-		editTextOffsetX.setText("25");
-		offX_saved = 25;
-
-		final EditText editTextOffsetY = (EditText)findViewById(R.id.editTextY);
-		editTextOffsetY.setText("25");
-		offY_saved = 25;
-
+		// Fill layout
+		editTextOffsetX = (EditText)findViewById(R.id.editTextX);
+		editTextOffsetY = (EditText)findViewById(R.id.editTextY);
 		checkBoxFullscreen = (CheckBox)findViewById(R.id.checkBoxFullscreen);
+		checkBoxAspect = (CheckBox)findViewById(R.id.checkBoxAspect);
+
+		fillLayoutBySettings();
+
+		// Set listeners
+
 		checkBoxFullscreen.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
 			@Override
 			public void onCheckedChanged(CompoundButton button, boolean status) {
 
-				editTextOffsetX.setEnabled(!status);
-				editTextOffsetY.setEnabled(!status);
+				setOffsetTextViewsState(!status);
+				checkBoxAspect.setChecked(false);
 				checkBoxAspect.setEnabled(!status);
 
 				if (status) {
-					offX = 0;
-					offY = 0;
+					SpoutSettings.s_OffsetX = 0;
+					SpoutSettings.s_OffsetY = 0;
 				} else {
-					offX = offX_saved;
-					offY = offY_saved;
+					SpoutSettings.s_OffsetX = offX_saved;
+					SpoutSettings.s_OffsetY = offY_saved;
 				}
 
-				editTextOffsetX.setText(String.valueOf(offX));
-				editTextOffsetY.setText(String.valueOf(offY));
+				editTextOffsetX.setText(Integer.toString(SpoutSettings.s_OffsetX));
+				editTextOffsetY.setText(Integer.toString(SpoutSettings.s_OffsetY));
+
+				writeSettings();
 			}
 
 		});
 
-		checkBoxAspect = (CheckBox)findViewById(R.id.checkBoxAspect);
 		checkBoxAspect.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
 			@Override
 			public void onCheckedChanged(CompoundButton button, boolean status) {
 
-				editTextOffsetX.setEnabled(!status);
-				editTextOffsetY.setEnabled(!status);
+				setOffsetTextViewsState(!status);
+				checkBoxFullscreen.setChecked(false);
 				checkBoxFullscreen.setEnabled(!status);
 
 				if (status) {
-					getAspectRatioOffsets(originalWidth, originalHeight,
-							getWindowManager().getDefaultDisplay().getWidth(),
-							getWindowManager().getDefaultDisplay().getHeight());
+					getAspectRatioOffsets(originalWidth, originalHeight, displayW, displayH);
 				} else {
-					offX = offX_saved;
-					offY = offY_saved;
+					SpoutSettings.s_OffsetX = offX_saved;
+					SpoutSettings.s_OffsetY = offY_saved;
 				}
 
-				editTextOffsetX.setText(String.valueOf(offX));
-				editTextOffsetY.setText(String.valueOf(offY));
+				editTextOffsetX.setText(Integer.toString(SpoutSettings.s_OffsetX));
+				editTextOffsetY.setText(Integer.toString(SpoutSettings.s_OffsetY));
+
+				writeSettings();
 			}
 
 		});
 
 		Button button = (Button)findViewById(R.id.buttonRunSpout);
+		button.requestFocus();
 		button.setOnClickListener(new OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-				Intent intent = new Intent(v.getContext(), SpoutActivity.class);
 
-				CheckBox checkBoxVar = (CheckBox)findViewById(R.id.checkBoxFilter);
-				intent.putExtra("filter", checkBoxVar.isChecked());
+				writeSettings(); // For fill
 
-				// TODO:
-				checkBoxVar = (CheckBox)findViewById(R.id.checkBoxScreenButtons);
-				intent.putExtra("buttons", checkBoxVar.isChecked());
-
-//				checkBoxVar = (CheckBox)findViewById(R.id.checkBoxAspect);
-//				intent.putExtra("aspect", checkBoxVar.isChecked());
-
-				// TODO:
-				checkBoxVar = (CheckBox)findViewById(R.id.checkBoxColor);
-				intent.putExtra("color", checkBoxVar.isChecked());
-
-				// TODO:
-				checkBoxVar = (CheckBox)findViewById(R.id.checkBoxTail);
-				intent.putExtra("tail", checkBoxVar.isChecked());
-
-				// TODO:
-				checkBoxVar = (CheckBox)findViewById(R.id.checkBoxSound);
-				intent.putExtra("sound", checkBoxVar.isChecked());
-
-				// TODO:
-				checkBoxVar = (CheckBox)findViewById(R.id.checkBoxVibro);
-				intent.putExtra("vibro", checkBoxVar.isChecked());
-
-				intent.putExtra("offset_x", editTextOffsetX.getText().toString());
-
-				intent.putExtra("offset_y", editTextOffsetY.getText().toString());
-
-				startActivity(intent);
+				if (testOffsets(SpoutSettings.s_OffsetX, SpoutSettings.s_OffsetY, displayW, displayH)) {
+					Intent intent = new Intent(v.getContext(), SpoutActivity.class);
+					startActivity(intent);
+				} else {
+					showDialog(OFFSET_ERROR);
+				}
 			}
+
 		});
+	}
+
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+		switch (id) {
+		case OFFSET_ERROR:
+			builder.setTitle(R.string.OffsetErrorTitle);
+			builder.setMessage(R.string.OffsetErrorText);
+			builder.setCancelable(false);
+			builder.setPositiveButton(R.string.DialogOkText, new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int id) {
+					dialog.cancel();
+				}
+			});
+			break;
+		default:
+			break;
+		}
+
+		return builder.create();
+	}
+
+	@Override
+	public void onBackPressed() {
+		// Write settings
+		writeSettings();
+
+		// Exit to Android
+		System.exit(0);
 	}
 }

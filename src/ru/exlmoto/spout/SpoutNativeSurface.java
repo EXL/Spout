@@ -36,14 +36,14 @@ public class SpoutNativeSurface extends GLSurfaceView implements android.opengl.
 
 	@Override
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-		SpoutNativeLibProxy.SpoutNativePushScore(SpoutActivity.getScoreHeight(),
-				SpoutActivity.getScoreScore());
+		SpoutNativeLibProxy.SpoutNativePushScore(SpoutLauncher.SpoutSettings.s_scoreHeight,
+				SpoutLauncher.SpoutSettings.s_scoreScore);
 
 		SpoutNativeLibProxy.SpoutNativeInit();
 
-		SpoutNativeLibProxy.SpoutFilter(SpoutActivity.getApplyFilter());
-		SpoutNativeLibProxy.SpoutDisplayOffsetX(SpoutActivity.getDisplayOffsetX());
-		SpoutNativeLibProxy.SpoutDisplayOffsetY(SpoutActivity.getDisplayOffsetY());
+		SpoutNativeLibProxy.SpoutFilter(SpoutLauncher.SpoutSettings.s_Filter);
+		SpoutNativeLibProxy.SpoutDisplayOffsetX(SpoutLauncher.SpoutSettings.s_OffsetX);
+		SpoutNativeLibProxy.SpoutDisplayOffsetY(SpoutLauncher.SpoutSettings.s_OffsetY);
 	}
 
 	public void onClose() {
@@ -58,7 +58,7 @@ public class SpoutNativeSurface extends GLSurfaceView implements android.opengl.
 		SpoutNativeLibProxy.SpoutNativeDraw();
 
 		// Vibration
-		if (SpoutActivity.getVibration()) {
+		if (SpoutLauncher.SpoutSettings.s_Vibro) {
 			if (SpoutNativeLibProxy.SpoutVibrate()) {
 				SpoutActivity.doVibrate();
 			}
