@@ -32,6 +32,9 @@ public class SpoutNativeSurface extends GLSurfaceView implements android.opengl.
 		setFocusable(true);
 		setFocusableInTouchMode(true);
 		requestFocus();
+
+		// We wants keep on screen
+		setKeepScreenOn(true);
 	}
 
 	@Override
