@@ -25,6 +25,5 @@ public class SpoutNativeLibProxy {
 	public native static void SpoutDisplayOffsetX(int offset_x);
 	public native static void SpoutDisplayOffsetY(int offset_y);
 
-	// TODO: return what? ByteBuffer?
-	public native static int[] SpoutNativeGetScore();
+	public native static void initilizeGlobalJavaEnvPointer();
 }

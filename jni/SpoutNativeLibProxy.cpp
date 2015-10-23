@@ -11,6 +11,8 @@ extern "C" {
 #include "piece.h"
 #include "SpoutNativeLibProxy.h"
 
+JNIEnv *javaEnviron = NULL;
+
 unsigned char keysState[] = {
 		0,
 		0, // KEY_LEFT
@@ -196,7 +198,8 @@ void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutNativeKeyUp
 }
 
 // Filter
-JNIEXPORT void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutFilter
+JNIEXPORT
+void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutFilter
   (JNIEnv *env, jclass c, jboolean applyFilter) {
 	if (applyFilter) {
 		filter = GL_LINEAR;
@@ -206,19 +209,22 @@ JNIEXPORT void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutFilter
 }
 
 // Vibrate
-JNIEXPORT jboolean JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutVibrate
+JNIEXPORT
+jboolean JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutVibrate
   (JNIEnv *env, jclass c) {
 	return (jboolean)vibrate_now;
 }
 
 // Display offset X
-JNIEXPORT void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutDisplayOffsetX
+JNIEXPORT
+void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutDisplayOffsetX
   (JNIEnv *env, jclass c, jint offset_x) {
 	dis_x = offset_x;
 }
 
 // Display offset Y
-JNIEXPORT void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutDisplayOffsetY
+JNIEXPORT
+void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutDisplayOffsetY
   (JNIEnv *env, jclass c, jint offset_y) {
 	dis_y = offset_y;
 }
@@ -231,10 +237,14 @@ void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutNativePushScore
 	score_height = scoreHeight;
 }
 
-// Get Score
+// Initialize Pointer
 JNIEXPORT
-jintArray JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutNativeGetScore
+void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_initilizeGlobalJavaEnvPointer
   (JNIEnv *env, jclass c) {
-//	int a[4] = {0, 1, 2, 3 };
-//	return a;
+
+	LOGI("Initialize pointer...");
+
+	if (!javaEnviron) {
+		javaEnviron = env;
+	}
 }

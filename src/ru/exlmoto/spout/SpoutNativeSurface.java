@@ -35,7 +35,16 @@ public class SpoutNativeSurface extends GLSurfaceView implements android.opengl.
 	}
 
 	@Override
+	public void onPause() {
+		SpoutActivity.toDebug("== GL_SURFACE ON PAUSE ==");
+		super.onPause();
+	}
+
+	@Override
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+		SpoutActivity.toDebug("== GL_SURFACE CREATED ==");
+		SpoutNativeLibProxy.initilizeGlobalJavaEnvPointer();
+
 		SpoutNativeLibProxy.SpoutNativePushScore(SpoutLauncher.SpoutSettings.s_scoreHeight,
 				SpoutLauncher.SpoutSettings.s_scoreScore);
 
@@ -47,6 +56,7 @@ public class SpoutNativeSurface extends GLSurfaceView implements android.opengl.
 	}
 
 	public void onClose() {
+		SpoutActivity.toDebug("== GL_SURFACE CLOSE ==");
 		SpoutNativeLibProxy.SpoutNativeDeinit();
 	}
 

@@ -560,7 +560,7 @@ int pceFileOpen (FILEACC * pfa, const char *fname, int mode)
 
 void pceFileReadSct (void *ptr, /*int sct,*/ int len)
 {
-    fprintf(stderr, "Getting score, length: %d\n", len);
+//    fprintf(stderr, "Getting score, length: %d\n", len);
 
     int *toScore = (int *)(ptr);
     toScore[0] = score_score;
@@ -570,7 +570,22 @@ void pceFileReadSct (void *ptr, /*int sct,*/ int len)
 void pceFileWriteSct (const void *ptr, /*int sct,*/ int len)
 {
     const int *hiScore = (const int *)(ptr);
-    fprintf(stderr, "Pushing score: %d and %d, Len: %d\n", hiScore[0], hiScore[1], len);
+//    fprintf(stderr, "Pushing score: %d and %d, Len: %d\n", hiScore[0], hiScore[1], len);
+#ifdef ANDROID_NDK
+    // Set high-scores to JAVA-launcher/activity
+    jclass clazz = (*javaEnviron)->FindClass(javaEnviron, "ru/exlmoto/spout/SpoutActivity");
+    if (clazz == 0) {
+        LOGI("Error JNI: Class ru/exlmoto/spout/SpoutActivity not found!");
+    }
+
+    jmethodID methodId = (*javaEnviron)->GetStaticMethodID(javaEnviron, clazz, "setScores", "(II)V");
+    if (methodId == 0) {
+        LOGI("Error JNI: methodId is 0, method setScores (II)V not found!");
+    }
+
+    // Call JAVA-method
+    (*javaEnviron)->CallStaticVoidMethod(javaEnviron, clazz, methodId, hiScore[0], hiScore[1]);
+#endif // ANDROID_NDK
 }
 
 int pceFileClose (FILEACC * pfa)

@@ -44,8 +44,8 @@ public class SpoutLauncher extends Activity {
 		public static boolean s_Sound = false;
 		public static boolean s_Vibro = true;
 
-		public static int s_scoreHeight = 5;
-		public static int s_scoreScore = 10;
+		public static int s_scoreHeight = 0;
+		public static int s_scoreScore = 0;
 	}
 	// END DEFAULT SETTINGS CLASS
 
@@ -116,6 +116,8 @@ public class SpoutLauncher extends Activity {
 	}
 
 	private void writeSettings() {
+
+		SpoutActivity.toDebug("== writeSettings() ==");
 
 		fillSettingsByLayout();
 
@@ -232,6 +234,10 @@ public class SpoutLauncher extends Activity {
 			checkBoxFullscreen.setEnabled(false);
 			SpoutSettings.s_Fullscreen = false;
 		}
+	}
+
+	public SpoutLauncher() {
+		SpoutActivity.toDebug("== SpoutLauncher() constructor ==");
 	}
 
 	@Override
@@ -353,6 +359,14 @@ public class SpoutLauncher extends Activity {
 		}
 
 		return builder.create();
+	}
+
+	@Override
+	protected void onDestroy() {
+		// Write settings before destroy
+		writeSettings();
+
+		super.onDestroy();
 	}
 
 	@Override

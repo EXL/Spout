@@ -9,6 +9,7 @@
 #define SPOUTNATIVELIBPROXY_H_
 
 #include <android/log.h>
+#include <jni.h>
 
 enum KeyCodes {
 	KEY_LEFT	=	0x01,
@@ -34,5 +35,7 @@ extern int dis_y;
 
 extern int score_height;
 extern int score_score;
+
+extern JNIEnv *javaEnviron;
 
 #endif /* SPOUTNATIVELIBPROXY_H_ */

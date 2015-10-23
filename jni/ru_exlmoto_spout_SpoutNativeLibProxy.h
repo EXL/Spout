@@ -97,10 +97,10 @@ JNIEXPORT void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutDisplayOff
 
 /*
  * Class:     ru_exlmoto_spout_SpoutNativeLibProxy
- * Method:    SpoutNativeGetScore
- * Signature: ()[I
+ * Method:    initilizeGlobalJavaEnvPointer
+ * Signature: ()V
  */
-JNIEXPORT jintArray JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutNativeGetScore
+JNIEXPORT void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_initilizeGlobalJavaEnvPointer
   (JNIEnv *, jclass);
 
 #ifdef __cplusplus
