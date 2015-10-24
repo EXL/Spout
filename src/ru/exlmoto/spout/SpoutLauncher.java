@@ -34,6 +34,7 @@ public class SpoutLauncher extends Activity {
 		public static boolean s_Filter = false;
 		public static boolean s_CubeDemo = false;
 		public static boolean s_ShowButtons = true;
+		public static boolean s_DisableButtons = false;
 		public static boolean s_Sensor = false;
 		public static int s_OffsetX = 25;
 		public static int s_OffsetY = 25;
@@ -51,6 +52,9 @@ public class SpoutLauncher extends Activity {
 
 	private CheckBox checkBoxFullscreen;
 	private CheckBox checkBoxAspect;
+
+	private CheckBox checkBoxDisableButtons;
+	private CheckBox checkBoxShowButtons;
 
 	private EditText editTextOffsetX;
 	private EditText editTextOffsetY;
@@ -110,6 +114,7 @@ public class SpoutLauncher extends Activity {
 		SpoutSettings.s_Sound = settings.getBoolean("s_Sound", SpoutSettings.s_Sound);
 		SpoutSettings.s_Tail = settings.getBoolean("s_Tail", SpoutSettings.s_Tail);
 		SpoutSettings.s_Vibro = settings.getBoolean("s_Vibro", SpoutSettings.s_Vibro);
+		SpoutSettings.s_DisableButtons = settings.getBoolean("s_DisableButtons", SpoutSettings.s_DisableButtons);
 
 		SpoutSettings.s_scoreHeight = settings.getInt("s_scoreHeight", SpoutSettings.s_scoreHeight);
 		SpoutSettings.s_scoreScore = settings.getInt("s_scoreScore", SpoutSettings.s_scoreScore);
@@ -140,6 +145,7 @@ public class SpoutLauncher extends Activity {
 
 		editor.putBoolean("s_Sensor", SpoutSettings.s_Sensor);
 		editor.putBoolean("s_ShowButtons", SpoutSettings.s_ShowButtons);
+		editor.putBoolean("s_DisableButtons", SpoutSettings.s_DisableButtons);
 		editor.putBoolean("s_Sound", SpoutSettings.s_Sound);
 		editor.putBoolean("s_Tail", SpoutSettings.s_Tail);
 		editor.putBoolean("s_Vibro", SpoutSettings.s_Vibro);
@@ -171,8 +177,11 @@ public class SpoutLauncher extends Activity {
 		generalCheckBox = (CheckBox)findViewById(R.id.checkBoxSensor);
 		SpoutSettings.s_Sensor = generalCheckBox.isChecked();
 
-		generalCheckBox = (CheckBox)findViewById(R.id.checkBoxScreenButtons);
-		SpoutSettings.s_ShowButtons = generalCheckBox.isChecked();
+		//generalCheckBox = (CheckBox)findViewById(R.id.checkBoxScreenButtons);
+		SpoutSettings.s_ShowButtons = checkBoxShowButtons.isChecked();
+
+		//generalCheckBox = (CheckBox)findViewById(R.id.checkBoxDisableButtons);
+		SpoutSettings.s_DisableButtons = checkBoxDisableButtons.isChecked();
 
 		generalCheckBox = (CheckBox)findViewById(R.id.checkBoxSound);
 		SpoutSettings.s_Sound = generalCheckBox.isChecked();
@@ -197,6 +206,10 @@ public class SpoutLauncher extends Activity {
 
 		checkBoxAspect.setChecked(SpoutSettings.s_AspectRatio);
 
+		checkBoxShowButtons.setChecked(SpoutSettings.s_ShowButtons);
+
+		checkBoxDisableButtons.setChecked(SpoutSettings.s_DisableButtons);
+
 		CheckBox generalCheckBox = (CheckBox)findViewById(R.id.checkBoxColor);
 		generalCheckBox.setChecked(SpoutSettings.s_Color);
 
@@ -206,8 +219,8 @@ public class SpoutLauncher extends Activity {
 		generalCheckBox = (CheckBox)findViewById(R.id.checkBoxFilter);
 		generalCheckBox.setChecked(SpoutSettings.s_Filter);
 
-		generalCheckBox = (CheckBox)findViewById(R.id.checkBoxScreenButtons);
-		generalCheckBox.setChecked(SpoutSettings.s_ShowButtons);
+//		generalCheckBox = (CheckBox)findViewById(R.id.checkBoxScreenButtons);
+//		generalCheckBox.setChecked(SpoutSettings.s_ShowButtons);
 
 		generalCheckBox = (CheckBox)findViewById(R.id.checkBoxSensor);
 		generalCheckBox.setChecked(SpoutSettings.s_Sensor);
@@ -220,6 +233,12 @@ public class SpoutLauncher extends Activity {
 
 		generalCheckBox = (CheckBox)findViewById(R.id.checkBoxVibro);
 		generalCheckBox.setChecked(SpoutSettings.s_Vibro);
+
+		if (checkBoxDisableButtons.isChecked()) {
+			checkBoxShowButtons.setChecked(false);
+			checkBoxShowButtons.setEnabled(false);
+			SpoutSettings.s_ShowButtons = false;
+		}
 
 		if (checkBoxFullscreen.isChecked()) {
 			setOffsetTextViewsState(false);
@@ -262,12 +281,27 @@ public class SpoutLauncher extends Activity {
 		// Fill layout
 		editTextOffsetX = (EditText)findViewById(R.id.editTextX);
 		editTextOffsetY = (EditText)findViewById(R.id.editTextY);
+
 		checkBoxFullscreen = (CheckBox)findViewById(R.id.checkBoxFullscreen);
 		checkBoxAspect = (CheckBox)findViewById(R.id.checkBoxAspect);
+
+		checkBoxShowButtons = (CheckBox)findViewById(R.id.checkBoxScreenButtons);
+		checkBoxDisableButtons = (CheckBox)findViewById(R.id.checkBoxDisableButtons);
 
 		fillLayoutBySettings();
 
 		// Set listeners
+
+		checkBoxDisableButtons.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+			@Override
+			public void onCheckedChanged(CompoundButton button, boolean status) {
+				checkBoxShowButtons.setChecked(false);
+				SpoutSettings.s_ShowButtons = false;
+				checkBoxShowButtons.setEnabled(!status);
+			}
+
+		});
 
 		checkBoxFullscreen.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 

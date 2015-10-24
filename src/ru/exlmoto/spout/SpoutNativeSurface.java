@@ -3,6 +3,7 @@ package ru.exlmoto.spout;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import ru.exlmoto.spout.SpoutLauncher.SpoutSettings;
 import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.os.SystemClock;
@@ -13,14 +14,14 @@ public class SpoutNativeSurface extends GLSurfaceView implements android.opengl.
 
 	private static final int FPS_RATE = 60;
 
-	private final int KEY_LEFT	=	0x01;
-	private final int KEY_RIGHT	=	0x02;
-	private final int KEY_UP	=	0x03;
-	private final int KEY_DOWN	=	0x04;
-	private final int KEY_FIRE	=	0x05;
-	private final int KEY_QUIT	=	0x06;
-	private final int KEY_PAUSE	=	0x07;
-	private final int KEY_UNKNOWN =	0x08;
+	public static final int KEY_LEFT        =    0x01;
+	public static final int KEY_RIGHT       =    0x02;
+	private static final int KEY_UP         =    0x03;
+	private static final int KEY_DOWN       =    0x04;
+	public static final int KEY_FIRE        =    0x05;
+	private static final int KEY_QUIT       =    0x06;
+	private static final int KEY_PAUSE      =    0x07;
+	private static final int KEY_UNKNOWN    =    0x08;
 
 	private long m_lastFrame = 0;
 
@@ -192,33 +193,34 @@ public class SpoutNativeSurface extends GLSurfaceView implements android.opengl.
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-		float x = event.getX();
-//		float y = event.getY();
+		if (SpoutSettings.s_DisableButtons) {
+			float x = event.getX();
+			//		float y = event.getY();
 
-		float chunk = getWidth() / 4.0f;
-		boolean first = x <= chunk;
-		boolean second = (x > chunk) && (x <= chunk * 3);
-		boolean third = ((x > chunk * 3) && (x <= chunk * 4));
+			float chunk = getWidth() / 4.0f;
+			boolean first = x <= chunk;
+			boolean second = (x > chunk) && (x <= chunk * 3);
+			boolean third = ((x > chunk * 3) && (x <= chunk * 4));
 
-		if (event.getAction() == MotionEvent.ACTION_DOWN) {
-			if (first) {
-				SpoutNativeLibProxy.SpoutNativeKeyDown(KEY_LEFT);
-			} else if (second) {
-				SpoutNativeLibProxy.SpoutNativeKeyDown(KEY_FIRE);
-			} else if (third) {
-				SpoutNativeLibProxy.SpoutNativeKeyDown(KEY_RIGHT);
+			if (event.getAction() == MotionEvent.ACTION_DOWN) {
+				if (first) {
+					SpoutNativeLibProxy.SpoutNativeKeyDown(KEY_LEFT);
+				} else if (second) {
+					SpoutNativeLibProxy.SpoutNativeKeyDown(KEY_FIRE);
+				} else if (third) {
+					SpoutNativeLibProxy.SpoutNativeKeyDown(KEY_RIGHT);
+				}
+			}
+			else if (event.getAction() == MotionEvent.ACTION_UP) {
+				if (first) {
+					SpoutNativeLibProxy.SpoutNativeKeyUp(KEY_LEFT);
+				} else if (second) {
+					SpoutNativeLibProxy.SpoutNativeKeyUp(KEY_FIRE);
+				} else if (third) {
+					SpoutNativeLibProxy.SpoutNativeKeyUp(KEY_RIGHT);
+				}
 			}
 		}
-		else if (event.getAction() == MotionEvent.ACTION_UP) {
-			if (first) {
-				SpoutNativeLibProxy.SpoutNativeKeyUp(KEY_LEFT);
-			} else if (second) {
-				SpoutNativeLibProxy.SpoutNativeKeyUp(KEY_FIRE);
-			} else if (third) {
-				SpoutNativeLibProxy.SpoutNativeKeyUp(KEY_RIGHT);
-			}
-		}
-
 		return true;
 	}
 }
