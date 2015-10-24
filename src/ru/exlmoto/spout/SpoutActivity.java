@@ -126,8 +126,12 @@ public class SpoutActivity extends Activity {
 				public boolean onTouch(View v, MotionEvent event) {
 					switch (event.getAction()) {
 					case MotionEvent.ACTION_DOWN:
-						if (SpoutSettings.s_ShowButtons) {
-							buttonFireHold.setBackgroundColor(Color.argb(100, 229, 82, 90));
+						if (holdPushed) {
+							if (SpoutSettings.s_ShowButtons) {
+								buttonFireHold.setBackgroundColor(Color.argb(100, 229, 82, 90));
+							}
+							holdPushed = false;
+							SpoutNativeLibProxy.SpoutNativeKeyUp(SpoutNativeSurface.KEY_FIRE);
 						}
 						SpoutNativeLibProxy.SpoutNativeKeyDown(SpoutNativeSurface.KEY_FIRE);
 						break;
