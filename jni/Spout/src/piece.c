@@ -584,7 +584,7 @@ void pceFileWriteSct (const void *ptr, /*int sct,*/ int len)
     }
 
     // Call JAVA-method
-    (*javaEnviron)->CallStaticVoidMethod(javaEnviron, clazz, methodId, hiScore[0], hiScore[1]);
+    (*javaEnviron)->CallStaticVoidMethod(javaEnviron, clazz, methodId, hiScore[1], hiScore[0]);
 #endif // ANDROID_NDK
 }
 
