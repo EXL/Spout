@@ -26,8 +26,6 @@ public class SpoutActivity extends Activity {
 
 	private static final String APP_TAG = "Spout_App";
 
-	private static final int VIBRATION_DURATION = 50;
-
 	private static boolean holdPushed = false;
 
 	@Override
@@ -52,6 +50,7 @@ public class SpoutActivity extends Activity {
 			int padding = (int)(50 * densityPixels);
 			toDebug("Padding: " + padding);
 
+			// LAYOUTS
 			LinearLayout.LayoutParams parametersBf =
 					new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
 							LayoutParams.WRAP_CONTENT);
@@ -70,7 +69,7 @@ public class SpoutActivity extends Activity {
 			int bottomLR = (int)(10 * densityPixels);
 			parametersbLR.setMargins(leftLR, topLR, rightLR, bottomLR);
 
-
+			// HOLD FIRE BUTTON
 			final Button buttonFireHold = new Button(this);
 			if (SpoutSettings.s_ShowButtons) {
 				buttonFireHold.setBackgroundColor(Color.argb(100, 229, 82, 90));
@@ -96,6 +95,11 @@ public class SpoutActivity extends Activity {
 						}
 
 						v.setPressed(holdPushed);
+
+						if (SpoutSettings.s_Vibro) {
+							doVibrate(15);
+						}
+
 						break;
 						//				case MotionEvent.ACTION_UP:
 						//					SpoutNativeLibProxy.SpoutNativeKeyUp(SpoutNativeSurface.KEY_FIRE);
@@ -118,7 +122,7 @@ public class SpoutActivity extends Activity {
 			buttonFireHold.setPadding(padding, padding, padding, padding);
 			buttonFireHold.setLayoutParams(parametersBf);
 
-
+			// FIRE BUTTON
 			Button buttonFire = new Button(this);
 			buttonFire.setOnTouchListener(new OnTouchListener() {
 
@@ -140,6 +144,11 @@ public class SpoutActivity extends Activity {
 							holdPushed = false;
 						}
 						SpoutNativeLibProxy.SpoutNativeKeyDown(SpoutNativeSurface.KEY_FIRE);
+
+						if (SpoutSettings.s_Vibro) {
+							doVibrate(15);
+						}
+
 						break;
 					case MotionEvent.ACTION_UP:
 						SpoutNativeLibProxy.SpoutNativeKeyUp(SpoutNativeSurface.KEY_FIRE);
@@ -159,6 +168,7 @@ public class SpoutActivity extends Activity {
 			buttonFire.setPadding(padding, padding, padding, padding);
 			buttonFire.setLayoutParams(parametersBf);
 
+			// LEFT BUTTON
 			Button buttonLeft = new Button(this);
 			buttonLeft.setOnTouchListener(new OnTouchListener() {
 
@@ -167,6 +177,11 @@ public class SpoutActivity extends Activity {
 					switch (event.getAction()) {
 					case MotionEvent.ACTION_DOWN:
 						SpoutNativeLibProxy.SpoutNativeKeyDown(SpoutNativeSurface.KEY_LEFT);
+
+						if (SpoutSettings.s_Vibro) {
+							doVibrate(15);
+						}
+
 						break;
 					case MotionEvent.ACTION_UP:
 						SpoutNativeLibProxy.SpoutNativeKeyUp(SpoutNativeSurface.KEY_LEFT);
@@ -186,6 +201,7 @@ public class SpoutActivity extends Activity {
 			buttonLeft.setPadding(padding, padding, padding, padding);
 			buttonLeft.setLayoutParams(parametersbLR);
 
+			// RIGHT BUTTON
 			Button buttonRight = new Button(this);
 			buttonRight.setOnTouchListener(new OnTouchListener() {
 
@@ -194,6 +210,11 @@ public class SpoutActivity extends Activity {
 					switch (event.getAction()) {
 					case MotionEvent.ACTION_DOWN:
 						SpoutNativeLibProxy.SpoutNativeKeyDown(SpoutNativeSurface.KEY_RIGHT);
+
+						if (SpoutSettings.s_Vibro) {
+							doVibrate(15);
+						}
+
 						break;
 					case MotionEvent.ACTION_UP:
 						SpoutNativeLibProxy.SpoutNativeKeyUp(SpoutNativeSurface.KEY_RIGHT);
@@ -214,6 +235,7 @@ public class SpoutActivity extends Activity {
 
 			buttonRight.setLayoutParams(parametersbLR);
 
+			// LAYOUTS SETTINGS
 			LinearLayout ll0 = new LinearLayout(this);
 			ll0.addView(buttonFireHold);
 			ll0.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.TOP);
@@ -247,8 +269,15 @@ public class SpoutActivity extends Activity {
 		Log.d(APP_TAG, s);
 	}
 
-	public static void doVibrate() {
-		m_vibrator.vibrate(VIBRATION_DURATION);
+	public static void doVibrate(final int duration) {
+		new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				m_vibrator.vibrate(duration);
+			}
+
+		}).start();
 	}
 
 	private void writeScoresToSharedPreferences() {
