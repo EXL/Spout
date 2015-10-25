@@ -86,6 +86,7 @@ public class SpoutNativeSurface extends GLSurfaceView implements android.opengl.
 		try {
 			long sleepfor = (1000 / FPS_RATE) - diff;
 			if (sleepfor > 0) {
+//				SpoutActivity.toDebug("Sleep now: " + sleepfor);
 				Thread.sleep(sleepfor);
 			}
 		} catch (InterruptedException ex) { }
@@ -216,8 +217,19 @@ public class SpoutNativeSurface extends GLSurfaceView implements android.opengl.
 					left_key_pressed = true;
 				} else if (second) {
 					if (!firstHalf) {
-						SpoutNativeLibProxy.SpoutNativeKeyDown(KEY_FIRE);
-						fire_key_pressed = true;
+						if (fire_hold_key_pressed) {
+							SpoutNativeLibProxy.SpoutNativeKeyUp(KEY_FIRE);
+							try {
+								long sleepfor = 50;
+								SpoutActivity.toDebug("Sleep now hack: " + sleepfor);
+								Thread.sleep(sleepfor);
+								SpoutNativeLibProxy.SpoutNativeKeyDown(KEY_FIRE);
+							} catch (InterruptedException ex) { }
+							fire_hold_key_pressed = false;
+						} else {
+							SpoutNativeLibProxy.SpoutNativeKeyDown(KEY_FIRE);
+							fire_key_pressed = true;
+						}
 					} else {
 						fire_hold_key_pressed = !fire_hold_key_pressed;
 						if (fire_hold_key_pressed) {

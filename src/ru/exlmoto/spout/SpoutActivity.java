@@ -130,8 +130,14 @@ public class SpoutActivity extends Activity {
 							if (SpoutSettings.s_ShowButtons) {
 								buttonFireHold.setBackgroundColor(Color.argb(100, 229, 82, 90));
 							}
-							holdPushed = false;
 							SpoutNativeLibProxy.SpoutNativeKeyUp(SpoutNativeSurface.KEY_FIRE);
+							try {
+								long sleepfor = 50;
+								SpoutActivity.toDebug("Sleep now hack: " + sleepfor);
+								Thread.sleep(sleepfor);
+								SpoutNativeLibProxy.SpoutNativeKeyDown(SpoutNativeSurface.KEY_FIRE);
+							} catch (InterruptedException ex) { }
+							holdPushed = false;
 						}
 						SpoutNativeLibProxy.SpoutNativeKeyDown(SpoutNativeSurface.KEY_FIRE);
 						break;
