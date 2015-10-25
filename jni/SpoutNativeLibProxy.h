@@ -30,6 +30,8 @@ extern int interval;
 
 extern int filter;
 
+extern int sound_on;
+
 extern int dis_x;
 extern int dis_y;
 

@@ -718,7 +718,7 @@ void pceAppProc (/*int cnt*/)
     }
 #ifdef ANDROID_NDK
     if (!gameover) {
-    	vibFlag = 0;
+        vibFlag = 0;
     }
 #endif // ANDROID_NDK
     if (gamePhase == 3 && gameover != 0) {
@@ -729,8 +729,11 @@ void pceAppProc (/*int cnt*/)
 
 #ifdef ANDROID_NDK
         if (vibrate_now == 0 && vibFlag == 0) {
-        	vibrate_now = 1;
-        	vibFlag = 1;
+            vibrate_now = 1;
+            vibFlag = 1;
+
+            // And play game_over sound
+            playGameOverSoundFromJNI();
         }
 #endif // ANDROID_NDK
     }

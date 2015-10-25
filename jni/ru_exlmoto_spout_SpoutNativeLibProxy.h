@@ -81,6 +81,14 @@ JNIEXPORT jboolean JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutVibrat
 
 /*
  * Class:     ru_exlmoto_spout_SpoutNativeLibProxy
+ * Method:    SpoutSetSound
+ * Signature: (Z)V
+ */
+JNIEXPORT void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutSetSound
+  (JNIEnv *, jclass, jboolean);
+
+/*
+ * Class:     ru_exlmoto_spout_SpoutNativeLibProxy
  * Method:    SpoutGetScoreScores
  * Signature: ()I
  */

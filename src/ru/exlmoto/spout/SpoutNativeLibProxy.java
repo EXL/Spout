@@ -22,6 +22,8 @@ public class SpoutNativeLibProxy {
 
 	public native static boolean SpoutVibrate();
 
+	public native static void SpoutSetSound(boolean sound);
+
 	public native static int SpoutGetScoreScores();
 	public native static int SpoutGetScoreHeight();
 

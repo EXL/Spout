@@ -51,6 +51,9 @@ int dis_y = 25;
 // Vibration
 int vibrate_now = 0;
 
+// Sound
+int sound_on = 0;
+
 // Scores
 int score_height = 0;
 int score_score = 0;
@@ -648,5 +651,41 @@ int getScoreScores() {
 
 int getScoreHeight() {
 	return height;
+}
+
+void playGameOverSoundFromJNI() {
+	if (sound_on) {
+		if (javaEnviron != NULL) {
+			// Get SpoutSounds class from SpoutActivity
+			jclass clazz = (*javaEnviron)->FindClass(javaEnviron, "ru/exlmoto/spout/SpoutActivity$SpoutSounds");
+			if (clazz == 0) {
+				LOGI("Error JNI: Class ru/exlmoto/spout/SpoutActivity$SpoutSounds not found!");
+			}
+
+			// Get static SoundID field ID from static SpoutSounds class
+			jfieldID fieldID = (*javaEnviron)->GetStaticFieldID(javaEnviron, clazz, "s_gameover", "I");
+			if (fieldID == 0) {
+				LOGI("Error JNI: fieldID is 0, field s_gameover I not found!");
+			}
+
+			// Get jint value
+			jint soundID = (*javaEnviron)->GetStaticIntField(javaEnviron, clazz, fieldID);
+			LOGI("JNI: soundID is: %d", (int)soundID);
+
+			// Now return to SpoutActivity
+			clazz = (*javaEnviron)->FindClass(javaEnviron, "ru/exlmoto/spout/SpoutActivity");
+
+			// Get static playSound method from SpoutActivity class
+			jmethodID methodId = (*javaEnviron)->GetStaticMethodID(javaEnviron, clazz, "playSound", "(I)V");
+			if (methodId == 0) {
+				LOGI("Error JNI: methodId is 0, method playSound (I)V not found!");
+			}
+
+			if (soundID != 0) {
+				// Call JAVA-method
+				(*javaEnviron)->CallStaticVoidMethod(javaEnviron, clazz, methodId, soundID);
+			}
+		}
+	}
 }
 #endif // !ANDROID_NDK

@@ -219,6 +219,17 @@ jboolean JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutVibrate
 	return (jboolean)vibrate_now;
 }
 
+// Sound
+JNIEXPORT
+void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutSetSound
+  (JNIEnv *env, jclass c, jboolean sound) {
+	if (sound) {
+		sound_on = 1;
+	} else {
+		sound_on = 0;
+	}
+}
+
 // Display offset X
 JNIEXPORT
 void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutDisplayOffsetX
@@ -242,13 +253,15 @@ void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutNativePushScore
 }
 
 // Get ScoreScores
-JNIEXPORT jint JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutGetScoreScores
+JNIEXPORT
+jint JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutGetScoreScores
   (JNIEnv *env, jclass c) {
 	return (jint)getScoreScores();
 }
 
 // Get ScoreHeight
-JNIEXPORT jint JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutGetScoreHeight
+JNIEXPORT
+jint JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutGetScoreHeight
   (JNIEnv *env, jclass c) {
 	return (jint)getScoreHeight();
 }

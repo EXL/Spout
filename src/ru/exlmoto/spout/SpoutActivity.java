@@ -1,5 +1,7 @@
 package ru.exlmoto.spout;
 
+import java.io.IOException;
+
 import ru.exlmoto.spout.SpoutLauncher.SpoutSettings;
 import android.app.Activity;
 import android.content.Context;
@@ -9,6 +11,8 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.util.Log;
@@ -35,6 +39,14 @@ public class SpoutActivity extends Activity implements SensorEventListener {
 	private boolean nowLeft = false;
 	private static final int touchDelay = 50;
 
+	public static SoundPool soundPool = null;
+	public static class SpoutSounds {
+		public static int s_gameover;
+		public static int s_fire;
+		public static int s_button;
+		public static int s_hold;
+	}
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		/* We like to be fullscreen */
@@ -49,6 +61,19 @@ public class SpoutActivity extends Activity implements SensorEventListener {
 
 		m_spoutNativeSurface = new SpoutNativeSurface(this);
 		setContentView(m_spoutNativeSurface);
+
+		// SOUNDS
+		if (SpoutSettings.s_Sound) {
+			soundPool = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
+			try {
+				SpoutSounds.s_button = soundPool.load(getAssets().openFd("s_button.wav"), 1);
+				SpoutSounds.s_fire = soundPool.load(getAssets().openFd("s_fire.wav"), 1);
+				SpoutSounds.s_gameover = soundPool.load(getAssets().openFd("s_gameover.wav"), 1);
+				SpoutSounds.s_hold = soundPool.load(getAssets().openFd("s_hold.wav"), 1);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 
 		// SENSORS
 		if (SpoutSettings.s_Sensor) {
@@ -116,6 +141,10 @@ public class SpoutActivity extends Activity implements SensorEventListener {
 							doVibrate(15);
 						}
 
+						if (SpoutSettings.s_Sound) {
+							playSound(SpoutSounds.s_hold);
+						}
+
 						break;
 						//				case MotionEvent.ACTION_UP:
 						//					SpoutNativeLibProxy.SpoutNativeKeyUp(SpoutNativeSurface.KEY_FIRE);
@@ -165,6 +194,10 @@ public class SpoutActivity extends Activity implements SensorEventListener {
 							doVibrate(15);
 						}
 
+						if (SpoutSettings.s_Sound) {
+							playSound(SpoutSounds.s_fire);
+						}
+
 						break;
 					case MotionEvent.ACTION_UP:
 						SpoutNativeLibProxy.SpoutNativeKeyUp(SpoutNativeSurface.KEY_FIRE);
@@ -196,6 +229,10 @@ public class SpoutActivity extends Activity implements SensorEventListener {
 
 						if (SpoutSettings.s_Vibro) {
 							doVibrate(15);
+						}
+
+						if (SpoutSettings.s_Sound) {
+							playSound(SpoutSounds.s_button);
 						}
 
 						break;
@@ -231,6 +268,10 @@ public class SpoutActivity extends Activity implements SensorEventListener {
 							doVibrate(15);
 						}
 
+						if (SpoutSettings.s_Sound) {
+							playSound(SpoutSounds.s_button);
+						}
+
 						break;
 					case MotionEvent.ACTION_UP:
 						SpoutNativeLibProxy.SpoutNativeKeyUp(SpoutNativeSurface.KEY_RIGHT);
@@ -258,18 +299,29 @@ public class SpoutActivity extends Activity implements SensorEventListener {
 			addContentView(ll0, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,
 					LayoutParams.MATCH_PARENT));
 
-
 			LinearLayout ll = new LinearLayout(this);
 
-			//		ll.setAlpha(0);
-
-			ll.addView(buttonLeft);
+			// Add buttons to layer
+			if (!SpoutSettings.s_Sensor) {
+				ll.addView(buttonLeft);
+			}
 			ll.addView(buttonFire);
-			ll.addView(buttonRight);
+			if (!SpoutSettings.s_Sensor) {
+				ll.addView(buttonRight);
+			}
+			// End
+
 			ll.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM);
 
 			addContentView(ll, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,
 					LayoutParams.MATCH_PARENT));
+		}
+	}
+
+	// JNI-method
+	public static void playSound(int soundID) {
+		if (SpoutSettings.s_Sound && (soundID != 0)) {
+			soundPool.play(soundID, 1.0f, 1.0f, 0, 0, 1.0f);
 		}
 	}
 
@@ -317,28 +369,6 @@ public class SpoutActivity extends Activity implements SensorEventListener {
 		editor.commit();
 
 		toDebug("write scores... " + SpoutSettings.s_scoreHeight + " " + SpoutSettings.s_scoreScore);
-	}
-
-	@Override
-	protected void onDestroy() {
-		toDebug("Destroying...");
-		//TODO: call score save method ?
-		//m_spoutNativeSurface.onClose();
-		super.onDestroy();
-	}
-
-	@Override
-	public void onBackPressed() {
-		toDebug("Back key pressed!, Exiting...");
-
-		writeScoresToSharedPreferences();
-
-		m_spoutNativeSurface.onPause();
-		m_spoutNativeSurface.onClose();
-
-		// super.onBackPressed();
-		// Because we want drop all memory of library
-		System.exit(0);
 	}
 
 	@Override
@@ -394,5 +424,30 @@ public class SpoutActivity extends Activity implements SensorEventListener {
 				toLeft(false);
 			}
 		}
+	}
+
+	@Override
+	protected void onDestroy() {
+		toDebug("Destroying...");
+		//TODO: call score save method ?
+		//m_spoutNativeSurface.onClose();
+		super.onDestroy();
+	}
+
+	@Override
+	public void onBackPressed() {
+		toDebug("Back key pressed!, Exiting...");
+
+		writeScoresToSharedPreferences();
+
+		m_spoutNativeSurface.onPause();
+		m_spoutNativeSurface.onClose();
+
+		if (SpoutSettings.s_Sound) {
+			soundPool.release();
+		}
+
+		// Because we want drop all memory of library
+		System.exit(0);
 	}
 }

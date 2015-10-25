@@ -57,6 +57,8 @@ public class SpoutNativeSurface extends GLSurfaceView implements android.opengl.
 		SpoutNativeLibProxy.SpoutNativePushScore(SpoutLauncher.SpoutSettings.s_scoreHeight,
 				SpoutLauncher.SpoutSettings.s_scoreScore);
 
+		SpoutNativeLibProxy.SpoutSetSound(SpoutLauncher.SpoutSettings.s_Sound);
+
 		SpoutNativeLibProxy.SpoutNativeInit();
 
 		SpoutNativeLibProxy.SpoutFilter(SpoutLauncher.SpoutSettings.s_Filter);
@@ -82,6 +84,14 @@ public class SpoutNativeSurface extends GLSurfaceView implements android.opengl.
 				SpoutActivity.doVibrate(50);
 			}
 		}
+
+//		// Sound
+//		// Now From JNI
+//		if (SpoutLauncher.SpoutSettings.s_Sound) {
+//			if (SpoutNativeLibProxy.SpoutVibrate()) {
+//				SpoutActivity.playSound(SpoutSounds.s_gameover);
+//			}
+//		}
 
 		try {
 			long sleepfor = (1000 / FPS_RATE) - diff;
