@@ -146,11 +146,9 @@ public class SpoutActivity extends Activity implements SensorEventListener {
 						}
 
 						break;
-						//				case MotionEvent.ACTION_UP:
-						//					SpoutNativeLibProxy.SpoutNativeKeyUp(SpoutNativeSurface.KEY_FIRE);
-						//					holdPushed = !holdPushed;
-						//					v.setPressed(holdPushed);
-						//					break;
+					case MotionEvent.ACTION_UP:
+						//v.performClick();
+						break;
 					default:
 						break;
 					}
@@ -201,6 +199,7 @@ public class SpoutActivity extends Activity implements SensorEventListener {
 						break;
 					case MotionEvent.ACTION_UP:
 						SpoutNativeLibProxy.SpoutNativeKeyUp(SpoutNativeSurface.KEY_FIRE);
+						//v.performClick();
 						break;
 					default:
 						break;
@@ -238,6 +237,7 @@ public class SpoutActivity extends Activity implements SensorEventListener {
 						break;
 					case MotionEvent.ACTION_UP:
 						SpoutNativeLibProxy.SpoutNativeKeyUp(SpoutNativeSurface.KEY_LEFT);
+						//v.performClick();
 						break;
 					default:
 						break;
@@ -275,6 +275,7 @@ public class SpoutActivity extends Activity implements SensorEventListener {
 						break;
 					case MotionEvent.ACTION_UP:
 						SpoutNativeLibProxy.SpoutNativeKeyUp(SpoutNativeSurface.KEY_RIGHT);
+						//v.performClick();
 						break;
 					default:
 						break;
