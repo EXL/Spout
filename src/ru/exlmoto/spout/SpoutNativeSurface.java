@@ -3,7 +3,8 @@ package ru.exlmoto.spout;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import ru.exlmoto.spout.SpoutLauncher.SpoutSettings;
+import ru.exlmoto.spout.SpoutActivity.SpoutSounds;
+
 import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.os.SystemClock;
@@ -210,7 +211,7 @@ public class SpoutNativeSurface extends GLSurfaceView implements android.opengl.
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-		if (SpoutSettings.s_DisableButtons) {
+		if (SpoutLauncher.SpoutSettings.s_DisableButtons) {
 			float x = event.getX();
 			float y = event.getY();
 
@@ -226,8 +227,14 @@ public class SpoutNativeSurface extends GLSurfaceView implements android.opengl.
 				if (first) {
 					SpoutNativeLibProxy.SpoutNativeKeyDown(KEY_LEFT);
 					left_key_pressed = true;
+
+					if (SpoutLauncher.SpoutSettings.s_Sound) {
+						if (!SpoutLauncher.SpoutSettings.s_Sensor) {
+							SpoutActivity.playSound(SpoutSounds.s_button);
+						}
+					}
 				} else if (second) {
-					if (!firstHalf) {
+					if (!firstHalf) { // EMULATE FIRE BUTTON
 						if (fire_hold_key_pressed) {
 							SpoutNativeLibProxy.SpoutNativeKeyUp(KEY_FIRE);
 							try {
@@ -241,17 +248,31 @@ public class SpoutNativeSurface extends GLSurfaceView implements android.opengl.
 							SpoutNativeLibProxy.SpoutNativeKeyDown(KEY_FIRE);
 							fire_key_pressed = true;
 						}
-					} else {
+
+						if (SpoutLauncher.SpoutSettings.s_Sound) {
+							SpoutActivity.playSound(SpoutSounds.s_fire);
+						}
+					} else { // EMULATE HOLD FIRE BUTTON
 						fire_hold_key_pressed = !fire_hold_key_pressed;
 						if (fire_hold_key_pressed) {
 							SpoutNativeLibProxy.SpoutNativeKeyDown(KEY_FIRE);
 						} else {
 							SpoutNativeLibProxy.SpoutNativeKeyUp(KEY_FIRE);
 						}
+
+						if (SpoutLauncher.SpoutSettings.s_Sound) {
+							SpoutActivity.playSound(SpoutSounds.s_hold);
+						}
 					}
 				} else if (third) {
 					SpoutNativeLibProxy.SpoutNativeKeyDown(KEY_RIGHT);
 					right_key_pressed = true;
+
+					if (SpoutLauncher.SpoutSettings.s_Sound) {
+						if (!SpoutLauncher.SpoutSettings.s_Sensor) {
+							SpoutActivity.playSound(SpoutSounds.s_button);
+						}
+					}
 				}
 			}
 			else if (event.getAction() == MotionEvent.ACTION_UP) {
