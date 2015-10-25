@@ -379,6 +379,10 @@ void pceAppProc (/*int cnt*/)
                     pceFontPrintf ("    height: %8d", hiScore[1] % 1000000);
                     pceFontSetPos (118 - 20 * 4, 6);
                     pceFontPrintf ("high-score: %8d", hiScore[0] % 1000000);
+                    pceFontSetPos (6, 12);
+                    pceFontPrintf ("http://exlmoto.ru/spout-droid");
+                    pceFontSetPos (6, 18);
+                    pceFontPrintf ("Android port by EXL (c) 2015");
                     break;
 
                 case 1:
