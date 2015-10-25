@@ -468,13 +468,13 @@ unsigned char * pceLCDSetBuffer (unsigned char *pbuff)
 
 void pceFontSetType (int type)
 {
-    const int width[] = { 5, 8, 4};
-    const int height[] = { 10, 16, 6};
+    const int widths[] = { 5, 8, 4};
+    const int heights[] = { 10, 16, 6};
     const char *adr[] = { (const char *)FONT6, (const char *)FONT16, (const char *)FONT6 };
 
     type &= 3;
-    font_width = width[type];
-    font_height = height[type];
+    font_width = widths[type];
+    font_height = heights[type];
     font_adr = adr[type];
 }
 
@@ -638,5 +638,13 @@ int main (/*int argc, char *argv[]*/)
 void stepSpoutGLES() {
 	pceAppProc();
 	pceLCDTrans();
+}
+
+int getScoreScores() {
+	return score;
+}
+
+int getScoreHeight() {
+	return height;
 }
 #endif // !ANDROID_NDK

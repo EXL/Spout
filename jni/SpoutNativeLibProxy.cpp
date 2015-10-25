@@ -161,26 +161,30 @@ void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutNativeDeinit
 JNIEXPORT
 void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutNativeSurfaceChanged
   (JNIEnv *env, jclass c, jint width, jint height) {
-	resizeSpoutGLES(width, height);
+	if (appRunning == 1) {
+		resizeSpoutGLES(width, height);
+	}
 }
 
 // Draw
 JNIEXPORT
 void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutNativeDraw
   (JNIEnv *env, jclass c) {
-    static Stats       stats;
-    static int         init;
+	if (appRunning == 1) {
+		static Stats       stats;
+		static int         init;
 
-    if (!init) {
-        stats_init(&stats);
-        init = 1;
-    }
+		if (!init) {
+			stats_init(&stats);
+			init = 1;
+		}
 
-    stats_startFrame(&stats);
+		stats_startFrame(&stats);
 
-	stepSpoutGLES();
+		stepSpoutGLES();
 
-	stats_endFrame(&stats);
+		stats_endFrame(&stats);
+	}
 }
 
 // KeyDown
@@ -237,9 +241,21 @@ void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutNativePushScore
 	score_height = scoreHeight;
 }
 
+// Get ScoreScores
+JNIEXPORT jint JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutGetScoreScores
+  (JNIEnv *env, jclass c) {
+	return (jint)getScoreScores();
+}
+
+// Get ScoreHeight
+JNIEXPORT jint JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutGetScoreHeight
+  (JNIEnv *env, jclass c) {
+	return (jint)getScoreHeight();
+}
+
 // Initialize Pointer
 JNIEXPORT
-void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_initilizeGlobalJavaEnvPointer
+void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutInitilizeGlobalJavaEnvPointer
   (JNIEnv *env, jclass c) {
 
 	LOGI("Initialize pointer...");

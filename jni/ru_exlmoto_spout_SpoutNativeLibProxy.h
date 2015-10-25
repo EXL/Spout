@@ -81,6 +81,22 @@ JNIEXPORT jboolean JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutVibrat
 
 /*
  * Class:     ru_exlmoto_spout_SpoutNativeLibProxy
+ * Method:    SpoutGetScoreScores
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutGetScoreScores
+  (JNIEnv *, jclass);
+
+/*
+ * Class:     ru_exlmoto_spout_SpoutNativeLibProxy
+ * Method:    SpoutGetScoreHeight
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutGetScoreHeight
+  (JNIEnv *, jclass);
+
+/*
+ * Class:     ru_exlmoto_spout_SpoutNativeLibProxy
  * Method:    SpoutDisplayOffsetX
  * Signature: (I)V
  */
@@ -97,10 +113,10 @@ JNIEXPORT void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutDisplayOff
 
 /*
  * Class:     ru_exlmoto_spout_SpoutNativeLibProxy
- * Method:    initilizeGlobalJavaEnvPointer
+ * Method:    SpoutInitilizeGlobalJavaEnvPointer
  * Signature: ()V
  */
-JNIEXPORT void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_initilizeGlobalJavaEnvPointer
+JNIEXPORT void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutInitilizeGlobalJavaEnvPointer
   (JNIEnv *, jclass);
 
 #ifdef __cplusplus

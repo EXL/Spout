@@ -22,8 +22,11 @@ public class SpoutNativeLibProxy {
 
 	public native static boolean SpoutVibrate();
 
+	public native static int SpoutGetScoreScores();
+	public native static int SpoutGetScoreHeight();
+
 	public native static void SpoutDisplayOffsetX(int offset_x);
 	public native static void SpoutDisplayOffsetY(int offset_y);
 
-	public native static void initilizeGlobalJavaEnvPointer();
+	public native static void SpoutInitilizeGlobalJavaEnvPointer();
 }

@@ -252,12 +252,26 @@ public class SpoutActivity extends Activity {
 	}
 
 	private void writeScoresToSharedPreferences() {
-		toDebug("write scores... " + SpoutSettings.s_scoreHeight + " " + SpoutSettings.s_scoreScore);
+		int scoreS = SpoutNativeLibProxy.SpoutGetScoreScores();
+		int scoreH = SpoutNativeLibProxy.SpoutGetScoreHeight();
+
+		toDebug("ScoreS: " + scoreS + " ScoreH: " + scoreH +
+				" SetS: " + SpoutSettings.s_scoreScore +
+				" SetH: " + SpoutSettings.s_scoreHeight);
+
+		if (scoreS > SpoutSettings.s_scoreScore) {
+			SpoutSettings.s_scoreScore = scoreS;
+			SpoutSettings.s_scoreHeight = scoreH;
+			toDebug("Update scores!");
+		}
+
 		SharedPreferences settings = getSharedPreferences("ru.exlmoto.spout", MODE_PRIVATE);
 		SharedPreferences.Editor editor = settings.edit();
 		editor.putInt("s_scoreHeight", SpoutSettings.s_scoreHeight);
 		editor.putInt("s_scoreScore", SpoutSettings.s_scoreScore);
 		editor.commit();
+
+		toDebug("write scores... " + SpoutSettings.s_scoreHeight + " " + SpoutSettings.s_scoreScore);
 	}
 
 	@Override

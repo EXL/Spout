@@ -74,6 +74,8 @@ void initSpoutGLES();
 void deinitSpoutGLES();
 void resizeSpoutGLES(int w, int h);
 void stepSpoutGLES();
+int getScoreScores();
+int getScoreHeight();
 
 extern int vibrate_now;
 #endif // PIECE_H
