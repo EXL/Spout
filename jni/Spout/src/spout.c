@@ -732,6 +732,9 @@ void pceAppProc (/*int cnt*/)
             vibrate_now = 1;
             vibFlag = 1;
 
+            // Vibrate from JNI
+            vibrateFromJNI(50);
+
             // And play game_over sound
             playGameOverSoundFromJNI();
         }

@@ -78,12 +78,13 @@ public class SpoutNativeSurface extends GLSurfaceView implements android.opengl.
 		m_lastFrame = currentFrame;
 		SpoutNativeLibProxy.SpoutNativeDraw();
 
-		// Vibration
-		if (SpoutLauncher.SpoutSettings.s_Vibro) {
-			if (SpoutNativeLibProxy.SpoutVibrate()) {
-				SpoutActivity.doVibrate(50);
-			}
-		}
+//		// Vibration
+//		// Now From JNI
+//		if (SpoutLauncher.SpoutSettings.s_Vibro) {
+//			if (SpoutNativeLibProxy.SpoutVibrate()) {
+//				SpoutActivity.doVibrate(50);
+//			}
+//		}
 
 //		// Sound
 //		// Now From JNI

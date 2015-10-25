@@ -333,19 +333,24 @@ public class SpoutActivity extends Activity implements SensorEventListener {
 		SpoutSettings.s_scoreScore = scoresS;
 	}
 
-	public static void toDebug(String s) {
-		Log.d(APP_TAG, s);
+	// JNI-method
+	public static void doVibrate(int duration) {
+		if (SpoutSettings.s_Vibro) {
+			final int delay = duration;
+
+			new Thread(new Runnable() {
+
+				@Override
+				public void run() {
+					m_vibrator.vibrate(delay);
+				}
+
+			}).start();
+		}
 	}
 
-	public static void doVibrate(final int duration) {
-		new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				m_vibrator.vibrate(duration);
-			}
-
-		}).start();
+	public static void toDebug(String s) {
+		Log.d(APP_TAG, s);
 	}
 
 	private void writeScoresToSharedPreferences() {
