@@ -5,6 +5,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.util.Log;
@@ -18,7 +22,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
-public class SpoutActivity extends Activity {
+public class SpoutActivity extends Activity implements SensorEventListener {
 
 	private SpoutNativeSurface m_spoutNativeSurface;
 
@@ -27,6 +31,9 @@ public class SpoutActivity extends Activity {
 	private static final String APP_TAG = "Spout_App";
 
 	private static boolean holdPushed = false;
+
+	private boolean nowLeft = false;
+	private static final int touchDelay = 50;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +50,15 @@ public class SpoutActivity extends Activity {
 		m_spoutNativeSurface = new SpoutNativeSurface(this);
 		setContentView(m_spoutNativeSurface);
 
+		// SENSORS
+		if (SpoutSettings.s_Sensor) {
+			SensorManager manager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+			Sensor accelerometer = manager.getSensorList(Sensor.TYPE_ACCELEROMETER).get(0);
+			toDebug("== Using accelerometer: " + accelerometer.getName());
+			manager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_GAME);
+		}
+
+		// ALL ONSCREEN BUTTONS
 		if (!SpoutSettings.s_DisableButtons) {
 			float densityPixels = getResources().getDisplayMetrics().density;
 			toDebug("PixelDensity: " + densityPixels);
@@ -323,5 +339,60 @@ public class SpoutActivity extends Activity {
 		// super.onBackPressed();
 		// Because we want drop all memory of library
 		System.exit(0);
+	}
+
+	@Override
+	public void onAccuracyChanged(Sensor sensor, int accuracy) {
+		// Nothing to do here
+	}
+
+	private void toLeft(final boolean left) {
+		if (!nowLeft) {
+			new Thread(new Runnable() {
+
+				@Override
+				public void run() {
+					nowLeft = true;
+					try {
+						if (left) {
+							SpoutNativeLibProxy.SpoutNativeKeyUp(SpoutNativeSurface.KEY_RIGHT);
+							SpoutNativeLibProxy.SpoutNativeKeyDown(SpoutNativeSurface.KEY_LEFT);
+						} else {
+							SpoutNativeLibProxy.SpoutNativeKeyUp(SpoutNativeSurface.KEY_LEFT);
+							SpoutNativeLibProxy.SpoutNativeKeyDown(SpoutNativeSurface.KEY_RIGHT);
+						}
+
+						Thread.sleep(touchDelay);
+
+						if (left) {
+							SpoutNativeLibProxy.SpoutNativeKeyUp(SpoutNativeSurface.KEY_LEFT);
+						} else {
+							SpoutNativeLibProxy.SpoutNativeKeyUp(SpoutNativeSurface.KEY_RIGHT);
+						}
+
+						nowLeft = false;
+					} catch (InterruptedException ex) { }
+				}
+
+			}).start();
+		}
+	}
+
+	@Override
+	public void onSensorChanged(SensorEvent event) {
+		float y = event.values[1]; // Y-axis
+
+		if (y > (-3.0f) && y < (3.0f)) {
+			SpoutNativeLibProxy.SpoutNativeKeyUp(SpoutNativeSurface.KEY_LEFT);
+			SpoutNativeLibProxy.SpoutNativeKeyUp(SpoutNativeSurface.KEY_RIGHT);
+		} else {
+			if (y < 0.0f) {
+				toLeft(true);
+			}
+
+			if (y > 0.0f) {
+				toLeft(false);
+			}
+		}
 	}
 }
