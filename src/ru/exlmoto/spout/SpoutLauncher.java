@@ -26,6 +26,8 @@ public class SpoutLauncher extends Activity {
 
 	private static int offX_saved = 0;
 	private static int offY_saved = 0;
+	private static int max_offX = 0;
+	private static int max_offY = 0;
 
 	private static final int OFFSET_ERROR = 0;
 
@@ -87,12 +89,17 @@ public class SpoutLauncher extends Activity {
 
 	private boolean testOffsets(int offsetX, int offsetY, int displayWidth, int displayHeight) {
 		int result = 0;
-		if (offsetX > ((displayWidth / 2) - (originalWidth / 2))) {
+
+		max_offX = (displayWidth / 2) - (originalWidth / 2);
+		max_offY = (displayHeight / 2) - (originalHeight / 2);
+
+		if (offsetX >  max_offX) {
 			result++;
 		}
-		if (offsetY > ((displayHeight / 2) - (originalHeight / 2))) {
+		if (offsetY > max_offY) {
 			result++;
 		}
+
 		return (result == 0);
 	}
 
@@ -375,13 +382,14 @@ public class SpoutLauncher extends Activity {
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
 		switch (id) {
 		case OFFSET_ERROR:
-			builder.setTitle(R.string.OffsetErrorTitle);
-			builder.setMessage(R.string.OffsetErrorText);
+			builder.setTitle(getString(R.string.OffsetErrorTitle));
+			builder.setMessage(getString(R.string.OffsetErrorText) +
+					"\nMax \'x\': " + max_offX + "\nMax \'y\': " + max_offY + "\n" +
+					getString(R.string.OffsetErrorText2));
 			builder.setCancelable(false);
-			builder.setPositiveButton(R.string.DialogOkText, new DialogInterface.OnClickListener() {
+			builder.setPositiveButton(getString(R.string.DialogOkText), new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int id) {
 					dialog.cancel();

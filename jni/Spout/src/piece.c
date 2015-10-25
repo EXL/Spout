@@ -572,19 +572,21 @@ void pceFileWriteSct (const void *ptr, /*int sct,*/ int len)
     const int *hiScore = (const int *)(ptr);
 //    fprintf(stderr, "Pushing score: %d and %d, Len: %d\n", hiScore[0], hiScore[1], len);
 #ifdef ANDROID_NDK
-    // Set high-scores to JAVA-launcher/activity
-    jclass clazz = (*javaEnviron)->FindClass(javaEnviron, "ru/exlmoto/spout/SpoutActivity");
-    if (clazz == 0) {
-        LOGI("Error JNI: Class ru/exlmoto/spout/SpoutActivity not found!");
-    }
+	if (javaEnviron != NULL) {
+		// Set high-scores to JAVA-launcher/activity
+		jclass clazz = (*javaEnviron)->FindClass(javaEnviron, "ru/exlmoto/spout/SpoutActivity");
+		if (clazz == 0) {
+			LOGI("Error JNI: Class ru/exlmoto/spout/SpoutActivity not found!");
+		}
 
-    jmethodID methodId = (*javaEnviron)->GetStaticMethodID(javaEnviron, clazz, "setScores", "(II)V");
-    if (methodId == 0) {
-        LOGI("Error JNI: methodId is 0, method setScores (II)V not found!");
-    }
+		jmethodID methodId = (*javaEnviron)->GetStaticMethodID(javaEnviron, clazz, "setScores", "(II)V");
+		if (methodId == 0) {
+			LOGI("Error JNI: methodId is 0, method setScores (II)V not found!");
+		}
 
-    // Call JAVA-method
-    (*javaEnviron)->CallStaticVoidMethod(javaEnviron, clazz, methodId, hiScore[1], hiScore[0]);
+		// Call JAVA-method
+		(*javaEnviron)->CallStaticVoidMethod(javaEnviron, clazz, methodId, hiScore[1], hiScore[0]);
+	}
 #endif // ANDROID_NDK
 }
 

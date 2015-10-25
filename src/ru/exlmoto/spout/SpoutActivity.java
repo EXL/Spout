@@ -114,7 +114,7 @@ public class SpoutActivity extends Activity {
 
 			});
 
-			buttonFireHold.setText(R.string.HoldText);
+			buttonFireHold.setText(getString(R.string.HoldText));
 			if (!SpoutSettings.s_ShowButtons) {
 				buttonFireHold.setBackgroundColor(Color.argb(0, 255, 255, 255));
 				buttonFireHold.setTextColor(Color.argb(75, 212, 207, 199));
@@ -160,7 +160,7 @@ public class SpoutActivity extends Activity {
 				}
 
 			});
-			buttonFire.setText(R.string.FireText);
+			buttonFire.setText(getText(R.string.FireText));
 			if (!SpoutSettings.s_ShowButtons) {
 				buttonFire.setBackgroundColor(Color.argb(0, 255, 255, 255));
 				buttonFire.setTextColor(Color.argb(75, 212, 207, 199));
@@ -193,7 +193,7 @@ public class SpoutActivity extends Activity {
 				}
 
 			});
-			buttonLeft.setText(R.string.LeftText);
+			buttonLeft.setText(getString(R.string.LeftText));
 			if (!SpoutSettings.s_ShowButtons) {
 				buttonLeft.setBackgroundColor(Color.argb(0, 255, 255, 255));
 				buttonLeft.setTextColor(Color.argb(75, 212, 207, 199));
@@ -226,7 +226,7 @@ public class SpoutActivity extends Activity {
 				}
 
 			});
-			buttonRight.setText(R.string.RightText);
+			buttonRight.setText(getString(R.string.RightText));
 			if (!SpoutSettings.s_ShowButtons) {
 				buttonRight.setBackgroundColor(Color.argb(0, 255, 255, 255));
 				buttonRight.setTextColor(Color.argb(75, 212, 207, 199));

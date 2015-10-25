@@ -17,7 +17,8 @@
     <string name="FullscreenText">Fullscreen</string>
     <string name="CubeText">Cube (Demo)</string>
     <string name="SensorText">Accelerometer</string>
-    <string name="OffsetErrorText">Please Check Offsets</string>
+    <string name="OffsetErrorText">Please check your offsets.</string>
+    <string name="OffsetErrorText2">Excess values are unacceptable.</string>
     <string name="OffsetErrorTitle">Too big offset value!</string>
     <string name="DialogOkText">OK</string>
     <string name="FireText">Fire!</string>
