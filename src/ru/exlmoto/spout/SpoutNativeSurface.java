@@ -25,6 +25,11 @@ public class SpoutNativeSurface extends GLSurfaceView implements android.opengl.
 
 	private long m_lastFrame = 0;
 
+	private boolean left_key_pressed = false;
+	private boolean right_key_pressed = false;
+	private boolean fire_key_pressed = false;
+	private boolean fire_hold_key_pressed = false;
+
 	public SpoutNativeSurface(Context context) {
 		super(context);
 		setRenderer(this);
@@ -195,29 +200,48 @@ public class SpoutNativeSurface extends GLSurfaceView implements android.opengl.
 	public boolean onTouchEvent(MotionEvent event) {
 		if (SpoutSettings.s_DisableButtons) {
 			float x = event.getX();
-			//		float y = event.getY();
+			float y = event.getY();
+
+			float half = getHeight() / 2.0f;
+			boolean firstHalf = (y <= half);
 
 			float chunk = getWidth() / 4.0f;
-			boolean first = x <= chunk;
-			boolean second = (x > chunk) && (x <= chunk * 3);
+			boolean first = (x <= chunk);
+			boolean second = ((x > chunk) && (x <= chunk * 3));
 			boolean third = ((x > chunk * 3) && (x <= chunk * 4));
 
 			if (event.getAction() == MotionEvent.ACTION_DOWN) {
 				if (first) {
 					SpoutNativeLibProxy.SpoutNativeKeyDown(KEY_LEFT);
+					left_key_pressed = true;
 				} else if (second) {
-					SpoutNativeLibProxy.SpoutNativeKeyDown(KEY_FIRE);
+					if (!firstHalf) {
+						SpoutNativeLibProxy.SpoutNativeKeyDown(KEY_FIRE);
+						fire_key_pressed = true;
+					} else {
+						fire_hold_key_pressed = !fire_hold_key_pressed;
+						if (fire_hold_key_pressed) {
+							SpoutNativeLibProxy.SpoutNativeKeyDown(KEY_FIRE);
+						} else {
+							SpoutNativeLibProxy.SpoutNativeKeyUp(KEY_FIRE);
+						}
+					}
 				} else if (third) {
 					SpoutNativeLibProxy.SpoutNativeKeyDown(KEY_RIGHT);
+					right_key_pressed = true;
 				}
 			}
 			else if (event.getAction() == MotionEvent.ACTION_UP) {
-				if (first) {
+				if (left_key_pressed) {
 					SpoutNativeLibProxy.SpoutNativeKeyUp(KEY_LEFT);
-				} else if (second) {
+					left_key_pressed = false;
+				} else if (fire_key_pressed) {
 					SpoutNativeLibProxy.SpoutNativeKeyUp(KEY_FIRE);
-				} else if (third) {
+					fire_key_pressed = false;
+					fire_hold_key_pressed = false;
+				} else if (right_key_pressed) {
 					SpoutNativeLibProxy.SpoutNativeKeyUp(KEY_RIGHT);
+					right_key_pressed = false;
 				}
 			}
 		}
