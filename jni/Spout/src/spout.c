@@ -84,16 +84,19 @@ void pceAppInit (void)
 
     pceLCDDispStart ();
 
-//    {
-//        FILEACC fa;
-//        if (!pceFileOpen (&fa, "spout.sco", FOMD_RD)) {
-            pceFileReadSct ((void *) hiScore, 8);
-//            pceFileClose (&fa);
-//        }
-//    }
 #ifndef ANDROID_NDK
+    {
+        FILEACC fa;
+        if (!pceFileOpen (&fa, "spout.sco", FOMD_RD)) {
+            pceFileReadSct (&fa, (void *) hiScore, 8);
+            pceFileClose (&fa);
+        }
+    }
+
     srand (pceTimerGetCount());
 #else
+    pceFileReadSct ((void *) hiScore, 8);
+
     srand (time(0));
 #endif // !ANDROID_NDK
 }
@@ -128,17 +131,21 @@ void pceAppProc (/*int cnt*/)
     if (!(gamePhase & 1)) {
         if (gamePhase == 0) {
             if (score > hiScore[0] || (score == hiScore[0] && height > hiScore[1])) {
-//                FILEACC fa;
                 hiScore[0] = score;
                 hiScore[1] = height;
-//                if (!pceFileOpen (&fa, "spout.sco", FOMD_WR)) {
-                    pceFileWriteSct ((void *) hiScore, 8);
-//                } else /*if(!pceFileCreate("spout.sco", 8)) { */
-//                    if(!pceFileOpen(&fa, "spout.sco", FOMD_WR)) {
-//                        pceFileWriteSct(&fa, (void *)hiScore, 8);
-//                    }
+#ifndef ANDROID_NDK
+                FILEACC fa;
+                if (!pceFileOpen (&fa, "spout.sco", FOMD_WR)) {
+                    pceFileWriteSct (&fa, (void *) hiScore, 8);
+                } else /*if(!pceFileCreate("spout.sco", 8)) { */
+                    if(!pceFileOpen(&fa, "spout.sco", FOMD_WR)) {
+                        pceFileWriteSct(&fa, (void *)hiScore, 8);
+                    }
                 //}
-//                pceFileClose (&fa);
+                pceFileClose (&fa);
+#else
+                pceFileWriteSct ((void *) hiScore, 8);
+#endif // !ANDROID_NDK
             }
         } else {
             score = 0;
@@ -214,9 +221,9 @@ void pceAppProc (/*int cnt*/)
         pceFontSetType (0);
 
         gamePhase = 4;
-#ifndef ANDROID_NDK
-        pceLCDTrans ();
-#endif // !ANDROID_NDK
+//#ifndef ANDROID_NDK
+//        pceLCDTrans ();
+//#endif // !ANDROID_NDK
         return;
     }
 
@@ -784,9 +791,9 @@ void pceAppProc (/*int cnt*/)
 #endif // ANDROID_NDK
     }
 
-#ifndef ANDROID_NDK
-    pceLCDTrans ();
-#endif // !ANDROID_NDK
+//#ifndef ANDROID_NDK
+//    pceLCDTrans ();
+//#endif // !ANDROID_NDK
 }
 
 

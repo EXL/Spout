@@ -140,6 +140,21 @@ void initilizeColorTable() {
 }
 
 #ifndef ANDROID_NDK
+int rgb (unsigned char r, unsigned char g, unsigned char b) {
+    unsigned char red = r >> 3;
+    unsigned char green = g >> 2;
+    unsigned char blue = b >> 3;
+
+    int result = (red << (5 + 6)) | (green << 5) | blue;
+
+    printf("red: %x\n", red);
+    printf("green: %x\n", green);
+    printf("blue: %x\n", blue);
+    printf("result: %x\n", result);
+
+    return result;
+}
+
 void SDL_GL_Enter2DMode () {
 	SDL_Surface *screen = SDL_GetVideoSurface();
 
@@ -334,21 +349,6 @@ void resizeSpoutGLES(int w, int h) {
 	display_h = h;
 }
 #endif // !ANDROID_NDK
-
-int rgb (unsigned char r, unsigned char g, unsigned char b) {
-    unsigned char red = r >> 3;
-    unsigned char green = g >> 2;
-    unsigned char blue = b >> 3;
-
-    int result = (red << (5 + 6)) | (green << 5) | blue;
-
-    printf("red: %x\n", red);
-    printf("green: %x\n", green);
-    printf("blue: %x\n", blue);
-    printf("result: %x\n", result);
-
-    return result;
-}
 
 void pceLCDTrans () {
     static int w, h;
@@ -586,7 +586,7 @@ void pceFontPrintf (const char *fmt, ...)
 #ifndef ANDROID_NDK
 int pceFileOpen (FILEACC * pfa, const char *fname, int mode)
 {
-    fprintf(stderr, "Openning file: %s\n", fname);
+//    fprintf(stderr, "Openning file: %s\n", fname);
 
     if (mode == FOMD_RD) {
         *pfa = open (fname, O_RDONLY);
@@ -600,23 +600,33 @@ int pceFileOpen (FILEACC * pfa, const char *fname, int mode)
         return 1;
     }
 }
-#endif // !ANDROID NDK
 
+int pceFileReadSct (FILEACC * pfa, void *ptr, /*int sct,*/ int len)
+{
+    return read (*pfa, ptr, len);
+}
+
+int pceFileWriteSct (FILEACC * pfa, const void *ptr, /*int sct,*/ int len)
+{
+    return write (*pfa, ptr, len);
+}
+
+int pceFileClose (FILEACC * pfa)
+{
+    close (*pfa);
+    return 0;
+}
+#else
 void pceFileReadSct (void *ptr, /*int sct,*/ int len)
 {
-//    fprintf(stderr, "Getting score, length: %d\n", len);
-#ifdef ANDROID_NDK
     int *toScore = (int *)(ptr);
     toScore[0] = score_score;
     toScore[1] = score_height;
-#endif
 }
 
 void pceFileWriteSct (const void *ptr, /*int sct,*/ int len)
 {
-    const int *hiScore = (const int *)(ptr);
-//    fprintf(stderr, "Pushing score: %d and %d, Len: %d\n", hiScore[0], hiScore[1], len);
-#ifdef ANDROID_NDK
+	const int *hiScore = (const int *)(ptr);
 	if (javaEnviron != NULL) {
 		// Set high-scores to JAVA-launcher/activity
 		jclass clazz = (*javaEnviron)->FindClass(javaEnviron, "ru/exlmoto/spout/SpoutActivity");
@@ -632,14 +642,8 @@ void pceFileWriteSct (const void *ptr, /*int sct,*/ int len)
 		// Call JAVA-method
 		(*javaEnviron)->CallStaticVoidMethod(javaEnviron, clazz, methodId, hiScore[1], hiScore[0]);
 	}
-#endif // ANDROID_NDK
 }
-
-int pceFileClose (FILEACC * pfa)
-{
-    close (*pfa);
-    return 0;
-}
+#endif // !ANDROID NDK
 
 #ifndef ANDROID_NDK
 int main (/*int argc, char *argv[]*/)
@@ -663,6 +667,7 @@ int main (/*int argc, char *argv[]*/)
         }
 
         pceAppProc ();
+        pceLCDTrans ();
 
         nextTick += interval;
         cnt++;
