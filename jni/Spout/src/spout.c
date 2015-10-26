@@ -607,6 +607,26 @@ void pceAppProc (/*int cnt*/)
 
     dispPos = upperLine;
 
+    // Path color to 0x1
+    {
+        int rn;
+        for (rn = 0; rn < 128 * 128; ++rn) {
+            switch (vbuff2[rn]) {
+            case 199:
+            case 198:
+            case 135:
+            case 134:
+            case 71:
+            case 70:
+            case 7:
+            case 6: {
+                vbuff2[rn] = 197; // 197 & 0x03030303 = 0x1
+                break;
+            }
+            }
+        }
+    }
+
     {
         unsigned int *pL, *pL2, *pLe;
         pL = (unsigned int *) (vbuff + 2 * 128);
@@ -646,22 +666,34 @@ void pceAppProc (/*int cnt*/)
         if (gameover == 0 && (gamePhase & 2)) {
             x = mPos.x + sintable[(256 + mR) & 1023] * gPhase / 64;
             y = mPos.y - sintable[mR] * gPhase / 64;
-            for (i = 0; i < 3; i++) {
-                if (y >= 78 * 256) {
+
+            // x = sqrt(128^2 + 88^2) / 4
+//            for (i = 0; i < 39; i++) {
+            for (i = 0; i < 39; i++) {
+                if (y < 0 || y >= 77 * 256) {
+                    break;
+                }
+                if (x < 4 * 256 || x > 124 * 256) {
                     break;
                 }
                 *(vbuff + x / 256 + (y / 256 + 2) * 128) = 3;
                 x += sintable[(256 + mR) & 1023] / 16;
                 y -= sintable[mR] / 16;
 
-                if (y >= 78 * 256) {
+                if (y < 0 || y >= 77 * 256) {
+                    break;
+                }
+                if (x < 4 * 256 || x > 124 * 256) {
                     break;
                 }
                 *(vbuff + x / 256 + (y / 256 + 2) * 128) = 3;
                 x += sintable[(256 + mR) & 1023] / 16;
                 y -= sintable[mR] / 16;
 
-                if (y >= 78 * 256) {
+                if (y < 0 || y >= 77 * 256) {
+                    break;
+                }
+                if (x < 4 * 256 || x > 124 * 256) {
                     break;
                 }
                 *(vbuff + x / 256 + (y / 256 + 2) * 128) = 3;

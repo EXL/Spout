@@ -21,6 +21,11 @@
 
 /**********GLOBALS***********************/
 
+// RGB to RGB565 macro
+#define RGB565(r, g, b)  (((r) << (5+6)) | ((g) << 6) | (b))
+
+int colorTable[19];
+
 #ifndef ANDROID_NDK
 SDL_Surface *video;
 
@@ -34,7 +39,6 @@ int fullscreen = 0;
 #define TEXTURE_WIDTH 256
 #define TEXTURE_HEIGHT 128
 #define S_PIXELS_SIZE (sizeof(texture_map[0]) * TEXTURE_WIDTH * TEXTURE_HEIGHT)
-#define RGB565(r, g, b)  (((r) << (5+6)) | ((g) << 6) | (b))
 #define KEY_UNPRESSED 0
 #define KEY_PRESSED 1
 
@@ -103,6 +107,31 @@ const char *font_adr = (const char *)FONT6;
 void pceLCDDispStop () { }
 
 void pceLCDDispStart () { }
+
+void initilizeColorTable() {
+    colorTable[0] = RGB565(139, 0, 0);      // DarkRed
+    colorTable[1] = RGB565(255, 160, 122);  // LightSalmon
+    colorTable[2] = RGB565(220, 20, 60);    // Crimson
+    colorTable[3] = RGB565(178, 34, 34);    // FireBrick
+    colorTable[4] = RGB565(255, 0, 0);      // Red
+    colorTable[5] = RGB565(255, 69, 0);     // OrangeRed
+    colorTable[6] = RGB565(255, 140, 0);    // DarkOrange
+    colorTable[7] = RGB565(255, 165, 0);    // Orange
+    colorTable[8] = RGB565(255, 255, 0);    // Yellow
+    colorTable[9] = RGB565(255, 215, 0);    // Gold
+    colorTable[10] = RGB565(128, 0, 0);     // Maroon
+    colorTable[11] = RGB565(210, 105, 30);  // Chocolate
+    colorTable[12] = RGB565(135, 206, 250); // LightSkyBlue
+    colorTable[13] = RGB565(30, 144, 255);  // DodgerBlue
+    colorTable[14] = RGB565(0, 255, 0);     // Green
+
+    /***********************************/
+
+    colorTable[15] = 0xAD55;                // LightGray #1
+    colorTable[16] = 0x52AA;                // DarkGray #2
+    colorTable[17] = 0x0000;                // Black
+    colorTable[18] = 0xFFFF;                // White
+}
 
 #ifndef ANDROID_NDK
 void SDL_GL_Enter2DMode () {
@@ -196,11 +225,15 @@ void initSDL () {
     if (!global_texture) {
         global_texture = SDL_GL_LoadTexture_fromPixelData(IN_SCREEN_WIDTH, IN_SCREEN_HEIGHT, texcoord, video->pixels);
     }
+
+    initilizeColorTable();
 }
 #else
 void initSpoutGLES() {
 
 	keys = keysState;
+
+	initilizeColorTable();
 
 	pceAppInit ();
 
@@ -341,16 +374,18 @@ void pceLCDTrans () {
     for (rz = 0; rz < IN_SCREEN_HEIGHT * IN_SCREEN_WIDTH; ++rz) {
         switch (pixelData[rz]) {
         case 0x1:
-            pixelDataRGB565[rz] = 0xAD55; // Gray #1
+            pixelDataRGB565[rz] = colorTable[rand() % 15];
             break;
         case 0x2:
-            pixelDataRGB565[rz] = 0x52AA; // Gray #2
+            pixelDataRGB565[rz] = colorTable[16];
             break;
         case 0x3:
-            pixelDataRGB565[rz] = 0x0000; // Black 00000 000000 00000
+            pixelDataRGB565[rz] = colorTable[17];
             break;
         case 0x0:
-            pixelDataRGB565[rz] = 0xFFFF; // White 11111 111111 11111
+            pixelDataRGB565[rz] = colorTable[18];
+            break;
+        default:
             break;
         }
     }
@@ -564,10 +599,11 @@ int pceFileOpen (FILEACC * pfa, const char *fname, int mode)
 void pceFileReadSct (void *ptr, /*int sct,*/ int len)
 {
 //    fprintf(stderr, "Getting score, length: %d\n", len);
-
+#ifdef ANDROID_NDK
     int *toScore = (int *)(ptr);
     toScore[0] = score_score;
     toScore[1] = score_height;
+#endif
 }
 
 void pceFileWriteSct (const void *ptr, /*int sct,*/ int len)
