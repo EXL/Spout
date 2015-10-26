@@ -26,6 +26,9 @@
 
 int colorTable[19];
 
+// Colors
+int color_on = 0;
+
 #ifndef ANDROID_NDK
 SDL_Surface *video;
 
@@ -57,6 +60,9 @@ int vibrate_now = 0;
 
 // Sound
 int sound_on = 0;
+
+// Long tail
+int tail_on = 0;
 
 // Scores
 int score_height = 0;
@@ -374,16 +380,16 @@ void pceLCDTrans () {
     for (rz = 0; rz < IN_SCREEN_HEIGHT * IN_SCREEN_WIDTH; ++rz) {
         switch (pixelData[rz]) {
         case 0x1:
-            pixelDataRGB565[rz] = colorTable[rand() % 15];
+            pixelDataRGB565[rz] = (color_on) ? colorTable[rand() % 15] : colorTable[15];
             break;
         case 0x2:
-            pixelDataRGB565[rz] = colorTable[16];
+            pixelDataRGB565[rz] = colorTable[16]; // DarkGray #2
             break;
         case 0x3:
-            pixelDataRGB565[rz] = colorTable[17];
+            pixelDataRGB565[rz] = colorTable[17]; // Black
             break;
         case 0x0:
-            pixelDataRGB565[rz] = colorTable[18];
+            pixelDataRGB565[rz] = colorTable[18]; // White
             break;
         default:
             break;

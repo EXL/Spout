@@ -55,6 +55,9 @@ public class SpoutNativeSurface extends GLSurfaceView implements android.opengl.
 		SpoutActivity.toDebug("== GL_SURFACE CREATED ==");
 		SpoutNativeLibProxy.SpoutInitilizeGlobalJavaEnvPointer();
 
+		SpoutNativeLibProxy.SpoutSetColor(SpoutLauncher.SpoutSettings.s_Color);
+		SpoutNativeLibProxy.SpoutSetTail(SpoutLauncher.SpoutSettings.s_Tail);
+
 		SpoutNativeLibProxy.SpoutNativePushScore(SpoutLauncher.SpoutSettings.s_scoreHeight,
 				SpoutLauncher.SpoutSettings.s_scoreScore);
 

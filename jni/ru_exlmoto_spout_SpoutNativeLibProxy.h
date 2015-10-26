@@ -89,6 +89,22 @@ JNIEXPORT void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutSetSound
 
 /*
  * Class:     ru_exlmoto_spout_SpoutNativeLibProxy
+ * Method:    SpoutSetColor
+ * Signature: (Z)V
+ */
+JNIEXPORT void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutSetColor
+  (JNIEnv *, jclass, jboolean);
+
+/*
+ * Class:     ru_exlmoto_spout_SpoutNativeLibProxy
+ * Method:    SpoutSetTail
+ * Signature: (Z)V
+ */
+JNIEXPORT void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutSetTail
+  (JNIEnv *, jclass, jboolean);
+
+/*
+ * Class:     ru_exlmoto_spout_SpoutNativeLibProxy
  * Method:    SpoutGetScoreScores
  * Signature: ()I
  */

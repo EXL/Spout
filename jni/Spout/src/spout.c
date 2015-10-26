@@ -607,7 +607,9 @@ void pceAppProc (/*int cnt*/)
 
     dispPos = upperLine;
 
-    // Path color to 0x1
+#ifdef ANDROID_NDK
+    // Patch grain color to 0x1 on display
+    if (color_on)
     {
         int rn;
         for (rn = 0; rn < 128 * 128; ++rn) {
@@ -626,6 +628,7 @@ void pceAppProc (/*int cnt*/)
             }
         }
     }
+#endif
 
     {
         unsigned int *pL, *pL2, *pLe;
@@ -667,9 +670,13 @@ void pceAppProc (/*int cnt*/)
             x = mPos.x + sintable[(256 + mR) & 1023] * gPhase / 64;
             y = mPos.y - sintable[mR] * gPhase / 64;
 
+            int N_con = 3;
+#ifdef ANDROID_NDK
             // x = sqrt(128^2 + 88^2) / 4
-//            for (i = 0; i < 39; i++) {
-            for (i = 0; i < 39; i++) {
+            // x = 39
+            N_con = (tail_on) ? 39 : 3;
+#endif
+            for (i = 0; i < N_con; i++) {
                 if (y < 0 || y >= 77 * 256) {
                     break;
                 }
@@ -708,7 +715,11 @@ void pceAppProc (/*int cnt*/)
         *(pC - 128) = 0x03;
         *(pC - 127) = 0x03;
         *(pC - 1) = 0x03;
+#ifdef ANDROID_NDK
+        *pC = (color_on) ? 0x01 : 0x00;
+#else
         *pC = 0x00;
+#endif // ANDROID_NDK
         *(pC + 1) = 0x03;
         *(pC + 127) = 0x03;
         *(pC + 128) = 0x03;

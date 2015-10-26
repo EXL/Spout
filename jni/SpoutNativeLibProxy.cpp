@@ -230,6 +230,28 @@ void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutSetSound
 	}
 }
 
+// Color
+JNIEXPORT
+void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutSetColor
+  (JNIEnv *env, jclass c, jboolean color) {
+	if (color) {
+		color_on = 1;
+	} else {
+		color_on = 0;
+	}
+}
+
+// Tail
+JNIEXPORT
+void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutSetTail
+  (JNIEnv *env, jclass c, jboolean tail) {
+	if (tail) {
+		tail_on = 1;
+	} else {
+		tail_on = 0;
+	}
+}
+
 // Display offset X
 JNIEXPORT
 void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutDisplayOffsetX
