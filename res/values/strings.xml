@@ -15,7 +15,7 @@
     <string name="VibroText">Vibro</string>
     <string name="SoundText">Sound</string>
     <string name="FullscreenText">Fullscreen</string>
-    <string name="CubeText">Cube (Demo)</string>
+    <string name="CubeText">3D Cube (Demo)</string>
     <string name="SensorText">Accelerometer</string>
     <string name="OffsetErrorText">Please check your offsets.</string>
     <string name="OffsetErrorText2">Excess values are unacceptable.</string>

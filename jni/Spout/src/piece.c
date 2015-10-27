@@ -71,6 +71,23 @@ int score_score = 0;
 // Filter
 int filter = GL_NEAREST;
 
+// Cube settings
+GLfloat angleCube = 0.0f;
+GLfloat speedCube = -0.5f;
+float vertices[] = { // Vertices for a face
+	-1.0f, -1.0f, 0.0f,  // 0. left-bottom-front
+	1.0f, -1.0f, 0.0f,  // 1. right-bottom-front
+	-1.0f,  1.0f, 0.0f,  // 2. left-top-front
+	1.0f,  1.0f, 0.0f   // 3. right-top-front
+};
+
+// Scales multipliers
+const GLfloat x_scale_m = (float)IN_SCREEN_WIDTH / TEXTURE_WIDTH;
+const GLfloat y_scale_m = (float)IN_SCREEN_HEIGHT / TEXTURE_HEIGHT;
+
+// Texture offsets
+float texCoords[8];
+
 // Useless features
 static GLuint s_disable_caps[] = {
 	GL_FOG,
@@ -250,11 +267,33 @@ void initSDL () {
     initilizeColorTable();
 }
 #else
+void initCubeTexturesCoords() {
+	// A. left-bottom
+	texCoords[0] = 0.0f;
+	texCoords[1] = y_scale_m;
+
+	// B. right-bottom
+	texCoords[2] = x_scale_m;
+	texCoords[3] = y_scale_m;
+
+	// C. left-top
+	texCoords[4] = 0.0f;
+	texCoords[5] = 0.0f;
+
+	// D. right-top
+	texCoords[6] = x_scale_m;
+	texCoords[7] = 0.0f;
+}
+
 void initSpoutGLES() {
 
 	keys = keysState;
 
 	initilizeColorTable();
+
+	// if cube
+
+	initCubeTexturesCoords();
 
 	pceAppInit ();
 
@@ -289,7 +328,19 @@ void deinitSpoutGLES() {
 
 	// pceAppExit ();
 
-// TODO: check this
+	// GLSurfaceView does its own EGL context management.
+	// It takes all responsibility for creating it, destroying it,
+	// and ensuring that it's current on the renderer thread
+	// when onDrawFrame() is called. If this is not what you want,
+	// you should use a plain SurfaceView instead, and issue the
+	// various EGL calls yourself.
+	// http://stackoverflow.com/a/22897020
+
+	// There's really no need.
+	// When the GLSurfaceView gets destroyed, it will free its EGL context,
+	// which will release all resources associated with it.
+	// http://stackoverflow.com/a/12172410
+
 //	if (global_texture) {
 //		glDeleteTextures(1, &global_texture);
 //		global_texture = 0;
@@ -301,6 +352,17 @@ void deinitSpoutGLES() {
 	}
 }
 
+void emulateGLUperspective(GLfloat fovY,  GLfloat aspect,  GLfloat zNear,  GLfloat zFar)
+{
+	GLfloat fW, fH;
+
+	fH = tan(fovY / 180 * M_PI) * zNear / 2;
+
+	fW = fH * aspect;
+
+	glFrustumf(-fW, fW, -fH, fH, zNear, zFar);
+}
+
 void resizeSpoutGLES(int w, int h) {
 
 	LOGI("Resize Spout GLES: %d, %d", w, h);
@@ -310,6 +372,11 @@ void resizeSpoutGLES(int w, int h) {
 	while (*start) {
 		glDisable(*start++);
 	}
+
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LEQUAL);
+	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+	glShadeModel(GL_SMOOTH);
 
 	glEnable(GL_TEXTURE_2D);
 	glGenTextures(1, &global_texture);
@@ -342,11 +409,83 @@ void resizeSpoutGLES(int w, int h) {
 			NULL);
 	check_gl_error("glTexImage2D");
 
-	glClearColor(0, 0, 0, 0);
+	GLclampf gray = 96.0f / 255.0f;
+	glClearColor(gray, gray, gray, 0);
 	check_gl_error("glClearColor");
 
 	display_w = w;
 	display_h = h;
+
+	if (display_h == 0) display_h = 1;
+	float aspect = (float)display_w / display_h;
+
+    glViewport(0, 0, display_w, display_h);
+
+    // Setup perspective projection, with aspect ratio matches viewport
+    glMatrixMode(GL_PROJECTION); // Select projection matrix
+    glLoadIdentity();                 // Reset projection matrix
+    // Use perspective projection
+    //gluPerspective(gl, 45, aspect, 0.1f, 100.f);
+    emulateGLUperspective(45.0f, aspect, 0.1f, 100.0f);
+
+    glMatrixMode(GL_MODELVIEW);  // Select model-view matrix
+    glLoadIdentity();                 // Reset
+}
+
+void draw_cube(void) {
+	glFrontFace(GL_CCW);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glVertexPointer(3, GL_FLOAT, 0, vertices);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	glTexCoordPointer(2, GL_FLOAT, 0, texCoords);
+
+	// front
+	glPushMatrix();
+	glTranslatef(0.0f, 0.0f, 1.0f);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	glPopMatrix();
+
+	// left
+	glPushMatrix();
+	glRotatef(270.0f, 0.0f, 1.0f, 0.0f);
+	glTranslatef(0.0f, 0.0f, 1.0f);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	glPopMatrix();
+
+	// back
+	glPushMatrix();
+	glRotatef(180.0f, 0.0f, 1.0f, 0.0f);
+	glTranslatef(0.0f, 0.0f, 1.0f);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	glPopMatrix();
+
+	// right
+	glPushMatrix();
+	glRotatef(90.0f, 0.0f, 1.0f, 0.0f);
+	glTranslatef(0.0f, 0.0f, 1.0f);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	glPopMatrix();
+
+	// top
+	glPushMatrix();
+	glRotatef(270.0f, 1.0f, 0.0f, 0.0f);
+	glTranslatef(0.0f, 0.0f, 1.0f);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	glPopMatrix();
+
+	// bottom
+	glPushMatrix();
+	glRotatef(90.0f, 1.0f, 0.0f, 0.0f);
+	glTranslatef(0.0f, 0.0f, 1.0f);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	glPopMatrix();
+
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisable(GL_CULL_FACE);
 }
 #endif // !ANDROID_NDK
 
@@ -436,10 +575,20 @@ void pceLCDTrans () {
 			texture_map);
     check_gl_error("glTexSubImage2D");
 
-    glDrawTexiOES(dis_x, dis_y, 0,
-			display_w - dis_x * 2,
-			display_h - dis_y * 2);
-    check_gl_error("glDrawTexiOES");
+//    glDrawTexiOES(dis_x, dis_y, 0,
+//			display_w - dis_x * 2,
+//			display_h - dis_y * 2);
+//    check_gl_error("glDrawTexiOES");
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glLoadIdentity();
+    glTranslatef(0.0f, 0.0f, -3.5f);
+    glRotatef(angleCube, 0.1f, 1.0f, 0.2f);
+
+    draw_cube();
+
+    angleCube += speedCube;
+
 #endif // !ANDROID_NDK
 }
 
