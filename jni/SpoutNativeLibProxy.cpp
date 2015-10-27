@@ -171,19 +171,20 @@ JNIEXPORT
 void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutNativeDraw
   (JNIEnv *env, jclass c) {
 	if (appRunning == 1) {
-		static Stats       stats;
-		static int         init;
+		// There is no need in release version
+		// static Stats       stats;
+		// static int         init;
 
-		if (!init) {
-			stats_init(&stats);
-			init = 1;
-		}
+		// if (!init) {
+		//	stats_init(&stats);
+		//	init = 1;
+		// }
 
-		stats_startFrame(&stats);
+		// stats_startFrame(&stats);
 
 		stepSpoutGLES();
 
-		stats_endFrame(&stats);
+		// stats_endFrame(&stats);
 	}
 }
 
