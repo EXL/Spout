@@ -4,12 +4,12 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import ru.exlmoto.spout.SpoutActivity.SpoutSounds;
-
 import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.os.SystemClock;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
+import android.view.SurfaceHolder;
 
 public class SpoutNativeSurface extends GLSurfaceView implements android.opengl.GLSurfaceView.Renderer {
 
@@ -48,6 +48,13 @@ public class SpoutNativeSurface extends GLSurfaceView implements android.opengl.
 	public void onPause() {
 		SpoutActivity.toDebug("== GL_SURFACE ON PAUSE ==");
 		super.onPause();
+	}
+
+	@Override
+	public void surfaceDestroyed(SurfaceHolder holder) {
+		SpoutActivity.toDebug("== GL_SURFACE DESTROYED ==");
+		super.surfaceDestroyed(holder);
+		System.exit(0);
 	}
 
 	@Override
