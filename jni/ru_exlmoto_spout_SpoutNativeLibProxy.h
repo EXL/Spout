@@ -105,6 +105,14 @@ JNIEXPORT void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutSetTail
 
 /*
  * Class:     ru_exlmoto_spout_SpoutNativeLibProxy
+ * Method:    SpoutSet3DCube
+ * Signature: (Z)V
+ */
+JNIEXPORT void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutSet3DCube
+  (JNIEnv *, jclass, jboolean);
+
+/*
+ * Class:     ru_exlmoto_spout_SpoutNativeLibProxy
  * Method:    SpoutGetScoreScores
  * Signature: ()I
  */

@@ -58,6 +58,8 @@ public class SpoutNativeSurface extends GLSurfaceView implements android.opengl.
 		SpoutNativeLibProxy.SpoutSetColor(SpoutLauncher.SpoutSettings.s_Color);
 		SpoutNativeLibProxy.SpoutSetTail(SpoutLauncher.SpoutSettings.s_Tail);
 
+		SpoutNativeLibProxy.SpoutSet3DCube(SpoutLauncher.SpoutSettings.s_CubeDemo);
+
 		SpoutNativeLibProxy.SpoutNativePushScore(SpoutLauncher.SpoutSettings.s_scoreHeight,
 				SpoutLauncher.SpoutSettings.s_scoreScore);
 

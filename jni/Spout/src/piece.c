@@ -72,6 +72,7 @@ int score_score = 0;
 int filter = GL_NEAREST;
 
 // Cube settings
+int cube_on = 0;
 GLfloat angleCube = 0.0f;
 GLfloat speedCube = -0.5f;
 float vertices[] = { // Vertices for a face
@@ -102,6 +103,8 @@ static GLuint s_disable_caps[] = {
 	GL_COLOR_MATERIAL,
 	0
 };
+
+void initCubeTexturesCoords();
 #endif // !ANDROID_NDK
 
 static GLuint global_texture = 0;
@@ -267,33 +270,15 @@ void initSDL () {
     initilizeColorTable();
 }
 #else
-void initCubeTexturesCoords() {
-	// A. left-bottom
-	texCoords[0] = 0.0f;
-	texCoords[1] = y_scale_m;
-
-	// B. right-bottom
-	texCoords[2] = x_scale_m;
-	texCoords[3] = y_scale_m;
-
-	// C. left-top
-	texCoords[4] = 0.0f;
-	texCoords[5] = 0.0f;
-
-	// D. right-top
-	texCoords[6] = x_scale_m;
-	texCoords[7] = 0.0f;
-}
-
 void initSpoutGLES() {
 
 	keys = keysState;
 
 	initilizeColorTable();
 
-	// if cube
-
-	initCubeTexturesCoords();
+	if (cube_on == 1) {
+		initCubeTexturesCoords();
+	}
 
 	pceAppInit ();
 
@@ -352,7 +337,26 @@ void deinitSpoutGLES() {
 	}
 }
 
-void emulateGLUperspective(GLfloat fovY,  GLfloat aspect,  GLfloat zNear,  GLfloat zFar)
+void initCubeTexturesCoords() {
+	// A. left-bottom
+	texCoords[0] = 0.0f;
+	texCoords[1] = y_scale_m;
+
+	// B. right-bottom
+	texCoords[2] = x_scale_m;
+	texCoords[3] = y_scale_m;
+
+	// C. left-top
+	texCoords[4] = 0.0f;
+	texCoords[5] = 0.0f;
+
+	// D. right-top
+	texCoords[6] = x_scale_m;
+	texCoords[7] = 0.0f;
+}
+
+void emulateGLUperspective(GLfloat fovY, GLfloat aspect,
+		GLfloat zNear,  GLfloat zFar)
 {
 	GLfloat fW, fH;
 
@@ -373,10 +377,12 @@ void resizeSpoutGLES(int w, int h) {
 		glDisable(*start++);
 	}
 
-	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LEQUAL);
-	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-	glShadeModel(GL_SMOOTH);
+	if (cube_on == 1) {
+		glEnable(GL_DEPTH_TEST);
+		glDepthFunc(GL_LEQUAL);
+		glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+		glShadeModel(GL_SMOOTH);
+	}
 
 	glEnable(GL_TEXTURE_2D);
 	glGenTextures(1, &global_texture);
@@ -409,27 +415,40 @@ void resizeSpoutGLES(int w, int h) {
 			NULL);
 	check_gl_error("glTexImage2D");
 
-	GLclampf gray = 96.0f / 255.0f;
-	glClearColor(gray, gray, gray, 0);
+	if (cube_on == 1) {
+		GLclampf gray = 96.0f / 255.0f;
+		glClearColor(gray, gray, gray, 0.0f);
+	} else {
+		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	}
 	check_gl_error("glClearColor");
 
 	display_w = w;
 	display_h = h;
 
-	if (display_h == 0) display_h = 1;
-	float aspect = (float)display_w / display_h;
+	if (cube_on == 1) {
+		// To prevent division by 0
+		if (display_h == 0) {
+			display_h = 1;
+		}
 
-    glViewport(0, 0, display_w, display_h);
+		float aspect = (float)display_w / display_h;
 
-    // Setup perspective projection, with aspect ratio matches viewport
-    glMatrixMode(GL_PROJECTION); // Select projection matrix
-    glLoadIdentity();                 // Reset projection matrix
-    // Use perspective projection
-    //gluPerspective(gl, 45, aspect, 0.1f, 100.f);
-    emulateGLUperspective(45.0f, aspect, 0.1f, 100.0f);
+		glViewport(0, 0, display_w, display_h);
 
-    glMatrixMode(GL_MODELVIEW);  // Select model-view matrix
-    glLoadIdentity();                 // Reset
+		// Setup perspective projection, with aspect ratio matches viewport
+		glMatrixMode(GL_PROJECTION);  // Select projection matrix
+		glLoadIdentity();             // Reset projection matrix
+
+		// Use perspective projection
+		// GLU library is not present in the Android NDK
+		// Emulate this function
+		// gluPerspective(gl, 45, aspect, 0.1f, 100.f);
+		emulateGLUperspective(45.0f, aspect, 0.1f, 100.0f);
+
+		glMatrixMode(GL_MODELVIEW);   // Select model-view matrix
+		glLoadIdentity();             // Reset projection matrix
+	}
 }
 
 void draw_cube(void) {
@@ -561,10 +580,10 @@ void pceLCDTrans () {
     SDL_GL_Leave2DMode();
     SDL_GL_SwapBuffers();
 #else
-    memset(texture_map, 0, S_PIXELS_SIZE);
-    render_pixels(texture_map, pixelDataRGB565);
-    glClear(GL_COLOR_BUFFER_BIT);
-    glTexSubImage2D(GL_TEXTURE_2D,
+	memset(texture_map, 0, S_PIXELS_SIZE);
+	render_pixels(texture_map, pixelDataRGB565);
+	glClear(GL_COLOR_BUFFER_BIT);
+	glTexSubImage2D(GL_TEXTURE_2D,
 			0,
 			0,
 			0,
@@ -573,22 +592,23 @@ void pceLCDTrans () {
 			GL_RGB,
 			GL_UNSIGNED_SHORT_5_6_5,
 			texture_map);
-    check_gl_error("glTexSubImage2D");
+	check_gl_error("glTexSubImage2D");
 
-//    glDrawTexiOES(dis_x, dis_y, 0,
-//			display_w - dis_x * 2,
-//			display_h - dis_y * 2);
-//    check_gl_error("glDrawTexiOES");
+	if (cube_on == 0) {
+		glDrawTexiOES(dis_x, dis_y, 0,
+				display_w - dis_x * 2,
+				display_h - dis_y * 2);
+		check_gl_error("glDrawTexiOES");
+	} else {
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glLoadIdentity();
+		glTranslatef(0.0f, 0.0f, -3.5f);
+		glRotatef(angleCube, 0.1f, 1.0f, 0.2f);
 
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glLoadIdentity();
-    glTranslatef(0.0f, 0.0f, -3.5f);
-    glRotatef(angleCube, 0.1f, 1.0f, 0.2f);
+		draw_cube();
 
-    draw_cube();
-
-    angleCube += speedCube;
-
+		angleCube += speedCube;
+	}
 #endif // !ANDROID_NDK
 }
 

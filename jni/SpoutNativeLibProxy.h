@@ -30,7 +30,10 @@ extern int interval;
 
 extern int filter;
 
+extern int cube_on;
+
 extern int sound_on;
+
 extern int color_on;
 extern int tail_on;
 

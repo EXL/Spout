@@ -252,6 +252,17 @@ void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutSetTail
 	}
 }
 
+// 3D Cube
+JNIEXPORT
+void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutSet3DCube
+  (JNIEnv *env, jclass c, jboolean cube) {
+	if (cube) {
+		cube_on = 1;
+	} else {
+		cube_on = 0;
+	}
+}
+
 // Display offset X
 JNIEXPORT
 void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutDisplayOffsetX

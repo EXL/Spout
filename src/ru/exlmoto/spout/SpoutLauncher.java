@@ -58,6 +58,8 @@ public class SpoutLauncher extends Activity {
 	private CheckBox checkBoxDisableButtons;
 	private CheckBox checkBoxShowButtons;
 
+	private CheckBox checkBox3DCube;
+
 	private EditText editTextOffsetX;
 	private EditText editTextOffsetY;
 
@@ -175,8 +177,8 @@ public class SpoutLauncher extends Activity {
 		CheckBox generalCheckBox = (CheckBox)findViewById(R.id.checkBoxColor);
 		SpoutSettings.s_Color = generalCheckBox.isChecked();
 
-		generalCheckBox = (CheckBox)findViewById(R.id.checkBoxCube);
-		SpoutSettings.s_CubeDemo = generalCheckBox.isChecked();
+		//generalCheckBox = (CheckBox)findViewById(R.id.checkBoxCube);
+		SpoutSettings.s_CubeDemo = checkBox3DCube.isChecked();
 
 		generalCheckBox = (CheckBox)findViewById(R.id.checkBoxFilter);
 		SpoutSettings.s_Filter = generalCheckBox.isChecked();
@@ -217,11 +219,13 @@ public class SpoutLauncher extends Activity {
 
 		checkBoxDisableButtons.setChecked(SpoutSettings.s_DisableButtons);
 
+		checkBox3DCube.setChecked(SpoutSettings.s_CubeDemo);
+
 		CheckBox generalCheckBox = (CheckBox)findViewById(R.id.checkBoxColor);
 		generalCheckBox.setChecked(SpoutSettings.s_Color);
 
-		generalCheckBox = (CheckBox)findViewById(R.id.checkBoxCube);
-		generalCheckBox.setChecked(SpoutSettings.s_CubeDemo);
+//		generalCheckBox = (CheckBox)findViewById(R.id.checkBoxCube);
+//		generalCheckBox.setChecked(SpoutSettings.s_CubeDemo);
 
 		generalCheckBox = (CheckBox)findViewById(R.id.checkBoxFilter);
 		generalCheckBox.setChecked(SpoutSettings.s_Filter);
@@ -260,6 +264,22 @@ public class SpoutLauncher extends Activity {
 			checkBoxFullscreen.setEnabled(false);
 			SpoutSettings.s_Fullscreen = false;
 		}
+
+		if (checkBox3DCube.isChecked()) {
+			offX_saved = SpoutSettings.s_OffsetX;
+			editTextOffsetX.setText(Integer.toString(0));
+			SpoutSettings.s_OffsetX = 0;
+			offY_saved = SpoutSettings.s_OffsetY;
+			editTextOffsetY.setText(Integer.toString(0));
+			SpoutSettings.s_OffsetX = 0;
+			setOffsetTextViewsState(false);
+
+			checkBoxAspect.setChecked(false);
+			checkBoxAspect.setEnabled(false);
+
+			checkBoxFullscreen.setChecked(false);
+			checkBoxFullscreen.setEnabled(false);
+		}
 	}
 
 	public SpoutLauncher() {
@@ -274,6 +294,7 @@ public class SpoutLauncher extends Activity {
 		displayH = getWindowManager().getDefaultDisplay().getHeight();
 
 		settings = getSharedPreferences("ru.exlmoto.spout", MODE_PRIVATE);
+
 		// Check the first run
 		if (settings.getBoolean("firstrun", true)) {
 			// The first run, fill GUI layout with default values
@@ -295,10 +316,11 @@ public class SpoutLauncher extends Activity {
 		checkBoxShowButtons = (CheckBox)findViewById(R.id.checkBoxScreenButtons);
 		checkBoxDisableButtons = (CheckBox)findViewById(R.id.checkBoxDisableButtons);
 
+		checkBox3DCube = (CheckBox)findViewById(R.id.checkBoxCube);
+
 		fillLayoutBySettings();
 
 		// Set listeners
-
 		checkBoxDisableButtons.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
 			@Override
@@ -306,6 +328,38 @@ public class SpoutLauncher extends Activity {
 				checkBoxShowButtons.setChecked(false);
 				SpoutSettings.s_ShowButtons = false;
 				checkBoxShowButtons.setEnabled(!status);
+			}
+
+		});
+
+		checkBox3DCube.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+			@Override
+			public void onCheckedChanged(CompoundButton button, boolean status) {
+
+				checkBoxAspect.setChecked(false);
+				checkBoxFullscreen.setChecked(false);
+
+				if (status) {
+					setOffsetTextViewsState(false);
+					checkBoxAspect.setEnabled(false);
+					checkBoxFullscreen.setEnabled(false);
+
+					SpoutSettings.s_OffsetX = 0;
+					SpoutSettings.s_OffsetY = 0;
+				} else {
+					setOffsetTextViewsState(true);
+					checkBoxAspect.setEnabled(true);
+					checkBoxFullscreen.setEnabled(true);
+
+					SpoutSettings.s_OffsetX = offX_saved;
+					SpoutSettings.s_OffsetY = offY_saved;
+				}
+
+				editTextOffsetX.setText(Integer.toString(SpoutSettings.s_OffsetX));
+				editTextOffsetY.setText(Integer.toString(SpoutSettings.s_OffsetY));
+
+				writeSettings();
 			}
 
 		});

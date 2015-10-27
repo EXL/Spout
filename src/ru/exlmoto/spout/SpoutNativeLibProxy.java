@@ -27,6 +27,8 @@ public class SpoutNativeLibProxy {
 	public native static void SpoutSetColor(boolean color);
 	public native static void SpoutSetTail(boolean tail);
 
+	public native static void SpoutSet3DCube(boolean cube);
+
 	public native static int SpoutGetScoreScores();
 	public native static int SpoutGetScoreHeight();
 
