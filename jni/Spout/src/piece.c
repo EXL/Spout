@@ -258,10 +258,12 @@ void initSDL () {
     SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
     SDL_GL_SetAttribute( SDL_GL_SWAP_CONTROL, 0 ); // ?
 
-	glClearColor( 255.0, 255.0, 255.0, 1.0 );
-	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClearColor( 255.0, 255.0, 255.0, 1.0 );
+    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     SDL_ShowCursor (0);
+
+    SDL_WM_SetCaption("Spout", NULL);
 
     if (!global_texture) {
         global_texture = SDL_GL_LoadTexture_fromPixelData(IN_SCREEN_WIDTH, IN_SCREEN_HEIGHT, texcoord, video->pixels);
@@ -571,13 +573,14 @@ void pceLCDTrans () {
     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, w, h, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, pixelDataRGB565);
 
     glBegin(GL_TRIANGLE_STRIP);
-    glTexCoord2f(texMinX, texMinY); glVertex2i(x_coord + x_off,                   y_coord + y_off );
-    glTexCoord2f(texMaxX, texMinY); glVertex2i(x_coord + display_w - x_off * 2,   y_coord + y_off );
-    glTexCoord2f(texMinX, texMaxY); glVertex2i(x_coord + x_off,                   y_coord + display_h - y_off * 2);
-    glTexCoord2f(texMaxX, texMaxY); glVertex2i(x_coord + display_w - x_off * 2,   y_coord + display_h - y_off * 2);
+    glTexCoord2f(texMinX, texMinY); glVertex2i(x_coord + x_off,             y_coord + y_off );
+    glTexCoord2f(texMaxX, texMinY); glVertex2i(x_coord + display_w - x_off, y_coord + y_off );
+    glTexCoord2f(texMinX, texMaxY); glVertex2i(x_coord + x_off,             y_coord + display_h - y_off);
+    glTexCoord2f(texMaxX, texMaxY); glVertex2i(x_coord + display_w - x_off, y_coord + display_h - y_off);
     glEnd();
 
     SDL_GL_Leave2DMode();
+
     SDL_GL_SwapBuffers();
 #else
 	memset(texture_map, 0, S_PIXELS_SIZE);
