@@ -1,22 +1,21 @@
-Spout port to Android OS
+Spout
 =============
 
 ![Spout port to Android OS, Motorola Photon Q](https://raw.github.com/EXL/Spout/master/screens/photo_thumb.jpg)
 
-Spout is a small, abstract shooting game from Japanese developer kuni. My port of this game on Android OS uses rendering the context of the game to texture, which is displayed with using OpenGL ES. Added touch control and some game engine improvements.
+Spout is a small, abstract shooting game from Japanese developer kuni. My port of Spout on Android OS uses rendering the videocontext of the game to texture, which is displayed with using OpenGL ES. Added touch control and some game engine improvements.
 
 ![Spout animation](https://raw.github.com/EXL/Spout/master/screens/animation_spout.gif)
 
 Rules of the Spout game are fairly simple: you need to rise on the ship higher and higher, struggling with gravity and destroying obstacles by reactive jet.
 
+![Spout Android Screen](https://raw.github.com/EXL/Spout/master/screens/spout_android.png)
+
 ## Build instructions
 
 For example, GNU/Linux:
 
-* Install the latest Android SDK and Android NDK;
-
-https://developer.android.com/sdk/
-https://developer.android.com/ndk/
+* Install the latest [Android SDK](https://developer.android.com/sdk/) and [Android NDK](https://developer.android.com/ndk/);
 
 * Clone repository into deploy directory;
 
