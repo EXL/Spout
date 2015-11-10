@@ -23,8 +23,8 @@
     <string name="DialogOkText">OK</string>
     <string name="FireText">Fire!</string>
     <string name="HoldText">Hold</string>
-    <string name="LeftText">&lt;  Left</string>
-    <string name="RightText">Right &gt;</string>
+    <string name="LeftText">&lt;---</string>
+    <string name="RightText">---&gt;</string>
     <string name="DisableButtonsText">Disable Buttons</string>
 
 </resources>

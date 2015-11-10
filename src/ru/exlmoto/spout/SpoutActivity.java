@@ -112,32 +112,50 @@ public class SpoutActivity extends Activity implements SensorEventListener {
 			float densityPixels = getResources().getDisplayMetrics().density;
 			toDebug("PixelDensity: " + densityPixels);
 
-			int padding = (int)(50 * densityPixels);
+			int padding = (int)(25 * densityPixels);
 			toDebug("Padding: " + padding);
 
 			// LAYOUTS
 			LinearLayout.LayoutParams parametersBf =
 					new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
 							LayoutParams.WRAP_CONTENT);
-			int leftF = (int)(20 * densityPixels);
+			int leftF = (int)(180 + 30 + 155 * densityPixels);
 			int topF = 0;
-			int rightF = (int)(20 * densityPixels);
+			int rightF = 0;
 			int bottomF = (int)(10 * densityPixels);
 			parametersBf.setMargins(leftF, topF, rightF, bottomF);
 
-			LinearLayout.LayoutParams parametersbLR =
+			LinearLayout.LayoutParams parametersbL =
 					new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
 							LayoutParams.WRAP_CONTENT);
-			int leftLR = 0;
-			int topLR = 0;
-			int rightLR = 0;
-			int bottomLR = (int)(10 * densityPixels);
-			parametersbLR.setMargins(leftLR, topLR, rightLR, bottomLR);
+			int leftL = (int)(30 * densityPixels);
+			int topL = 0;
+			int rightL = 0;
+			int bottomL = (int)(10 * densityPixels);
+			parametersbL.setMargins(leftL, topL, rightL, bottomL);
+
+			LinearLayout.LayoutParams parametersbR =
+					new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
+							LayoutParams.WRAP_CONTENT);
+			int leftR = (int)(5 * densityPixels);
+			int topR = 0;
+			int rightR = 0;
+			int bottomR = (int)(10 * densityPixels);
+			parametersbR.setMargins(leftR, topR, rightR, bottomR);
+
+			LinearLayout.LayoutParams parametersBH =
+					new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
+							LayoutParams.WRAP_CONTENT);
+			int leftH = 0;
+			int topH = (int)(2 * densityPixels);
+			int rightH = (int)(2 * densityPixels);;
+			int bottomH = 0;
+			parametersBH.setMargins(leftH, topH, rightH, bottomH);
 
 			// HOLD FIRE BUTTON
 			final Button buttonFireHold = new Button(this);
 			if (SpoutSettings.s_ShowButtons) {
-				buttonFireHold.setBackgroundColor(Color.argb(100, 229, 82, 90));
+				buttonFireHold.setBackgroundColor(Color.argb(125, 212, 207, 199));
 			}
 			buttonFireHold.setOnTouchListener(new OnTouchListener() {
 
@@ -150,12 +168,12 @@ public class SpoutActivity extends Activity implements SensorEventListener {
 						if (holdPushed) {
 							SpoutNativeLibProxy.SpoutNativeKeyDown(SpoutNativeSurface.KEY_FIRE);
 							if (SpoutSettings.s_ShowButtons) {
-								v.setBackgroundColor(Color.argb(100, 142, 207, 106));
+								v.setBackgroundColor(Color.argb(125, 212 - 100, 207 - 100, 199 - 100));
 							}
 						} else {
 							SpoutNativeLibProxy.SpoutNativeKeyUp(SpoutNativeSurface.KEY_FIRE);
 							if (SpoutSettings.s_ShowButtons) {
-								v.setBackgroundColor(Color.argb(100, 229, 82, 90));
+								v.setBackgroundColor(Color.argb(125, 212, 207, 199));
 							}
 						}
 
@@ -187,7 +205,7 @@ public class SpoutActivity extends Activity implements SensorEventListener {
 				buttonFireHold.setTextColor(Color.argb(75, 212, 207, 199));
 			}
 			buttonFireHold.setPadding(padding, padding, padding, padding);
-			buttonFireHold.setLayoutParams(parametersBf);
+			buttonFireHold.setLayoutParams(parametersBH);
 
 			// FIRE BUTTON
 			Button buttonFire = new Button(this);
@@ -199,7 +217,7 @@ public class SpoutActivity extends Activity implements SensorEventListener {
 					case MotionEvent.ACTION_DOWN:
 						if (holdPushed) {
 							if (SpoutSettings.s_ShowButtons) {
-								buttonFireHold.setBackgroundColor(Color.argb(100, 229, 82, 90));
+								buttonFireHold.setBackgroundColor(Color.argb(125, 212, 207, 199));
 							}
 							SpoutNativeLibProxy.SpoutNativeKeyUp(SpoutNativeSurface.KEY_FIRE);
 							try {
@@ -270,13 +288,13 @@ public class SpoutActivity extends Activity implements SensorEventListener {
 				}
 
 			});
-			buttonLeft.setText(getString(R.string.LeftText));
+			buttonLeft.setText(getString(R.string.RightText));
 			if (!SpoutSettings.s_ShowButtons) {
 				buttonLeft.setBackgroundColor(Color.argb(0, 255, 255, 255));
 				buttonLeft.setTextColor(Color.argb(75, 212, 207, 199));
 			}
 			buttonLeft.setPadding(padding, padding, padding, padding);
-			buttonLeft.setLayoutParams(parametersbLR);
+			buttonLeft.setLayoutParams(parametersbL);
 
 			// RIGHT BUTTON
 			Button buttonRight = new Button(this);
@@ -308,19 +326,19 @@ public class SpoutActivity extends Activity implements SensorEventListener {
 				}
 
 			});
-			buttonRight.setText(getString(R.string.RightText));
+			buttonRight.setText(getString(R.string.LeftText));
 			if (!SpoutSettings.s_ShowButtons) {
 				buttonRight.setBackgroundColor(Color.argb(0, 255, 255, 255));
 				buttonRight.setTextColor(Color.argb(75, 212, 207, 199));
 			}
 			buttonRight.setPadding(padding, padding, padding, padding);
 
-			buttonRight.setLayoutParams(parametersbLR);
+			buttonRight.setLayoutParams(parametersbR);
 
 			// LAYOUTS SETTINGS
 			LinearLayout ll0 = new LinearLayout(this);
 			ll0.addView(buttonFireHold);
-			ll0.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.TOP);
+			ll0.setGravity(Gravity.RIGHT | Gravity.TOP);
 			addContentView(ll0, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,
 					LayoutParams.MATCH_PARENT));
 
@@ -328,15 +346,24 @@ public class SpoutActivity extends Activity implements SensorEventListener {
 
 			// Add buttons to layer
 			if (!SpoutSettings.s_Sensor) {
-				ll.addView(buttonLeft);
-			}
-			ll.addView(buttonFire);
-			if (!SpoutSettings.s_Sensor) {
+				if (SpoutSettings.s_ShowButtons) {
+					buttonRight.setBackgroundColor(Color.argb(125, 212, 207, 199));
+				}
 				ll.addView(buttonRight);
 			}
+			if (!SpoutSettings.s_Sensor) {
+				if (SpoutSettings.s_ShowButtons) {
+					buttonLeft.setBackgroundColor(Color.argb(125, 212, 207, 199));
+				}
+				ll.addView(buttonLeft);
+			}
+			if (SpoutSettings.s_ShowButtons) {
+				buttonFire.setBackgroundColor(Color.argb(125, 212, 207, 199));
+			}
+			ll.addView(buttonFire);
 			// End
 
-			ll.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM);
+			ll.setGravity(Gravity.LEFT | Gravity.BOTTOM);
 
 			addContentView(ll, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,
 					LayoutParams.MATCH_PARENT));
