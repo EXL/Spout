@@ -813,6 +813,8 @@ void pceFileWriteSct (const void *ptr, /*int sct,*/ int len)
 
 		// Call JAVA-method
 		(*javaEnviron)->CallStaticVoidMethod(javaEnviron, clazz, methodId, hiScore[1], hiScore[0]);
+
+		(*javaEnviron)->DeleteLocalRef(javaEnviron, clazz);
 	}
 }
 #endif // !ANDROID NDK
@@ -887,6 +889,7 @@ void vibrateFromJNI(int duration) {
 
 			// Call JAVA-method
 			(*javaEnviron)->CallStaticVoidMethod(javaEnviron, clazz, methodId, duration);
+			(*javaEnviron)->DeleteLocalRef(javaEnviron, clazz);
 		}
 	}
 }
@@ -910,6 +913,8 @@ void playGameOverSoundFromJNI() {
 			jint soundID = (*javaEnviron)->GetStaticIntField(javaEnviron, clazz, fieldID);
 			LOGI("JNI: soundID is: %d", (int)soundID);
 
+			(*javaEnviron)->DeleteLocalRef(javaEnviron, clazz);
+
 			// Now return to SpoutActivity
 			clazz = (*javaEnviron)->FindClass(javaEnviron, "ru/exlmoto/spout/SpoutActivity");
 			if (clazz == 0) {
@@ -926,6 +931,8 @@ void playGameOverSoundFromJNI() {
 				// Call JAVA-method
 				(*javaEnviron)->CallStaticVoidMethod(javaEnviron, clazz, methodId, soundID);
 			}
+
+			(*javaEnviron)->DeleteLocalRef(javaEnviron, clazz);
 		}
 	}
 }
