@@ -190,9 +190,11 @@ public class SpoutLauncher extends Activity {
 	}
 
 	private void fillSettingsByLayout() {
-		SpoutSettings.s_OffsetX = Integer.parseInt(editTextOffsetX.getText().toString());
+		String _toParse = editTextOffsetX.getText().toString();
+		SpoutSettings.s_OffsetX = _toParse.compareTo("") == 0 ? 0 : Integer.parseInt(_toParse);
 
-		SpoutSettings.s_OffsetY = Integer.parseInt(editTextOffsetY.getText().toString());
+		_toParse = editTextOffsetY.getText().toString();
+		SpoutSettings.s_OffsetY = _toParse.compareTo("") == 0 ? 0 : Integer.parseInt(_toParse);
 
 		SpoutSettings.s_AspectRatio = checkBoxAspect.isChecked();
 
