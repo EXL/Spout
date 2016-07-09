@@ -86,6 +86,10 @@ public class SpoutActivity extends Activity implements SensorEventListener {
 		m_spoutNativeSurface = new SpoutNativeSurface(this);
 		setContentView(m_spoutNativeSurface);
 
+		if (SpoutSettings.s_Sound) {
+			setVolumeControlStream(AudioManager.STREAM_MUSIC);
+		}
+
 		// SOUNDS
 		if (SpoutSettings.s_Sound) {
 			soundPool = new SoundPool(5, AudioManager.STREAM_MUSIC, 0);
