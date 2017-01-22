@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:focusableInTouchMode="true"
-    tools:context="${relativePackage}.${activityClass}" >
+    android:focusableInTouchMode="true" >
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -102,31 +100,6 @@
         </TableRow>
 
         <TextView
-            android:id="@+id/touch_label"
-            style="?android:attr/listSeparatorTextViewStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/TouchLabel" />
-
-        <TableRow
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" >
-
-            <CheckBox
-                android:id="@+id/checkBoxScreenButtons"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:checked="false"
-                android:text="@string/OnScreenText" />
-
-            <CheckBox
-                android:id="@+id/checkBoxDisableButtons"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/DisableButtonsText" />
-        </TableRow>
-
-        <TextView
             android:id="@+id/screen_label"
             style="?android:attr/listSeparatorTextViewStyle"
             android:layout_width="match_parent"
@@ -152,8 +125,7 @@
 
         <TableRow
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp" >
+            android:layout_height="wrap_content" >
 
             <TextView
                 android:id="@+id/textView1"
@@ -188,6 +160,32 @@
                 android:ems="10"
                 android:inputType="number" >
             </EditText>
+        </TableRow>
+
+        <TextView
+            android:id="@+id/touch_label"
+            style="?android:attr/listSeparatorTextViewStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/TouchLabel" />
+
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp" >
+
+            <CheckBox
+                android:id="@+id/checkBoxScreenButtons"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                android:text="@string/OnScreenText" />
+
+            <CheckBox
+                android:id="@+id/checkBoxDisableButtons"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/DisableButtonsText" />
         </TableRow>
     </LinearLayout>
 </ScrollView>
