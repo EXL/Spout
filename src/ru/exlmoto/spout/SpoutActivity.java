@@ -26,7 +26,6 @@ package ru.exlmoto.spout;
 
 import java.io.IOException;
 
-import ru.exlmoto.spout.SpoutLauncher.SpoutSettings;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -50,9 +49,12 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
+import ru.exlmoto.spout.SpoutLauncher.SpoutSettings;
+
 public class SpoutActivity extends Activity implements SensorEventListener {
 
 	private SpoutNativeSurface m_spoutNativeSurface;
+	private SpoutJoystickView m_SpoutJoystickView;
 
 	private static Vibrator m_vibrator;
 
@@ -111,240 +113,246 @@ public class SpoutActivity extends Activity implements SensorEventListener {
 			manager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_GAME);
 		}
 
+		m_SpoutJoystickView = new SpoutJoystickView(this);
+		addContentView(m_SpoutJoystickView,
+				new LinearLayout.LayoutParams(
+						LayoutParams.MATCH_PARENT,
+						LayoutParams.MATCH_PARENT));
+
 		// ALL ONSCREEN BUTTONS
-		if (!SpoutSettings.s_DisableButtons) {
-			float densityPixels = getResources().getDisplayMetrics().density;
-			toDebug("PixelDensity: " + densityPixels);
-
-			int padding = (int)(50 * densityPixels);
-			toDebug("Padding: " + padding);
-
-			// LAYOUTS
-			LinearLayout.LayoutParams parametersBf =
-					new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
-							LayoutParams.WRAP_CONTENT);
-			int leftF = (int)(20 * densityPixels);
-			int topF = 0;
-			int rightF = (int)(20 * densityPixels);
-			int bottomF = (int)(10 * densityPixels);
-			parametersBf.setMargins(leftF, topF, rightF, bottomF);
-
-			LinearLayout.LayoutParams parametersbLR =
-					new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
-							LayoutParams.WRAP_CONTENT);
-			int leftLR = 0;
-			int topLR = 0;
-			int rightLR = 0;
-			int bottomLR = (int)(10 * densityPixels);
-			parametersbLR.setMargins(leftLR, topLR, rightLR, bottomLR);
-
-			// HOLD FIRE BUTTON
-			final Button buttonFireHold = new Button(this);
-			if (SpoutSettings.s_ShowButtons) {
-				buttonFireHold.setBackgroundColor(Color.argb(100, 229, 82, 90));
-			}
-			buttonFireHold.setOnTouchListener(new OnTouchListener() {
-
-				@Override
-				public boolean onTouch(View v, MotionEvent event) {
-					switch (event.getAction()) {
-					case MotionEvent.ACTION_DOWN:
-						holdPushed = !holdPushed;
-
-						if (holdPushed) {
-							SpoutNativeLibProxy.SpoutNativeKeyDown(SpoutNativeSurface.KEY_FIRE);
-							if (SpoutSettings.s_ShowButtons) {
-								v.setBackgroundColor(Color.argb(100, 142, 207, 106));
-							}
-						} else {
-							SpoutNativeLibProxy.SpoutNativeKeyUp(SpoutNativeSurface.KEY_FIRE);
-							if (SpoutSettings.s_ShowButtons) {
-								v.setBackgroundColor(Color.argb(100, 229, 82, 90));
-							}
-						}
-
-						v.setPressed(holdPushed);
-
-						if (SpoutSettings.s_Vibro) {
-							doVibrate(15);
-						}
-
-						if (SpoutSettings.s_Sound) {
-							playSound(SpoutSounds.s_hold);
-						}
-
-						break;
-					case MotionEvent.ACTION_UP:
-						//v.performClick();
-						break;
-					default:
-						break;
-					}
-					return false;
-				}
-
-			});
-
-			buttonFireHold.setText(getString(R.string.HoldText));
-			if (!SpoutSettings.s_ShowButtons) {
-				buttonFireHold.setBackgroundColor(Color.argb(0, 255, 255, 255));
-				buttonFireHold.setTextColor(Color.argb(75, 212, 207, 199));
-			}
-			buttonFireHold.setPadding(padding, padding, padding, padding);
-			buttonFireHold.setLayoutParams(parametersBf);
-
-			// FIRE BUTTON
-			Button buttonFire = new Button(this);
-			buttonFire.setOnTouchListener(new OnTouchListener() {
-
-				@Override
-				public boolean onTouch(View v, MotionEvent event) {
-					switch (event.getAction()) {
-					case MotionEvent.ACTION_DOWN:
-						if (holdPushed) {
-							if (SpoutSettings.s_ShowButtons) {
-								buttonFireHold.setBackgroundColor(Color.argb(100, 229, 82, 90));
-							}
-							SpoutNativeLibProxy.SpoutNativeKeyUp(SpoutNativeSurface.KEY_FIRE);
-							try {
-								long sleepfor = 50;
-								SpoutActivity.toDebug("Sleep now hack: " + sleepfor);
-								Thread.sleep(sleepfor);
-								SpoutNativeLibProxy.SpoutNativeKeyDown(SpoutNativeSurface.KEY_FIRE);
-							} catch (InterruptedException ex) { }
-							holdPushed = false;
-						}
-						SpoutNativeLibProxy.SpoutNativeKeyDown(SpoutNativeSurface.KEY_FIRE);
-
-						if (SpoutSettings.s_Vibro) {
-							doVibrate(15);
-						}
-
-						if (SpoutSettings.s_Sound) {
-							playSound(SpoutSounds.s_fire);
-						}
-
-						break;
-					case MotionEvent.ACTION_UP:
-						SpoutNativeLibProxy.SpoutNativeKeyUp(SpoutNativeSurface.KEY_FIRE);
-						//v.performClick();
-						break;
-					default:
-						break;
-					}
-					return false;
-				}
-
-			});
-			buttonFire.setText(getText(R.string.FireText));
-			if (!SpoutSettings.s_ShowButtons) {
-				buttonFire.setBackgroundColor(Color.argb(0, 255, 255, 255));
-				buttonFire.setTextColor(Color.argb(75, 212, 207, 199));
-			}
-			buttonFire.setPadding(padding, padding, padding, padding);
-			buttonFire.setLayoutParams(parametersBf);
-
-			// LEFT BUTTON
-			Button buttonLeft = new Button(this);
-			buttonLeft.setOnTouchListener(new OnTouchListener() {
-
-				@Override
-				public boolean onTouch(View v, MotionEvent event) {
-					switch (event.getAction()) {
-					case MotionEvent.ACTION_DOWN:
-						SpoutNativeLibProxy.SpoutNativeKeyDown(SpoutNativeSurface.KEY_LEFT);
-
-						if (SpoutSettings.s_Vibro) {
-							doVibrate(15);
-						}
-
-						if (SpoutSettings.s_Sound) {
-							playSound(SpoutSounds.s_button);
-						}
-
-						break;
-					case MotionEvent.ACTION_UP:
-						SpoutNativeLibProxy.SpoutNativeKeyUp(SpoutNativeSurface.KEY_LEFT);
-						//v.performClick();
-						break;
-					default:
-						break;
-					}
-					return false;
-				}
-
-			});
-			buttonLeft.setText(getString(R.string.LeftText));
-			if (!SpoutSettings.s_ShowButtons) {
-				buttonLeft.setBackgroundColor(Color.argb(0, 255, 255, 255));
-				buttonLeft.setTextColor(Color.argb(75, 212, 207, 199));
-			}
-			buttonLeft.setPadding(padding, padding, padding, padding);
-			buttonLeft.setLayoutParams(parametersbLR);
-
-			// RIGHT BUTTON
-			Button buttonRight = new Button(this);
-			buttonRight.setOnTouchListener(new OnTouchListener() {
-
-				@Override
-				public boolean onTouch(View v, MotionEvent event) {
-					switch (event.getAction()) {
-					case MotionEvent.ACTION_DOWN:
-						SpoutNativeLibProxy.SpoutNativeKeyDown(SpoutNativeSurface.KEY_RIGHT);
-
-						if (SpoutSettings.s_Vibro) {
-							doVibrate(15);
-						}
-
-						if (SpoutSettings.s_Sound) {
-							playSound(SpoutSounds.s_button);
-						}
-
-						break;
-					case MotionEvent.ACTION_UP:
-						SpoutNativeLibProxy.SpoutNativeKeyUp(SpoutNativeSurface.KEY_RIGHT);
-						//v.performClick();
-						break;
-					default:
-						break;
-					}
-					return false;
-				}
-
-			});
-			buttonRight.setText(getString(R.string.RightText));
-			if (!SpoutSettings.s_ShowButtons) {
-				buttonRight.setBackgroundColor(Color.argb(0, 255, 255, 255));
-				buttonRight.setTextColor(Color.argb(75, 212, 207, 199));
-			}
-			buttonRight.setPadding(padding, padding, padding, padding);
-
-			buttonRight.setLayoutParams(parametersbLR);
-
-			// LAYOUTS SETTINGS
-			LinearLayout ll0 = new LinearLayout(this);
-			ll0.addView(buttonFireHold);
-			ll0.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.TOP);
-			addContentView(ll0, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,
-					LayoutParams.MATCH_PARENT));
-
-			LinearLayout ll = new LinearLayout(this);
-
-			// Add buttons to layer
-			if (!SpoutSettings.s_Sensor) {
-				ll.addView(buttonLeft);
-			}
-			ll.addView(buttonFire);
-			if (!SpoutSettings.s_Sensor) {
-				ll.addView(buttonRight);
-			}
-			// End
-
-			ll.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM);
-
-			addContentView(ll, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,
-					LayoutParams.MATCH_PARENT));
-		}
+//		if (!SpoutSettings.s_DisableButtons) {
+//			float densityPixels = getResources().getDisplayMetrics().density;
+//			toDebug("PixelDensity: " + densityPixels);
+//
+//			int padding = (int)(50 * densityPixels);
+//			toDebug("Padding: " + padding);
+//
+//			// LAYOUTS
+//			LinearLayout.LayoutParams parametersBf =
+//					new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
+//							LayoutParams.WRAP_CONTENT);
+//			int leftF = (int)(20 * densityPixels);
+//			int topF = 0;
+//			int rightF = (int)(20 * densityPixels);
+//			int bottomF = (int)(10 * densityPixels);
+//			parametersBf.setMargins(leftF, topF, rightF, bottomF);
+//
+//			LinearLayout.LayoutParams parametersbLR =
+//					new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
+//							LayoutParams.WRAP_CONTENT);
+//			int leftLR = 0;
+//			int topLR = 0;
+//			int rightLR = 0;
+//			int bottomLR = (int)(10 * densityPixels);
+//			parametersbLR.setMargins(leftLR, topLR, rightLR, bottomLR);
+//
+//			// HOLD FIRE BUTTON
+//			final Button buttonFireHold = new Button(this);
+//			if (SpoutSettings.s_ShowButtons) {
+//				buttonFireHold.setBackgroundColor(Color.argb(100, 229, 82, 90));
+//			}
+//			buttonFireHold.setOnTouchListener(new OnTouchListener() {
+//
+//				@Override
+//				public boolean onTouch(View v, MotionEvent event) {
+//					switch (event.getAction()) {
+//					case MotionEvent.ACTION_DOWN:
+//						holdPushed = !holdPushed;
+//
+//						if (holdPushed) {
+//							SpoutNativeLibProxy.SpoutNativeKeyDown(SpoutNativeSurface.KEY_FIRE);
+//							if (SpoutSettings.s_ShowButtons) {
+//								v.setBackgroundColor(Color.argb(100, 142, 207, 106));
+//							}
+//						} else {
+//							SpoutNativeLibProxy.SpoutNativeKeyUp(SpoutNativeSurface.KEY_FIRE);
+//							if (SpoutSettings.s_ShowButtons) {
+//								v.setBackgroundColor(Color.argb(100, 229, 82, 90));
+//							}
+//						}
+//
+//						v.setPressed(holdPushed);
+//
+//						if (SpoutSettings.s_Vibro) {
+//							doVibrate(15);
+//						}
+//
+//						if (SpoutSettings.s_Sound) {
+//							playSound(SpoutSounds.s_hold);
+//						}
+//
+//						break;
+//					case MotionEvent.ACTION_UP:
+//						//v.performClick();
+//						break;
+//					default:
+//						break;
+//					}
+//					return false;
+//				}
+//
+//			});
+//
+//			buttonFireHold.setText(getString(R.string.HoldText));
+//			if (!SpoutSettings.s_ShowButtons) {
+//				buttonFireHold.setBackgroundColor(Color.argb(0, 255, 255, 255));
+//				buttonFireHold.setTextColor(Color.argb(75, 212, 207, 199));
+//			}
+//			buttonFireHold.setPadding(padding, padding, padding, padding);
+//			buttonFireHold.setLayoutParams(parametersBf);
+//
+//			// FIRE BUTTON
+//			Button buttonFire = new Button(this);
+//			buttonFire.setOnTouchListener(new OnTouchListener() {
+//
+//				@Override
+//				public boolean onTouch(View v, MotionEvent event) {
+//					switch (event.getAction()) {
+//					case MotionEvent.ACTION_DOWN:
+//						if (holdPushed) {
+//							if (SpoutSettings.s_ShowButtons) {
+//								buttonFireHold.setBackgroundColor(Color.argb(100, 229, 82, 90));
+//							}
+//							SpoutNativeLibProxy.SpoutNativeKeyUp(SpoutNativeSurface.KEY_FIRE);
+//							try {
+//								long sleepfor = 50;
+//								SpoutActivity.toDebug("Sleep now hack: " + sleepfor);
+//								Thread.sleep(sleepfor);
+//								SpoutNativeLibProxy.SpoutNativeKeyDown(SpoutNativeSurface.KEY_FIRE);
+//							} catch (InterruptedException ex) { }
+//							holdPushed = false;
+//						}
+//						SpoutNativeLibProxy.SpoutNativeKeyDown(SpoutNativeSurface.KEY_FIRE);
+//
+//						if (SpoutSettings.s_Vibro) {
+//							doVibrate(15);
+//						}
+//
+//						if (SpoutSettings.s_Sound) {
+//							playSound(SpoutSounds.s_fire);
+//						}
+//
+//						break;
+//					case MotionEvent.ACTION_UP:
+//						SpoutNativeLibProxy.SpoutNativeKeyUp(SpoutNativeSurface.KEY_FIRE);
+//						//v.performClick();
+//						break;
+//					default:
+//						break;
+//					}
+//					return false;
+//				}
+//
+//			});
+//			buttonFire.setText(getText(R.string.FireText));
+//			if (!SpoutSettings.s_ShowButtons) {
+//				buttonFire.setBackgroundColor(Color.argb(0, 255, 255, 255));
+//				buttonFire.setTextColor(Color.argb(75, 212, 207, 199));
+//			}
+//			buttonFire.setPadding(padding, padding, padding, padding);
+//			buttonFire.setLayoutParams(parametersBf);
+//
+//			// LEFT BUTTON
+//			Button buttonLeft = new Button(this);
+//			buttonLeft.setOnTouchListener(new OnTouchListener() {
+//
+//				@Override
+//				public boolean onTouch(View v, MotionEvent event) {
+//					switch (event.getAction()) {
+//					case MotionEvent.ACTION_DOWN:
+//						SpoutNativeLibProxy.SpoutNativeKeyDown(SpoutNativeSurface.KEY_LEFT);
+//
+//						if (SpoutSettings.s_Vibro) {
+//							doVibrate(15);
+//						}
+//
+//						if (SpoutSettings.s_Sound) {
+//							playSound(SpoutSounds.s_button);
+//						}
+//
+//						break;
+//					case MotionEvent.ACTION_UP:
+//						SpoutNativeLibProxy.SpoutNativeKeyUp(SpoutNativeSurface.KEY_LEFT);
+//						//v.performClick();
+//						break;
+//					default:
+//						break;
+//					}
+//					return false;
+//				}
+//
+//			});
+//			buttonLeft.setText(getString(R.string.LeftText));
+//			if (!SpoutSettings.s_ShowButtons) {
+//				buttonLeft.setBackgroundColor(Color.argb(0, 255, 255, 255));
+//				buttonLeft.setTextColor(Color.argb(75, 212, 207, 199));
+//			}
+//			buttonLeft.setPadding(padding, padding, padding, padding);
+//			buttonLeft.setLayoutParams(parametersbLR);
+//
+//			// RIGHT BUTTON
+//			Button buttonRight = new Button(this);
+//			buttonRight.setOnTouchListener(new OnTouchListener() {
+//
+//				@Override
+//				public boolean onTouch(View v, MotionEvent event) {
+//					switch (event.getAction()) {
+//					case MotionEvent.ACTION_DOWN:
+//						SpoutNativeLibProxy.SpoutNativeKeyDown(SpoutNativeSurface.KEY_RIGHT);
+//
+//						if (SpoutSettings.s_Vibro) {
+//							doVibrate(15);
+//						}
+//
+//						if (SpoutSettings.s_Sound) {
+//							playSound(SpoutSounds.s_button);
+//						}
+//
+//						break;
+//					case MotionEvent.ACTION_UP:
+//						SpoutNativeLibProxy.SpoutNativeKeyUp(SpoutNativeSurface.KEY_RIGHT);
+//						//v.performClick();
+//						break;
+//					default:
+//						break;
+//					}
+//					return false;
+//				}
+//
+//			});
+//			buttonRight.setText(getString(R.string.RightText));
+//			if (!SpoutSettings.s_ShowButtons) {
+//				buttonRight.setBackgroundColor(Color.argb(0, 255, 255, 255));
+//				buttonRight.setTextColor(Color.argb(75, 212, 207, 199));
+//			}
+//			buttonRight.setPadding(padding, padding, padding, padding);
+//
+//			buttonRight.setLayoutParams(parametersbLR);
+//
+//			// LAYOUTS SETTINGS
+//			LinearLayout ll0 = new LinearLayout(this);
+//			ll0.addView(buttonFireHold);
+//			ll0.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.TOP);
+//			addContentView(ll0, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,
+//					LayoutParams.MATCH_PARENT));
+//
+//			LinearLayout ll = new LinearLayout(this);
+//
+//			// Add buttons to layer
+//			if (!SpoutSettings.s_Sensor) {
+//				ll.addView(buttonLeft);
+//			}
+//			ll.addView(buttonFire);
+//			if (!SpoutSettings.s_Sensor) {
+//				ll.addView(buttonRight);
+//			}
+//			// End
+//
+//			ll.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM);
+//
+//			addContentView(ll, new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT,
+//					LayoutParams.MATCH_PARENT));
+//		}
 	}
 
 	// JNI-method

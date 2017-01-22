@@ -83,4 +83,5 @@ int getScoreScores();
 int getScoreHeight();
 
 extern int vibrate_now;
+extern int mR;
 #endif // PIECE_H

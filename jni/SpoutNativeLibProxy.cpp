@@ -335,3 +335,10 @@ void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutInitilizeGlobalJavaE
 		javaEnviron = env;
 	}
 }
+
+// Set mR
+JNIEXPORT
+void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutSetMr
+  (JNIEnv *env, jclass c, jint _mR) {
+	mR = _mR;
+}

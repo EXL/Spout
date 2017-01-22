@@ -151,6 +151,14 @@ JNIEXPORT void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutDisplayOff
 JNIEXPORT void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutInitilizeGlobalJavaEnvPointer
   (JNIEnv *, jclass);
 
+/*
+ * Class:     ru_exlmoto_spout_SpoutNativeLibProxy
+ * Method:    SpoutSetMr
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_ru_exlmoto_spout_SpoutNativeLibProxy_SpoutSetMr
+  (JNIEnv *, jclass, jint);
+
 #ifdef __cplusplus
 }
 #endif

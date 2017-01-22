@@ -60,4 +60,6 @@ public class SpoutNativeLibProxy {
 	public native static void SpoutDisplayOffsetY(int offset_y);
 
 	public native static void SpoutInitilizeGlobalJavaEnvPointer();
+
+	public native static void SpoutSetMr(int mR);
 }
