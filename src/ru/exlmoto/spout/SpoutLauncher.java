@@ -319,6 +319,12 @@ public class SpoutLauncher extends Activity {
 		displayW = getWindowManager().getDefaultDisplay().getWidth();
 		displayH = getWindowManager().getDefaultDisplay().getHeight();
 
+		if (displayH > displayW) { // To Landscape
+			int tempVar = displayH;
+			displayH = displayW;
+			displayW = tempVar;
+		}
+
 		settings = getSharedPreferences("ru.exlmoto.spout", MODE_PRIVATE);
 
 		// Check the first run
