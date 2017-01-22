@@ -7,17 +7,18 @@
     <uses-sdk
         android:minSdkVersion="9"
         android:targetSdkVersion="14" />
+
     <uses-permission android:name="android.permission.VIBRATE"/>
 
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme"
+        android:hardwareAccelerated="true" >
         <activity
             android:name=".SpoutLauncher"
             android:label="@string/title_activity_spout_launcher"
-            android:screenOrientation="landscape"
             android:configChanges="keyboard|keyboardHidden|orientation"
             android:launchMode="singleTop" >
             <intent-filter>
@@ -30,7 +31,7 @@
             android:label="@string/title_activity_spout_launcher"
             android:screenOrientation="landscape"
             android:launchMode="singleTask"
-            android:configChanges="keyboard|keyboardHidden|orientation"
+            android:configChanges="keyboardHidden|orientation"
             android:name="SpoutActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -38,5 +39,8 @@
             </intent-filter>
         </activity>
     </application>
+
+    <!-- OpenGL ES 1.1 -->
+    <uses-feature android:glEsVersion="0x00010000" />
 
 </manifest>

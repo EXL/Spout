@@ -497,6 +497,8 @@ public class SpoutLauncher extends Activity {
 		writeSettings();
 
 		// Exit to Android
-		System.exit(0);
+		// System.exit(0);
+
+		super.onBackPressed();
 	}
 }
