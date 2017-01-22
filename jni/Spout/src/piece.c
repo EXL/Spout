@@ -337,6 +337,8 @@ void deinitSpoutGLES() {
 		LOGI("Free texture_map...");
 		free(texture_map);
 	}
+
+	exit(0);
 }
 
 void initCubeTexturesCoords() {

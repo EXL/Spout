@@ -490,6 +490,8 @@ public class SpoutActivity extends Activity implements SensorEventListener {
 		}
 
 		// Because we want drop all memory of library
-		System.exit(0);
+		// System.exit(0);
+		// Now exit() in deinitSpoutGLES()
+		super.onBackPressed();
 	}
 }

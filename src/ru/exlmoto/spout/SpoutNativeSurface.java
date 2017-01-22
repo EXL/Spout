@@ -78,7 +78,7 @@ public class SpoutNativeSurface extends GLSurfaceView implements android.opengl.
 	public void surfaceDestroyed(SurfaceHolder holder) {
 		SpoutActivity.toDebug("== GL_SURFACE DESTROYED ==");
 		super.surfaceDestroyed(holder);
-		System.exit(0);
+		// System.exit(0);
 	}
 
 	@Override
