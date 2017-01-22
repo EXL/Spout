@@ -452,7 +452,14 @@ public class SpoutActivity extends Activity implements SensorEventListener {
 
 	@Override
 	public void onSensorChanged(SensorEvent event) {
+		float x = event.values[0]; // X-axis
 		float y = event.values[1]; // Y-axis
+
+		if (x < 6.0f) {
+			SpoutNativeLibProxy.SpoutNativeKeyDown(SpoutNativeSurface.KEY_FIRE);
+		} else {
+			SpoutNativeLibProxy.SpoutNativeKeyUp(SpoutNativeSurface.KEY_FIRE);
+		}
 
 		if (y > (-3.0f) && y < (3.0f)) {
 			SpoutNativeLibProxy.SpoutNativeKeyUp(SpoutNativeSurface.KEY_LEFT);
