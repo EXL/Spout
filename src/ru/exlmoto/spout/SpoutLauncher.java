@@ -33,7 +33,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -86,6 +88,8 @@ public class SpoutLauncher extends Activity {
 
 	private EditText editTextOffsetX;
 	private EditText editTextOffsetY;
+
+	private AlertDialog aboutDialog = null;
 
 	private SharedPreferences settings = null;
 
@@ -312,6 +316,17 @@ public class SpoutLauncher extends Activity {
 		SpoutActivity.toDebug("== SpoutLauncher() constructor ==");
 	}
 
+	private void initAboutDialog() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setCancelable(false);
+		LayoutInflater inflater = this.getLayoutInflater();
+		View dialogView = inflater.inflate(R.layout.dialog_about, null);
+		builder.setView(dialogView);
+		builder.setTitle(R.string.app_name);
+		builder.setPositiveButton(R.string.DialogOkText, null);
+		aboutDialog = builder.create();
+	}
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -335,6 +350,8 @@ public class SpoutLauncher extends Activity {
 			// Read settings from Shared Preferences
 			readSettings();
 		}
+
+		initAboutDialog();
 
 		setContentView(R.layout.spout_launcher);
 
@@ -463,6 +480,15 @@ public class SpoutLauncher extends Activity {
 			}
 
 		});
+
+		Button aboutButton = (Button)findViewById(R.id.buttonAboutSpout);
+		aboutButton.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				showMyDialog(aboutDialog);
+			}
+		});
 	}
 
 	@Override
@@ -495,6 +521,21 @@ public class SpoutLauncher extends Activity {
 		writeSettings();
 
 		super.onDestroy();
+	}
+
+	// Prevent dialog dismiss when orientation changes
+	// http://stackoverflow.com/a/27311231/2467443
+	private static void doKeepDialog(AlertDialog dialog) {
+		WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
+		lp.copyFrom(dialog.getWindow().getAttributes());
+		lp.width = WindowManager.LayoutParams.WRAP_CONTENT;
+		lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+		dialog.getWindow().setAttributes(lp);
+	}
+
+	private void showMyDialog(AlertDialog dialog) {
+		dialog.show();
+		doKeepDialog(dialog);
 	}
 
 	/*
