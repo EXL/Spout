@@ -1,14 +1,48 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:focusableInTouchMode="true"
-    android:orientation="vertical"
     tools:context="${relativePackage}.${activityClass}" >
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:orientation="vertical" >
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:contentDescription="@string/CoverString"
+            android:src="@drawable/cover" />
+
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <Button
+                android:id="@+id/buttonRunSpout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/RunSpoutButton" />
+
+            <Button
+                android:id="@+id/buttonAboutSpout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/AboutSpoutButton" />
+        </TableRow>
+
+        <TextView
+            android:id="@+id/settings_label"
+            style="?android:attr/listSeparatorTextViewStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/SettingsLabel" />
 
         <CheckBox
             android:id="@+id/checkBoxFilter"
@@ -16,145 +50,144 @@
             android:layout_height="wrap_content"
             android:text="@string/FilterText" />
 
-        <CheckBox
-            android:id="@+id/checkBoxCube"
+        <TableRow
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:text="@string/CubeText" />
+            android:layout_height="wrap_content" >
 
-        <CheckBox
-            android:id="@+id/checkBoxSensor"
+            <CheckBox
+                android:id="@+id/checkBoxCube"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/CubeText" />
+
+            <CheckBox
+                android:id="@+id/checkBoxSound"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/SoundText" />
+        </TableRow>
+
+        <TableRow
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:text="@string/SensorText" />
+            android:layout_height="wrap_content" >
 
-    </LinearLayout>
+            <CheckBox
+                android:id="@+id/checkBoxSensor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/SensorText" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+            <CheckBox
+                android:id="@+id/checkBoxVibro"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/VibroText" />
+        </TableRow>
 
-        <CheckBox
-            android:id="@+id/checkBoxScreenButtons"
+        <TableRow
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:checked="false"
-            android:text="@string/OnScreenText" />
+            android:layout_height="wrap_content" >
 
-        <CheckBox
-            android:id="@+id/checkBoxDisableButtons"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:text="@string/DisableButtonsText" />
+            <CheckBox
+                android:id="@+id/checkBoxColor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/ColorText" />
 
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+            <CheckBox
+                android:id="@+id/checkBoxTail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/LongTailText" />
+        </TableRow>
 
         <TextView
-            android:id="@+id/textView1"
-            android:layout_width="wrap_content"
+            android:id="@+id/touch_label"
+            style="?android:attr/listSeparatorTextViewStyle"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="0"
-            android:text="@string/ScreenOffsetXText"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:text="@string/TouchLabel" />
 
-        <EditText
-            android:id="@+id/editTextX"
-            android:layout_width="50dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:layout_weight="0"
-            android:ems="10"
-            android:inputType="number" />
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <CheckBox
+                android:id="@+id/checkBoxScreenButtons"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                android:text="@string/OnScreenText" />
+
+            <CheckBox
+                android:id="@+id/checkBoxDisableButtons"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/DisableButtonsText" />
+        </TableRow>
 
         <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/screen_label"
+            style="?android:attr/listSeparatorTextViewStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/ScreenLabel" />
+
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <CheckBox
+                android:id="@+id/checkBoxAspect"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/AspectRatioText" />
+
+            <CheckBox
+                android:id="@+id/checkBoxFullscreen"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/FullscreenText" />
+        </TableRow>
+
+        <TableRow
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="0"
-            android:text="@string/ScreenOffsetYText"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:layout_marginBottom="10dp" >
 
-        <EditText
-            android:id="@+id/editTextY"
-            android:layout_width="50dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:layout_weight="0"
-            android:ems="10"
-            android:inputType="number" >
-        </EditText>
+            <TextView
+                android:id="@+id/textView1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:text="@string/ScreenOffsetXText"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
 
-        <CheckBox
-            android:id="@+id/checkBoxAspect"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:layout_weight="0"
-            android:text="@string/AspectRatioText" />
+            <EditText
+                android:id="@+id/editTextX"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:ems="10"
+                android:inputType="number" />
 
-        <CheckBox
-            android:id="@+id/checkBoxFullscreen"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:layout_weight="0"
-            android:text="@string/FullscreenText" />
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/ScreenOffsetYText"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <EditText
+                android:id="@+id/editTextY"
+                android:layout_width="50dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:ems="10"
+                android:inputType="number" >
+            </EditText>
+        </TableRow>
     </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-
-        <TextView
-            android:id="@+id/TextView01"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/TweaksText"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
-        <CheckBox
-            android:id="@+id/checkBoxColor"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:text="@string/ColorText" />
-
-        <CheckBox
-            android:id="@+id/checkBoxTail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:text="@string/LongTailText" />
-
-        <CheckBox
-            android:id="@+id/checkBoxSound"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:text="@string/SoundText" />
-
-        <CheckBox
-            android:id="@+id/checkBoxVibro"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:text="@string/VibroText" />
-    </LinearLayout>
-
-    <Button
-        android:id="@+id/buttonRunSpout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:text="@string/RunSpoutButton" />
-
-</LinearLayout>
+</ScrollView>

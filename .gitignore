@@ -86,3 +86,5 @@ lint.xml
 ### Android Patch ###
 gen-external-apklibs
 
+# Qt Creator builds
+jni/Spout/build*

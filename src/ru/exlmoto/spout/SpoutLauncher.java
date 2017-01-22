@@ -440,7 +440,7 @@ public class SpoutLauncher extends Activity {
 		});
 
 		Button button = (Button)findViewById(R.id.buttonRunSpout);
-		button.requestFocus();
+		// button.requestFocus();
 		button.setOnClickListener(new OnClickListener() {
 
 			@Override
@@ -491,14 +491,14 @@ public class SpoutLauncher extends Activity {
 		super.onDestroy();
 	}
 
+	/*
 	@Override
 	public void onBackPressed() {
 		// Write settings
 		writeSettings();
 
 		// Exit to Android
-		// System.exit(0);
-
-		super.onBackPressed();
+		System.exit(0);
 	}
+	*/
 }

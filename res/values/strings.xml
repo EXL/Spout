@@ -8,7 +8,7 @@
     <string name="ColorText">Colorize</string>
     <string name="OnScreenText">Strong Buttons</string>
     <string name="FilterText">Apply Filter (Smooth)</string>
-    <string name="ScreenOffsetXText">Screen Offset \'x\':</string>
+    <string name="ScreenOffsetXText">Offset \'x\':</string>
     <string name="ScreenOffsetYText">\'y\':</string>
     <string name="AspectRatioText">Aspect Ratio</string>
     <string name="TweaksText">Tweaks:</string>
@@ -26,5 +26,10 @@
     <string name="LeftText">&lt;  Left</string>
     <string name="RightText">Right &gt;</string>
     <string name="DisableButtonsText">Disable Buttons</string>
+    <string name="AboutSpoutButton">About Spout</string>
+    <string name="SettingsLabel">Settings</string>
+    <string name="TouchLabel">Touch Controls</string>
+    <string name="ScreenLabel">Screen Settings</string>
+    <string name="CoverString">Spout Cover</string>
 
 </resources>
