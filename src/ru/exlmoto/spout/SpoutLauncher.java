@@ -334,7 +334,7 @@ public class SpoutLauncher extends Activity {
 
 	private void initAboutDialog() {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setCancelable(false);
+		// builder.setCancelable(false);
 		LayoutInflater inflater = this.getLayoutInflater();
 		View dialogView = inflater.inflate(R.layout.dialog_about, null);
 		builder.setView(dialogView);
@@ -524,7 +524,7 @@ public class SpoutLauncher extends Activity {
 			builder.setMessage(getString(R.string.OffsetErrorText) +
 					"\nMax \'x\': " + max_offX + "\nMax \'y\': " + max_offY + "\n" +
 					getString(R.string.OffsetErrorText2));
-			builder.setCancelable(false);
+			// builder.setCancelable(false);
 			builder.setPositiveButton(getString(R.string.DialogOkText), new DialogInterface.OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int id) {
