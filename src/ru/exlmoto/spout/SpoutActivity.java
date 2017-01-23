@@ -63,7 +63,7 @@ public class SpoutActivity extends Activity implements SensorEventListener {
 	private static boolean holdPushed = false;
 
 	private boolean nowLeft = false;
-	private static final int touchDelay = 50;
+	public static final int touchDelay = 50;
 
 	public static SoundPool soundPool = null;
 	public static class SpoutSounds {
@@ -113,15 +113,27 @@ public class SpoutActivity extends Activity implements SensorEventListener {
 			manager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_GAME);
 		}
 
-		if (SpoutLauncher.SpoutSettings.s_SensorType != 2) {
-			m_SpoutJoystickView = new SpoutJoystickView(this);
-			addContentView(m_SpoutJoystickView,
-					new LinearLayout.LayoutParams(
-							LayoutParams.MATCH_PARENT,
-							LayoutParams.MATCH_PARENT));
+		// ALL ONSCREEN BUTTONS
+		switch (SpoutLauncher.SpoutSettings.s_SensorType) {
+			case SpoutLauncher.SENSOR_TYPE_JOY:
+			default:
+				m_SpoutJoystickView = new SpoutJoystickView(this);
+				addContentView(m_SpoutJoystickView,
+						new LinearLayout.LayoutParams(
+								LayoutParams.MATCH_PARENT,
+								LayoutParams.MATCH_PARENT));
+				break;
+			case SpoutLauncher.SENSOR_TYPE_KEY:
+				LinearLayout ll = new LinearLayout(this);
+				ll.setBackgroundDrawable(getResources().getDrawable(R.drawable.overlay_controls));
+				addContentView(ll, new LinearLayout.LayoutParams(
+						LayoutParams.MATCH_PARENT,
+						LayoutParams.MATCH_PARENT));
+				break;
+			case SpoutLauncher.SENSOR_TYPE_NON:
+				break;
 		}
 
-		// ALL ONSCREEN BUTTONS
 //		if (!SpoutSettings.s_DisableButtons) {
 //			float densityPixels = getResources().getDisplayMetrics().density;
 //			toDebug("PixelDensity: " + densityPixels);
@@ -375,16 +387,7 @@ public class SpoutActivity extends Activity implements SensorEventListener {
 	// JNI-method
 	public static void doVibrate(int duration) {
 		if (SpoutSettings.s_Vibro) {
-			final int delay = duration;
-
-			new Thread(new Runnable() {
-
-				@Override
-				public void run() {
-					m_vibrator.vibrate(delay);
-				}
-
-			}).start();
+			m_vibrator.vibrate(duration);
 		}
 	}
 

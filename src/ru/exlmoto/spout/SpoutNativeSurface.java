@@ -39,6 +39,8 @@ public class SpoutNativeSurface extends GLSurfaceView implements android.opengl.
 
 	private static final int FPS_RATE = 60;
 
+	private SpoutTouchButtonsRects m_SpoutTouchButtonsRects;
+
 	public static final int KEY_LEFT        =    0x01;
 	public static final int KEY_RIGHT       =    0x02;
 	private static final int KEY_UP         =    0x03;
@@ -57,6 +59,9 @@ public class SpoutNativeSurface extends GLSurfaceView implements android.opengl.
 
 	public SpoutNativeSurface(Context context) {
 		super(context);
+
+		m_SpoutTouchButtonsRects = new SpoutTouchButtonsRects();
+
 		setRenderer(this);
 
 		// We wants events
@@ -113,28 +118,13 @@ public class SpoutNativeSurface extends GLSurfaceView implements android.opengl.
 		long currentFrame = SystemClock.uptimeMillis();
 		long diff = currentFrame - m_lastFrame;
 		m_lastFrame = currentFrame;
+
 		SpoutNativeLibProxy.SpoutNativeDraw();
-
-//		// Vibration
-//		// Now From JNI
-//		if (SpoutLauncher.SpoutSettings.s_Vibro) {
-//			if (SpoutNativeLibProxy.SpoutVibrate()) {
-//				SpoutActivity.doVibrate(50);
-//			}
-//		}
-
-//		// Sound
-//		// Now From JNI
-//		if (SpoutLauncher.SpoutSettings.s_Sound) {
-//			if (SpoutNativeLibProxy.SpoutVibrate()) {
-//				SpoutActivity.playSound(SpoutSounds.s_gameover);
-//			}
-//		}
 
 		try {
 			long sleepfor = (1000 / FPS_RATE) - diff;
 			if (sleepfor > 0) {
-//				SpoutActivity.toDebug("Sleep now: " + sleepfor);
+				// SpoutActivity.toDebug("Sleep now: " + sleepfor);
 				Thread.sleep(sleepfor);
 			}
 		} catch (InterruptedException ex) { }
@@ -264,12 +254,8 @@ public class SpoutNativeSurface extends GLSurfaceView implements android.opengl.
 				if (first) {
 					SpoutNativeLibProxy.SpoutNativeKeyDown(KEY_LEFT);
 					left_key_pressed = true;
-
-					if (SpoutLauncher.SpoutSettings.s_Sound) {
-						if (!SpoutLauncher.SpoutSettings.s_Sensor) {
-							SpoutActivity.playSound(SpoutSounds.s_button);
-						}
-					}
+					SpoutActivity.playSound(SpoutSounds.s_button);
+					SpoutActivity.doVibrate(15);
 				} else if (second) {
 					if (!firstHalf) { // EMULATE FIRE BUTTON
 						if (fire_hold_key_pressed) {
@@ -286,9 +272,8 @@ public class SpoutNativeSurface extends GLSurfaceView implements android.opengl.
 							fire_key_pressed = true;
 						}
 
-						if (SpoutLauncher.SpoutSettings.s_Sound) {
-							SpoutActivity.playSound(SpoutSounds.s_fire);
-						}
+						SpoutActivity.playSound(SpoutSounds.s_button);
+						SpoutActivity.doVibrate(15);
 					} else { // EMULATE HOLD FIRE BUTTON
 						fire_hold_key_pressed = !fire_hold_key_pressed;
 						if (fire_hold_key_pressed) {
@@ -297,19 +282,15 @@ public class SpoutNativeSurface extends GLSurfaceView implements android.opengl.
 							SpoutNativeLibProxy.SpoutNativeKeyUp(KEY_FIRE);
 						}
 
-						if (SpoutLauncher.SpoutSettings.s_Sound) {
-							SpoutActivity.playSound(SpoutSounds.s_hold);
-						}
+						SpoutActivity.playSound(SpoutSounds.s_button);
+						SpoutActivity.doVibrate(15);
 					}
 				} else if (third) {
 					SpoutNativeLibProxy.SpoutNativeKeyDown(KEY_RIGHT);
 					right_key_pressed = true;
 
-					if (SpoutLauncher.SpoutSettings.s_Sound) {
-						if (!SpoutLauncher.SpoutSettings.s_Sensor) {
-							SpoutActivity.playSound(SpoutSounds.s_button);
-						}
-					}
+					SpoutActivity.playSound(SpoutSounds.s_button);
+					SpoutActivity.doVibrate(15);
 				}
 			}
 			else if (event.getAction() == MotionEvent.ACTION_UP) {
@@ -324,6 +305,34 @@ public class SpoutNativeSurface extends GLSurfaceView implements android.opengl.
 					SpoutNativeLibProxy.SpoutNativeKeyUp(KEY_RIGHT);
 					right_key_pressed = false;
 				}
+			}
+		} else if (SpoutLauncher.SpoutSettings.s_SensorType == SpoutLauncher.SENSOR_TYPE_KEY) {
+			int touchId = event.getPointerCount() - 1;
+			if (touchId < 0) {
+				return false;
+			}
+
+			float touchX = event.getX(touchId) / getWidth();
+			float touchY = event.getY(touchId) / getHeight();
+
+			switch (event.getAction() & MotionEvent.ACTION_MASK) {
+			case MotionEvent.ACTION_DOWN:
+				m_SpoutTouchButtonsRects.checkTouchButtons(touchX, touchY, touchId);
+				m_SpoutTouchButtonsRects.pressSingleTouchButtons();
+				break;
+			case MotionEvent.ACTION_POINTER_DOWN:
+				m_SpoutTouchButtonsRects.checkTouchButtons(touchX, touchY, touchId);
+				m_SpoutTouchButtonsRects.pressMultiTouchButtons();
+				break;
+			case MotionEvent.ACTION_POINTER_UP:
+				m_SpoutTouchButtonsRects.checkTouchButtons(touchX, touchY, touchId);
+				m_SpoutTouchButtonsRects.releaseMultiTouchButtons(touchId);
+				break;
+			case MotionEvent.ACTION_UP:
+				m_SpoutTouchButtonsRects.releaseAllButtons();
+				break;
+			default:
+				break;
 			}
 		}
 		return true;

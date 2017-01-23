@@ -388,7 +388,12 @@ public class SpoutLauncher extends Activity {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 				if (isChecked) {
-					radioSensorNone.setChecked(isChecked);
+					radioSensorNone.setChecked(true);
+					radioSensorJoy.setEnabled(false);
+					radioSensorKey.setEnabled(false);
+				} else {
+					radioSensorJoy.setEnabled(true);
+					radioSensorKey.setEnabled(true);
 				}
 			}
 		});
