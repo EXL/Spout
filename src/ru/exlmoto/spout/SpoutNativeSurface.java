@@ -247,7 +247,8 @@ public class SpoutNativeSurface extends GLSurfaceView implements android.opengl.
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-		if (SpoutLauncher.SpoutSettings.s_DisableButtons) {
+		if ((SpoutLauncher.SpoutSettings.s_SensorType == SpoutLauncher.SENSOR_TYPE_NON)
+				&& !SpoutLauncher.SpoutSettings.s_Sensor) {
 			float x = event.getX();
 			float y = event.getY();
 

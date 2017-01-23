@@ -42,6 +42,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
+import android.widget.RadioButton;
 
 public class SpoutLauncher extends Activity {
 
@@ -57,12 +58,15 @@ public class SpoutLauncher extends Activity {
 
 	private static final int OFFSET_ERROR = 0;
 
+	public static final int SENSOR_TYPE_JOY = 0;
+	public static final int SENSOR_TYPE_KEY = 1;
+	public static final int SENSOR_TYPE_NON = 2;
+
 	// DEFAULT SETTINGS CLASS
 	public static class SpoutSettings {
 		public static boolean s_Filter = false;
 		public static boolean s_CubeDemo = false;
-		public static boolean s_ShowButtons = true;
-		public static boolean s_DisableButtons = false;
+		public static int s_SensorType = SENSOR_TYPE_JOY;
 		public static boolean s_Sensor = false;
 		public static int s_OffsetX = 25;
 		public static int s_OffsetY = 25;
@@ -81,10 +85,12 @@ public class SpoutLauncher extends Activity {
 	private CheckBox checkBoxFullscreen;
 	private CheckBox checkBoxAspect;
 
-	private CheckBox checkBoxDisableButtons;
-	private CheckBox checkBoxShowButtons;
+	private RadioButton radioSensorJoy;
+	private RadioButton radioSensorKey;
+	private RadioButton radioSensorNone;
 
 	private CheckBox checkBox3DCube;
+	private CheckBox checkBoxAccel;
 
 	private EditText editTextOffsetX;
 	private EditText editTextOffsetY;
@@ -147,11 +153,10 @@ public class SpoutLauncher extends Activity {
 		SpoutSettings.s_OffsetX = settings.getInt("s_OffsetX", SpoutSettings.s_OffsetX);
 		SpoutSettings.s_OffsetY = settings.getInt("s_OffsetY", SpoutSettings.s_OffsetY);
 		SpoutSettings.s_Sensor = settings.getBoolean("s_Sensor", SpoutSettings.s_Sensor);
-		SpoutSettings.s_ShowButtons = settings.getBoolean("s_ShowButtons", SpoutSettings.s_ShowButtons);
 		SpoutSettings.s_Sound = settings.getBoolean("s_Sound", SpoutSettings.s_Sound);
 		SpoutSettings.s_Tail = settings.getBoolean("s_Tail", SpoutSettings.s_Tail);
 		SpoutSettings.s_Vibro = settings.getBoolean("s_Vibro", SpoutSettings.s_Vibro);
-		SpoutSettings.s_DisableButtons = settings.getBoolean("s_DisableButtons", SpoutSettings.s_DisableButtons);
+		SpoutSettings.s_SensorType = settings.getInt("s_SensorType", SpoutSettings.s_SensorType);
 
 		SpoutSettings.s_scoreHeight = settings.getInt("s_scoreHeight", SpoutSettings.s_scoreHeight);
 		SpoutSettings.s_scoreScore = settings.getInt("s_scoreScore", SpoutSettings.s_scoreScore);
@@ -181,8 +186,7 @@ public class SpoutLauncher extends Activity {
 		}
 
 		editor.putBoolean("s_Sensor", SpoutSettings.s_Sensor);
-		editor.putBoolean("s_ShowButtons", SpoutSettings.s_ShowButtons);
-		editor.putBoolean("s_DisableButtons", SpoutSettings.s_DisableButtons);
+		editor.putInt("s_SensorType", SpoutSettings.s_SensorType);
 		editor.putBoolean("s_Sound", SpoutSettings.s_Sound);
 		editor.putBoolean("s_Tail", SpoutSettings.s_Tail);
 		editor.putBoolean("s_Vibro", SpoutSettings.s_Vibro);
@@ -216,11 +220,13 @@ public class SpoutLauncher extends Activity {
 		generalCheckBox = (CheckBox)findViewById(R.id.checkBoxSensor);
 		SpoutSettings.s_Sensor = generalCheckBox.isChecked();
 
-		//generalCheckBox = (CheckBox)findViewById(R.id.checkBoxScreenButtons);
-		SpoutSettings.s_ShowButtons = checkBoxShowButtons.isChecked();
-
-		//generalCheckBox = (CheckBox)findViewById(R.id.checkBoxDisableButtons);
-		SpoutSettings.s_DisableButtons = checkBoxDisableButtons.isChecked();
+		if (radioSensorJoy.isChecked()) {
+			SpoutSettings.s_SensorType = SENSOR_TYPE_JOY;
+		} else if (radioSensorKey.isChecked()) {
+			SpoutSettings.s_SensorType = SENSOR_TYPE_KEY;
+		} else if (radioSensorNone.isChecked()) {
+			SpoutSettings.s_SensorType = SENSOR_TYPE_NON;
+		}
 
 		generalCheckBox = (CheckBox)findViewById(R.id.checkBoxSound);
 		SpoutSettings.s_Sound = generalCheckBox.isChecked();
@@ -245,9 +251,19 @@ public class SpoutLauncher extends Activity {
 
 		checkBoxAspect.setChecked(SpoutSettings.s_AspectRatio);
 
-		checkBoxShowButtons.setChecked(SpoutSettings.s_ShowButtons);
-
-		checkBoxDisableButtons.setChecked(SpoutSettings.s_DisableButtons);
+		switch (SpoutSettings.s_SensorType) {
+		case SENSOR_TYPE_JOY:
+			radioSensorJoy.setChecked(true);
+			break;
+		case SENSOR_TYPE_KEY:
+			radioSensorKey.setChecked(true);
+			break;
+		case SENSOR_TYPE_NON:
+			radioSensorNone.setChecked(true);
+			break;
+		default:
+			break;
+		}
 
 		checkBox3DCube.setChecked(SpoutSettings.s_CubeDemo);
 
@@ -274,12 +290,6 @@ public class SpoutLauncher extends Activity {
 
 		generalCheckBox = (CheckBox)findViewById(R.id.checkBoxVibro);
 		generalCheckBox.setChecked(SpoutSettings.s_Vibro);
-
-		if (checkBoxDisableButtons.isChecked()) {
-			checkBoxShowButtons.setChecked(false);
-			checkBoxShowButtons.setEnabled(false);
-			SpoutSettings.s_ShowButtons = false;
-		}
 
 		if (checkBoxFullscreen.isChecked()) {
 			setOffsetTextViewsState(false);
@@ -362,23 +372,25 @@ public class SpoutLauncher extends Activity {
 		checkBoxFullscreen = (CheckBox)findViewById(R.id.checkBoxFullscreen);
 		checkBoxAspect = (CheckBox)findViewById(R.id.checkBoxAspect);
 
-		checkBoxShowButtons = (CheckBox)findViewById(R.id.checkBoxScreenButtons);
-		checkBoxDisableButtons = (CheckBox)findViewById(R.id.checkBoxDisableButtons);
+		radioSensorJoy = (RadioButton)findViewById(R.id.radioButtonJoy);
+		radioSensorKey = (RadioButton)findViewById(R.id.radioButtonKey);
+		radioSensorNone = (RadioButton)findViewById(R.id.radioButtonNone);
+
+		checkBoxAccel = (CheckBox)findViewById(R.id.checkBoxSensor);
 
 		checkBox3DCube = (CheckBox)findViewById(R.id.checkBoxCube);
 
 		fillLayoutBySettings();
 
 		// Set listeners
-		checkBoxDisableButtons.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+		checkBoxAccel.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
 			@Override
-			public void onCheckedChanged(CompoundButton button, boolean status) {
-				checkBoxShowButtons.setChecked(false);
-				SpoutSettings.s_ShowButtons = false;
-				checkBoxShowButtons.setEnabled(!status);
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				if (isChecked) {
+					radioSensorNone.setChecked(isChecked);
+				}
 			}
-
 		});
 
 		checkBox3DCube.setOnCheckedChangeListener(new OnCheckedChangeListener() {

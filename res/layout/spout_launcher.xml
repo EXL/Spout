@@ -169,23 +169,30 @@
             android:layout_height="wrap_content"
             android:text="@string/TouchLabel" />
 
-        <TableRow
+        <RadioGroup
+            android:id="@+id/radioGroup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
             android:layout_marginBottom="10dp" >
 
-            <CheckBox
-                android:id="@+id/checkBoxScreenButtons"
+            <RadioButton
+                android:id="@+id/radioButtonJoy"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:checked="false"
-                android:text="@string/OnScreenText" />
+                android:text="@string/SJoy" />
 
-            <CheckBox
-                android:id="@+id/checkBoxDisableButtons"
+            <RadioButton
+                android:id="@+id/radioButtonKey"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/DisableButtonsText" />
-        </TableRow>
+                android:text="@string/SKey" />
+
+            <RadioButton
+                android:id="@+id/radioButtonNone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/SNone" />
+        </RadioGroup>
     </LinearLayout>
 </ScrollView>
