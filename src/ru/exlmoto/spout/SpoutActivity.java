@@ -28,6 +28,7 @@ import java.io.IOException;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -239,6 +240,12 @@ public class SpoutActivity extends Activity implements SensorEventListener {
 		}
 	}
 
+	private void startLauncher() {
+		Intent intent = this.getPackageManager()
+				.getLaunchIntentForPackage("ru.exlmoto.spout");
+		startActivity(intent);
+	}
+
 	@Override
 	protected void onDestroy() {
 		toDebug("Destroying activity...");
@@ -251,12 +258,14 @@ public class SpoutActivity extends Activity implements SensorEventListener {
 	public void onBackPressed() {
 		toDebug("Back key pressed!, Exiting...");
 
-		m_spoutNativeSurface.onPause();
-		m_spoutNativeSurface.onClose();
-
 		if (SpoutSettings.s_Sound) {
 			soundPool.release();
 		}
+
+		startLauncher();
+
+		m_spoutNativeSurface.onPause();
+		m_spoutNativeSurface.onClose();
 
 		// Because we want drop all memory of library
 		// System.exit(0);

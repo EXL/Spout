@@ -498,6 +498,7 @@ public class SpoutLauncher extends Activity {
 				if (testOffsets(SpoutSettings.s_OffsetX, SpoutSettings.s_OffsetY, displayW, displayH)) {
 					Intent intent = new Intent(v.getContext(), SpoutActivity.class);
 					startActivity(intent);
+					finish();
 				} else {
 					showDialog(OFFSET_ERROR);
 				}
