@@ -35,6 +35,8 @@ import android.graphics.Paint;
 import android.view.MotionEvent;
 import android.view.View;
 
+import ru.exlmoto.spout.SpoutActivity.SpoutSounds;
+
 public class SpoutJoystickView extends View {
 
 	private Paint paint = null;
@@ -133,6 +135,8 @@ public class SpoutJoystickView extends View {
 				break;
 			case MotionEvent.ACTION_DOWN:
 				SpoutNativeLibProxy.SpoutNativeKeyDown(SpoutNativeSurface.KEY_FIRE);
+				SpoutActivity.playSound(SpoutSounds.s_button);
+				SpoutActivity.doVibrate(15);
 				index = e.getActionIndex();
 				id = e.getPointerId(index);
 				cleanPointer(npid, id);

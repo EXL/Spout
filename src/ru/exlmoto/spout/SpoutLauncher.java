@@ -291,6 +291,12 @@ public class SpoutLauncher extends Activity {
 		generalCheckBox = (CheckBox)findViewById(R.id.checkBoxVibro);
 		generalCheckBox.setChecked(SpoutSettings.s_Vibro);
 
+		if (checkBoxAccel.isChecked()) {
+			radioSensorNone.setChecked(true);
+			radioSensorJoy.setEnabled(false);
+			radioSensorKey.setEnabled(false);
+		}
+
 		if (checkBoxFullscreen.isChecked()) {
 			setOffsetTextViewsState(false);
 			checkBoxAspect.setChecked(false);

@@ -35,7 +35,7 @@ public class SpoutTouchButtonsRects {
 
 	private class SpoutButton {
 
-		final private int VIBRO_OFFSET = 20;
+		final private int VIBRO_OFFSET = 30;
 
 		private float m_x0;
 		private float m_y0;
