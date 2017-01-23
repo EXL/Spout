@@ -343,6 +343,7 @@ public class SpoutLauncher extends Activity {
 		aboutDialog = builder.create();
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
