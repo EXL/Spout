@@ -258,6 +258,8 @@ public class SpoutActivity extends Activity implements SensorEventListener {
 	public void onBackPressed() {
 		toDebug("Back key pressed!, Exiting...");
 
+		writeScoresToSharedPreferences();
+
 		if (SpoutSettings.s_Sound) {
 			soundPool.release();
 		}

@@ -32,7 +32,7 @@
     <string name="ScreenLabel">Screen Settings</string>
     <string name="CoverString">Spout Cover</string>
     <string name="IconDesc">Spout Icon</string>
-    <string name="Version">v1.1 | 23-JAN-2017</string>
+    <string name="Version">v1.1 | 24-JAN-2017</string>
     <string name="AboutString">Porting from SDL to Android OS native application with using OpenGL ES drawing:\n• © 2015 S. \"EXL\" KLS\nemail: exl@bk.ru\nemail: exlmotodev@gmail.com\n\nSource Code:\nhttps://github.com/EXL/Spout\n\nArticle About Porting Spout:\nhttp://exlmoto.ru/spout-droid\n\nThanks to:\n• [SoD]Thor for touch joystick;\n• J()KER for testing touch controls;\n• Zorge.R for hosting, patience and help.\n\nOriginal game:\n• © 2002 kuni.</string>
     <string name="SJoy">Joystick</string>
     <string name="SKey">Keys</string>
