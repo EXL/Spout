@@ -163,7 +163,6 @@ public class SpoutLauncher extends Activity {
 	}
 
 	private void writeSettings() {
-
 		SpoutActivity.toDebug("== writeSettings() ==");
 
 		fillSettingsByLayout();
