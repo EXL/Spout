@@ -173,3 +173,7 @@ tmp/
 cmake-build-debug/
 
 # End of https://www.gitignore.io/api/android,eclipse,jetbrains,androidstudio
+
+# Qt Creator builds
+build-*
+*.user*
