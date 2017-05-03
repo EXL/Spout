@@ -24,32 +24,23 @@ cd ~/Deploy/
 git clone https://github.com/EXL/Spout SpoutAndroid
 ```
 
-* Edit "project.properties" file and set the installed Android API SDK version here, for example:
-
-```sh
-# Project target.
-target=android-23
-```
-
-* Build the APK-package into deploy directory;
+* Build the APK-package into deploy directory with Gradle building script;
 
 ```sh
 cd ~/Deploy/SpoutAndroid/
-/opt/android/android-sdk-linux/tools/android update project -n Spout -p .
-/opt/android/android-ndk-r10d/ndk-build V=1
-/opt/android/apache-ant-1.9.4/bin/ant debug
+ANDROID_HOME="/opt/android-sdk/" ./gradlew assembleDebug
 ```
 
 * Install Spout APK-package on your Android device via adb;
 
 ```sh
 cd ~/Deploy/SpoutAndroid/
-/opt/android/android-sdk-linux/platform-tools/adb install -r bin/Spout-debug.apk
+/opt/android-sdk/platform-tools/adb install -r spout/build/outputs/apk/spout-debug.apk
 ```
 
 * Run and enjoy!
 
-You can also import this project in your favorite IDE: Eclipse or Android Studio and build the APK-package by using these programs.
+You can also open this project in Android Studio IDE and build the APK-package by using this program.
 
 ## More information
 
