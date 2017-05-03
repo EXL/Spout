@@ -12,11 +12,11 @@ QMAKE_CFLAGS = $$system(sdl-config --cflags)
 LIBS = $$system(sdl-config --libs) -lGL
 
 # Input
-HEADERS +=  ../src/config.h \
-            ../src/font.h \
-            ../src/piece.h \
-            ../src/sintable.h \
-            ../src/spout.h
+HEADERS +=  ./Spout/config.h \
+            ./Spout/font.h \
+            ./Spout/piece.h \
+            ./Spout/sintable.h \
+            ./Spout/spout.h
 
-SOURCES +=  ../src/piece.c \
-            ../src/spout.c
+SOURCES +=  ./Spout/piece.c \
+            ./Spout/spout.c
