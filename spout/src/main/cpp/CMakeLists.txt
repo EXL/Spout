@@ -15,8 +15,8 @@ set(SOURCES ${PROJECT_NAME}/piece.c
             ${PROJECT_NAME}/spout.c)
 
 if(ANDROID)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -ffast-math -fomit-frame-pointer -DANDROID_NDK")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -frtti -ffast-math -fomit-frame-pointer -DANDROID_NDK")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -ffast-math -fomit-frame-pointer -DANDROID_NDK -DGL_GLEXT_PROTOTYPES")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -frtti -ffast-math -fomit-frame-pointer -DANDROID_NDK -DGL_GLEXT_PROTOTYPES")
     set(HEADERS ${HEADERS}
                 ru_exlmoto_spout_SpoutNativeLibProxy.h
                 SpoutNativeLibProxy.h)

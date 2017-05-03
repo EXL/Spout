@@ -16,7 +16,7 @@
 #include <GLES/gl.h>
 #include <GLES/glext.h>
 
-#include "../../SpoutNativeLibProxy.h" // For Keys
+#include "../SpoutNativeLibProxy.h" // For Keys
 #endif // ANDROID_NDK
 
 /**********GLOBALS***********************/

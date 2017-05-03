@@ -67,6 +67,8 @@ int pceFileOpen (FILEACC * pfa, const char *fname, int mode);
 #ifdef ANDROID_NDK
 void pceFileReadSct(void *ptr, int len);
 void pceFileWriteSct(const void *ptr, int len);
+void playGameOverSoundFromJNI();
+void vibrateFromJNI(int duration);
 #else
 int pceFileReadSct (FILEACC * pfa, void *ptr, int len);
 int pceFileWriteSct (FILEACC * pfa, const void *ptr, int len);

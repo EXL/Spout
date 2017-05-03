@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include "piece.h"
 #include "spout.h"
@@ -9,7 +10,7 @@
 #include "sintable.h"
 
 #ifdef ANDROID_NDK
-#include "../../SpoutNativeLibProxy.h"
+#include "../SpoutNativeLibProxy.h"
 int vibFlag = 0;
 #endif // !ANDROID_NDK
 
