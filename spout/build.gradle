@@ -9,10 +9,6 @@ android {
         minSdkVersion 9
         targetSdkVersion 14
 
-        ndk {
-            moduleName "Spout"
-        }
-
         externalNativeBuild {
             cmake {
                 arguments "-DANDROID_PLATFORM_LEVEL=9 -DANDROID=ON"
