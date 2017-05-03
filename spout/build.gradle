@@ -11,6 +11,13 @@ android {
 
         ndk {
             moduleName "Spout"
+            abiFilters "armeabi", "armeabi-v7a", "arm64-v8a", "x86", "x86_64", "mips", "mips64"
+        }
+
+        externalNativeBuild {
+            cmake {
+                arguments "-DANDROID_PLATFORM_LEVEL=9 -DANDROID=ON"
+            }
         }
     }
 
@@ -18,6 +25,12 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+    }
+
+    externalNativeBuild {
+        cmake {
+            path 'src/main/cpp/CMakeLists.txt'
         }
     }
 }
