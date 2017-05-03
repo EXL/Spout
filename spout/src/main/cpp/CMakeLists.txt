@@ -15,8 +15,7 @@ set(SOURCES ${PROJECT_NAME}/piece.c
             ${PROJECT_NAME}/spout.c)
 
 if(ANDROID)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -ffast-math -fomit-frame-pointer -DANDROID_NDK -DGL_GLEXT_PROTOTYPES")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -frtti -ffast-math -fomit-frame-pointer -DANDROID_NDK -DGL_GLEXT_PROTOTYPES")
+    add_definitions(-DANDROID_NDK -DGL_GLEXT_PROTOTYPES)
     set(HEADERS ${HEADERS}
                 ru_exlmoto_spout_SpoutNativeLibProxy.h
                 SpoutNativeLibProxy.h)
@@ -25,5 +24,9 @@ if(ANDROID)
     add_library(${PROJECT_NAME} SHARED ${SOURCES} ${HEADERS})
     target_link_libraries(${PROJECT_NAME} log GLESv1_CM)
 else()
-
+    find_package(SDL)
+    find_package(OpenGL)
+    include_directories(${INCLUDE_DIRECTORIES} ${SDL_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR})
+    add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
+    target_link_libraries(${PROJECT_NAME} ${SDL_LIBRARY} ${OPENGL_LIBRARIES})
 endif()

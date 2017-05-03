@@ -17,6 +17,8 @@ android {
         externalNativeBuild {
             cmake {
                 arguments "-DANDROID_PLATFORM_LEVEL=9 -DANDROID=ON"
+                cFlags "-O3", "-ffast-math", "-fomit-frame-pointer"
+                cppFlags "-O3", "-frtti", "-ffast-math", "-fomit-frame-pointer"
             }
         }
     }
