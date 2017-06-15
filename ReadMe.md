@@ -11,6 +11,10 @@ Rules of the Spout game are fairly simple: you need to rise on the ship higher a
 
 ![Spout Android Screen](https://raw.github.com/EXL/Spout/master/images/spout_android.png)
 
+## Download
+
+You can download APK-package for Android OS from the [releases](https://github.com/EXL/Spout/releases) section.
+
 ## Build instructions
 
 For example, GNU/Linux:
