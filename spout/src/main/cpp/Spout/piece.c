@@ -853,12 +853,14 @@ int main (/*int argc, char *argv[]*/)
         }
     }
 
-    pceAppExit ();
-
     if (global_texture) {
         glDeleteTextures(1, &global_texture);
         global_texture = 0;
     }
+
+    pceAppExit ();
+
+    SDL_Quit();
 
     return 0;
 }
