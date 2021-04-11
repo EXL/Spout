@@ -237,7 +237,7 @@ void initSDL () {
         exit (1);
     }
 
-    atexit (SDL_Quit);
+    // atexit (SDL_Quit);
 
     Uint32 flags = SDL_OPENGL | SDL_SWSURFACE;
     if (fullscreen) {
