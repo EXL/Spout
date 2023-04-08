@@ -6,12 +6,15 @@
 #include <math.h>
 #include <unistd.h>
 
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 
 #include "piece.h"
 #include "font.h"
 
-SDL_Surface *video, *layer;
+SDL_Surface *video;
+SDL_Surface *layer;
+SDL_Renderer *render;
+SDL_Texture *texture;
 SDL_Rect layerRect;
 
 unsigned char *vBuffer = NULL;
@@ -27,23 +30,35 @@ void pceLCDDispStart()
 void initSDL() {
 	SDL_PixelFormat *pfrm;
 
-	if(SDL_Init(SDL_INIT_VIDEO) < 0) {
-		fprintf(stderr, "Couldn't initialize SDL: %s\n",SDL_GetError());
-		exit(1);
+	SDL_Window *window = SDL_CreateWindow(
+		"Spout",
+		SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+		SDL_WIDTH * 3, SDL_HEIGHT * 3,
+		SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE
+	);
+	if (window == NULL) {
+		SDL_Log("SDL_CreateWindow failed: %s", SDL_GetError());
+		exit(EXIT_FAILURE);
 	}
+
 	atexit(SDL_Quit);
 
-	video = SDL_SetVideoMode(SDL_WIDTH, SDL_HEIGHT, 8, SDL_DOUBLEBUF | SDL_HWSURFACE | SDL_HWPALETTE);
-	if(video == NULL) {
-		fprintf(stderr, "Couldn't set video mode: %s\n", SDL_GetError());
-		exit(1);
+	render = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+	if (render == NULL) {
+		SDL_Log("SDL_CreateRenderer failed: %s", SDL_GetError());
+		exit(EXIT_FAILURE);
 	}
 
-	pfrm = video->format;
-	layer = SDL_CreateRGBSurface(SDL_SWSURFACE, SDL_WIDTH, SDL_HEIGHT, 8, pfrm->Rmask, pfrm->Gmask, pfrm->Bmask, pfrm->Amask);
-	if(layer == NULL) {
-		fprintf(stderr, "Couldn't create surface: %s\n", SDL_GetError());
-		exit(1);
+	video = SDL_CreateRGBSurface(0, SDL_WIDTH, SDL_HEIGHT, 32, 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
+	if (video == NULL) {
+		SDL_Log("SDL_CreateRGBSurface failed: %s", SDL_GetError());
+		exit(EXIT_FAILURE);
+	}
+
+	layer = SDL_CreateRGBSurface(0, SDL_WIDTH, SDL_HEIGHT, 8, 0x00, 0x00, 0x00, 0x00);
+	if (layer == NULL) {
+		SDL_Log("SDL_CreateRGBSurface failed: %s", SDL_GetError());
+		exit(EXIT_FAILURE);
 	}
 
 	layerRect.x = 0;
@@ -58,8 +73,13 @@ void initSDL() {
 			{85, 85, 85},
 			{0, 0, 0}
 		};
-		SDL_SetColors(video, pltTbl, 0, 4);
-		SDL_SetColors(layer, pltTbl, 0, 4);
+		SDL_SetPaletteColors(layer->format->palette, pltTbl, 0, sizeof(pltTbl));
+	}
+
+	texture = SDL_CreateTextureFromSurface(render, layer);
+	if (texture == NULL) {
+		SDL_Log("SDL_CreateTextureFromSurface failed: %s", SDL_GetError());
+		exit(EXIT_FAILURE);
 	}
 }
 
@@ -77,20 +97,22 @@ void pceLCDTrans() {
 	}
 
 	SDL_BlitSurface(layer, NULL, video, &layerRect);
-	SDL_Flip(video);
+	SDL_UpdateTexture(texture, &layerRect, video->pixels, video->pitch);
+	SDL_RenderCopy(render, texture, NULL, NULL);
+	SDL_RenderPresent(render);
 }
 
-unsigned char *keys;
+const unsigned char *keys;
 
 int pcePadGet() {
 	static int pad = 0;
 	int i = 0, op = pad & 0x00ff;
 
 	int k[] = {
-		SDLK_UP,		SDLK_DOWN,		SDLK_LEFT,		SDLK_RIGHT,
-		SDLK_KP8,		SDLK_KP2,		SDLK_KP4,		SDLK_KP6,
-		SDLK_x,			SDLK_z,			SDLK_SPACE,		SDLK_RETURN,
-		SDLK_ESCAPE,	SDLK_LSHIFT,	SDLK_RSHIFT
+		SDL_SCANCODE_UP,	SDL_SCANCODE_DOWN,	SDL_SCANCODE_LEFT,	SDL_SCANCODE_RIGHT,
+		SDL_SCANCODE_KP_8,	SDL_SCANCODE_KP_2,	SDL_SCANCODE_KP_4,	SDL_SCANCODE_KP_6,
+		SDL_SCANCODE_X,		SDL_SCANCODE_Z,		SDL_SCANCODE_SPACE,	SDL_SCANCODE_RETURN,
+		SDL_SCANCODE_ESCAPE,	SDL_SCANCODE_LSHIFT,	SDL_SCANCODE_RSHIFT
 	};
 
 	int p[] = {
@@ -253,12 +275,10 @@ int main(int argc, char *argv[])
 	initSDL();
 	pceAppInit();
 
-	SDL_WM_SetCaption("Spout", NULL);
-
 	nextTick = SDL_GetTicks() + interval;
 	while(exec) {
 		SDL_PollEvent(&event);
-		keys = SDL_GetKeyState(NULL);
+		keys = SDL_GetKeyboardState(NULL);
 
 		wait = nextTick - SDL_GetTicks();
 		if(wait > 0) {
@@ -271,7 +291,7 @@ int main(int argc, char *argv[])
 		nextTick += interval;
 		cnt ++;
 
-		if((keys[SDLK_ESCAPE] == SDL_PRESSED && (keys[SDLK_LSHIFT] == SDL_PRESSED || keys[SDLK_RSHIFT] == SDL_PRESSED)) || event.type == SDL_QUIT) {
+		if((keys[SDL_SCANCODE_ESCAPE] == SDL_PRESSED && (keys[SDL_SCANCODE_LSHIFT] == SDL_PRESSED || keys[SDL_SCANCODE_RSHIFT] == SDL_PRESSED)) || event.type == SDL_QUIT) {
 			exec = 0;
 		}
 	}

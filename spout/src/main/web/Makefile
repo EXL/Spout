@@ -3,7 +3,7 @@
 all: linux
 
 linux:
-	gcc -O2 spout.c piece.c -o Spout `sdl-config --cflags --libs`
+	gcc -O2 spout.c piece.c -o Spout `sdl2-config --cflags --libs`
 	strip -s Spout
 
 clean:
