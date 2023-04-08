@@ -1,11 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
-#include <sys\stat.h>
+#include <sys/stat.h>
 #include <fcntl.h>
 #include <math.h>
+#include <unistd.h>
 
-#include "SDL.h"
+#include <SDL/SDL.h>
+
 #include "piece.h"
 #include "font.h"
 
@@ -208,14 +210,15 @@ int pceFontPrintf(const char *fmt, ...)
 		adr -= 128 * font_height - font_width;
 		pC ++;
 	}
+	return 0;
 }
 
 int pceFileOpen(FILEACC *pfa, const char *fname, int mode)
 {
 	if(mode == FOMD_RD) {
-		*pfa = open(fname, O_RDONLY | O_BINARY);
+		*pfa = open(fname, O_RDONLY);
 	} else if(mode == FOMD_WR) {
-		*pfa = open(fname, O_CREAT | O_RDWR | O_BINARY | O_TRUNC, S_IREAD | S_IWRITE);
+		*pfa = open(fname, O_CREAT | O_RDWR | O_TRUNC, S_IREAD | S_IWRITE);
 	}
 
 	if(*pfa >= 0) {

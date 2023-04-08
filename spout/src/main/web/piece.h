@@ -59,3 +59,6 @@ int pceFileClose(FILEACC *pfa);
 
 int pcePadGet();
 
+void pceAppInit(void);
+void pceAppExit(void);
+void pceAppProc(int cnt);
