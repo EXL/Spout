@@ -177,3 +177,13 @@ cmake-build-debug/
 # Qt Creator builds
 build-*
 *.user*
+
+# Executable files
+Spout
+Spout.exe
+Spout.html
+Spout.wasm
+Spout.js
+
+# Other files
+spout.sco

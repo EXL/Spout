@@ -1,6 +1,6 @@
 #include "SDL.h"
 
-#define ZOOM 2
+#define ZOOM 3
 #define SDL_WIDTH (128 * ZOOM)
 #define SDL_HEIGHT (88 * ZOOM)
 

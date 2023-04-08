@@ -253,7 +253,7 @@ int main(int argc, char *argv[])
 	initSDL();
 	pceAppInit();
 
-	SDL_WM_SetCaption("spout", NULL);
+	SDL_WM_SetCaption("Spout", NULL);
 
 	nextTick = SDL_GetTicks() + interval;
 	while(exec) {
