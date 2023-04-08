@@ -7,7 +7,11 @@ linux:
 	strip -s Spout
 
 web:
-	emcc -O2 --use-preload-plugins spout.c piece.c -s USE_SDL=2 -o Spout.html
+	emcc -O2 spout.c piece.c \
+			-s USE_SDL=2 \
+			-s EXPORTED_FUNCTIONS=_main,_read_file \
+			-s EXPORTED_RUNTIME_METHODS=ccall \
+		-o Spout.html -lidbfs.js
 	emstrip -s Spout.wasm
 
 clean:

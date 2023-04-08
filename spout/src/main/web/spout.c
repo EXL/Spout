@@ -78,13 +78,7 @@ void pceAppInit(void)
 
 	pceCPUSetSpeed(CPU_SPEED_NORMAL);
 
-	{
-		FILEACC fa;
-		if(!pceFileOpen(&fa, "spout.sco", FOMD_RD)) {
-			pceFileReadSct(&fa, (void *)hiScore, 0, 8);
-			pceFileClose(&fa);
-		}
-	}
+	read_file();
 
 	pcePadSetTrigMode(PP_MODE_SINGLE);
 

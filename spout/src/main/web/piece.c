@@ -250,16 +250,43 @@ static FILE *file;
 
 int pceFileOpen(FILEACC *pfa, const char *fname, int mode)
 {
+#ifdef __EMSCRIPTEN__
+	const char *name = "/spout/spout.sco";
+#else
+	const char *name = fname;
+#endif
 	file = NULL;
 
 	if(mode == FOMD_RD) {
-		file = fopen(fname, "rb");
+		file = fopen(name, "rb+");
 	} else if(mode == FOMD_WR) {
-		file = fopen(fname, "wb");
+		file = fopen(name, "wb");
 	}
 
 	return (file == NULL);
 }
+
+#ifdef __EMSCRIPTEN__
+static void main_loop(void);
+
+static void main_loop_emscripten(void *arguments) {
+	main_loop();
+}
+
+static void sync_idbfs(void) {
+	EM_ASM(
+		FS.syncfs(function (err) { assert(!err); });
+	);
+}
+
+void read_file(void) {
+	FILEACC fa;
+	if(!pceFileOpen(&fa, "spout.sco", FOMD_RD)) {
+		pceFileReadSct(&fa, (void *) hiScore, 0, 8);
+		pceFileClose(&fa);
+	}
+}
+#endif
 
 int pceFileReadSct(FILEACC *pfa, void *ptr, int sct, int len)
 {
@@ -268,7 +295,11 @@ int pceFileReadSct(FILEACC *pfa, void *ptr, int sct, int len)
 
 int pceFileWriteSct(FILEACC *pfa, const void *ptr, int sct, int len)
 {
-	return fwrite(ptr, len, 1, file);
+	int ret = fwrite(ptr, len, 1, file);
+#ifdef __EMSCRIPTEN__
+	sync_idbfs();
+#endif
+	return ret;
 }
 
 int pceFileClose(FILEACC *pfa)
@@ -307,18 +338,24 @@ static void main_loop(void) {
 #endif
 }
 
-#ifdef __EMSCRIPTEN__
-static void main_loop_emscripten(void *arguments) {
-	main_loop();
-}
-#endif
-
 int main(int argc, char *argv[])
 {
+#ifdef __EMSCRIPTEN__
+	EM_ASM(
+		FS.mkdir('/spout');
+		FS.mount(IDBFS, {}, '/spout');
+		FS.syncfs(true, function (err) {
+			assert(!err);
+			Module.ccall('read_file', 'v');
+		});
+	);
+#endif
+
 	initSDL();
 	pceAppInit();
 
 	nextTick = SDL_GetTicks() + interval;
+
 #ifndef __EMSCRIPTEN__
 	while(exec) {
 		main_loop();
@@ -328,5 +365,5 @@ int main(int argc, char *argv[])
 #endif
 
 	pceAppExit();
+	return 0;
 }
-

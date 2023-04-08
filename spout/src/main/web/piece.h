@@ -63,3 +63,6 @@ int pcePadGet();
 void pceAppInit(void);
 void pceAppExit(void);
 void pceAppProc(int cnt);
+
+extern int hiScore[2];
+extern void read_file(void);
