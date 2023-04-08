@@ -1,6 +1,7 @@
 The MIT License (MIT)
 
-Copyright (c) 2015 Serg "EXL" Koles
+Copyright (c) 2002-2006 Kuni
+Copyright (c) 2015-2023 EXL
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
