@@ -246,34 +246,34 @@ int pceFontPrintf(const char *fmt, ...)
 	return 0;
 }
 
+static FILE *file;
+
 int pceFileOpen(FILEACC *pfa, const char *fname, int mode)
 {
+	file = NULL;
+
 	if(mode == FOMD_RD) {
-		*pfa = open(fname, O_RDONLY);
+		file = fopen(fname, "rb");
 	} else if(mode == FOMD_WR) {
-		*pfa = open(fname, O_CREAT | O_RDWR | O_TRUNC, S_IREAD | S_IWRITE);
+		file = fopen(fname, "wb");
 	}
 
-	if(*pfa >= 0) {
-		return 0;
-	} else {
-		return 1;
-	}
+	return (file == NULL);
 }
 
 int pceFileReadSct(FILEACC *pfa, void *ptr, int sct, int len)
 {
-	return read(*pfa, ptr, len);
+	return fread(ptr, len, 1, file);
 }
 
 int pceFileWriteSct(FILEACC *pfa, const void *ptr, int sct, int len)
 {
-	return write(*pfa, ptr, len);
+	return fwrite(ptr, len, 1, file);
 }
 
 int pceFileClose(FILEACC *pfa)
 {
-	close(*pfa);
+	fclose(file);
 	return 0;
 }
 
