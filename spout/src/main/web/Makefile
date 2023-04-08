@@ -6,6 +6,10 @@ linux:
 	gcc -O2 spout.c piece.c -o Spout `sdl2-config --cflags --libs`
 	strip -s Spout
 
+web:
+	emcc -O2 --use-preload-plugins spout.c piece.c -s USE_SDL=2 -o Spout.html
+	emstrip -s Spout.wasm
+
 clean:
 	-rm -f Spout
 	-rm -f Spout.o

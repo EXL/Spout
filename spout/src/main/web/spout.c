@@ -6,7 +6,6 @@
 
 #include "sintable.h"
 
-#define FRAMERATE 50
 #define MAX_GRAIN 500
 
 const unsigned char	MATSUMI[] = {
@@ -57,7 +56,7 @@ int mR;
 
 int nGrain;
 
-int time = FRAMERATE * 60, score = 0, height = 0, dispscore = 0;
+static int time = FRAMERATE * 60, score = 0, height = 0, dispscore = 0;
 int hiScore[2] = {0, 0};
 int dispPos, upperLine, rollCount;
 

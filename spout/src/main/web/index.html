@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>Spout</title>
+	</head>
+	<body>
+		<table style="margin: 10px">
+			<tbody>
+				<tr>
+					<td>
+						<canvas id="canvas" oncontextmenu="event.preventDefault()" width="384" height="264"></canvas>
+					</td>
+					<td style="padding-left: 25px">
+						<h3>Spout</h3>
+						<p>Port of the "Spout" game by kuni to <a href="https://www.libsdl.org/" title="Simple DirectMedia Layer is a cross-platform development library designed to provide low level access to audio, keyboard, mouse, joystick, and graphics hardware via OpenGL and Direct3D." target="_blank">SDL2</a> and <a href="https://emscripten.org/" title="Emscripten is a complete compiler toolchain to WebAssembly, using LLVM, with a special focus on speed, size, and the Web platform." target="_blank">Emscripten</a>.</p>
+						<p><strong>Controls:</strong></p>
+						<ul>
+							<li>Arrows and 4, 6, 8, 2 on Keypad &ndash; Movement.</li>
+							<li>Z, Space, Return and 5 on Keypad &ndash; Fire.</li>
+							<li>Q &ndash; Pause.</li>
+							<li>Q + W or E &ndash; Reset Game.</li>
+						</ul>
+						<p><strong>Source code:</strong></p>
+						<p><a href="https://github.com/EXL/Spout/tree/master/spout/src/main/web" title="Spout GitHub Repository" target="_blank">https://github.com/EXL/Spout/tree/master/spout/src/main/web</a></p>
+						<p><strong><em>&#169; kuni, <a href="https://github.com/EXL" title="@EXL" target="_blank">EXL</a> on 09-Apr-2023.</strong></em></p>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<script type='text/javascript'>
+			var Module = {
+				canvas: (function() { return document.getElementById('canvas'); })()
+			};
+		</script>
+		<script src="Spout.js"></script>
+	</body>
+</html>

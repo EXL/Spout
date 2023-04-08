@@ -1,8 +1,9 @@
-#include "SDL.h"
+#include <SDL2/SDL.h>
 
 #define ZOOM 1
 #define SDL_WIDTH (128 * ZOOM)
 #define SDL_HEIGHT (88 * ZOOM)
+#define FRAMERATE 50
 
 #define PAD_RI 0x01
 #define PAD_LF 0x02

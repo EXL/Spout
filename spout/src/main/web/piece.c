@@ -8,6 +8,10 @@
 
 #include <SDL2/SDL.h>
 
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#endif
+
 #include "piece.h"
 #include "font.h"
 
@@ -109,10 +113,17 @@ int pcePadGet() {
 	int i = 0, op = pad & 0x00ff;
 
 	int k[] = {
+	#ifndef __EMSCRIPTEN__
 		SDL_SCANCODE_UP,	SDL_SCANCODE_DOWN,	SDL_SCANCODE_LEFT,	SDL_SCANCODE_RIGHT,
 		SDL_SCANCODE_KP_8,	SDL_SCANCODE_KP_2,	SDL_SCANCODE_KP_4,	SDL_SCANCODE_KP_6,
 		SDL_SCANCODE_X,		SDL_SCANCODE_Z,		SDL_SCANCODE_SPACE,	SDL_SCANCODE_RETURN,
 		SDL_SCANCODE_ESCAPE,	SDL_SCANCODE_LSHIFT,	SDL_SCANCODE_RSHIFT
+	#else
+		SDL_SCANCODE_UP,	SDL_SCANCODE_DOWN,	SDL_SCANCODE_LEFT,	SDL_SCANCODE_RIGHT,
+		SDL_SCANCODE_KP_8,	SDL_SCANCODE_KP_2,	SDL_SCANCODE_KP_4,	SDL_SCANCODE_KP_6,
+		SDL_SCANCODE_Z,		SDL_SCANCODE_KP_5,	SDL_SCANCODE_SPACE,	SDL_SCANCODE_RETURN,
+		SDL_SCANCODE_Q, SDL_SCANCODE_W,	SDL_SCANCODE_E
+	#endif
 	};
 
 	int p[] = {
@@ -266,35 +277,55 @@ int pceFileClose(FILEACC *pfa)
 	return 0;
 }
 
-int main(int argc, char *argv[])
-{
+long nextTick = 0;
+
+static void main_loop(void) {
 	SDL_Event event;
-	long nextTick, wait;
+	long wait;
 	int cnt = 0;
 
+	SDL_PollEvent(&event);
+	keys = SDL_GetKeyboardState(NULL);
+
+	wait = nextTick - SDL_GetTicks();
+#ifndef __EMSCRIPTEN__
+	if(wait > 0) {
+		SDL_Delay(wait);
+	}
+#endif
+
+	pceAppProc(cnt);
+//	SDL_Flip(video);
+
+	nextTick += interval;
+	cnt ++;
+
+#ifndef __EMSCRIPTEN__
+	if((keys[SDL_SCANCODE_ESCAPE] == SDL_PRESSED && (keys[SDL_SCANCODE_LSHIFT] == SDL_PRESSED || keys[SDL_SCANCODE_RSHIFT] == SDL_PRESSED)) || event.type == SDL_QUIT) {
+		exec = 0;
+	}
+#endif
+}
+
+#ifdef __EMSCRIPTEN__
+static void main_loop_emscripten(void *arguments) {
+	main_loop();
+}
+#endif
+
+int main(int argc, char *argv[])
+{
 	initSDL();
 	pceAppInit();
 
 	nextTick = SDL_GetTicks() + interval;
+#ifndef __EMSCRIPTEN__
 	while(exec) {
-		SDL_PollEvent(&event);
-		keys = SDL_GetKeyboardState(NULL);
-
-		wait = nextTick - SDL_GetTicks();
-		if(wait > 0) {
-			SDL_Delay(wait);
-		}
-
-		pceAppProc(cnt);
-	//	SDL_Flip(video);
-
-		nextTick += interval;
-		cnt ++;
-
-		if((keys[SDL_SCANCODE_ESCAPE] == SDL_PRESSED && (keys[SDL_SCANCODE_LSHIFT] == SDL_PRESSED || keys[SDL_SCANCODE_RSHIFT] == SDL_PRESSED)) || event.type == SDL_QUIT) {
-			exec = 0;
-		}
+		main_loop();
 	}
+#else
+	emscripten_set_main_loop_arg(main_loop_emscripten, NULL, -1, 1);
+#endif
 
 	pceAppExit();
 }
