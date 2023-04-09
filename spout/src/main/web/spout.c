@@ -353,6 +353,10 @@ void pceAppProc(int cnt)
 						pceFontPrintf("    height: %8d", hiScore[1] % 1000000);
 						pceFontSetPos(118 - 20 * 4, 6);
 						pceFontPrintf("high-score: %8d", hiScore[0] % 1000000);
+						pceFontSetPos (6, 18);
+						pceFontPrintf ("(c)2023 EXL/Web WASM port");
+						pceFontSetPos (6, 24);
+						pceFontPrintf ("http://github.com/EXL/Spout");
 						break;
 
 					case 1:
