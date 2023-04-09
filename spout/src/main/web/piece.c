@@ -19,6 +19,7 @@ SDL_Surface *video;
 SDL_Surface *layer;
 SDL_Renderer *render;
 SDL_Texture *texture;
+SDL_Window *window;
 
 unsigned char *vBuffer = NULL;
 
@@ -31,7 +32,7 @@ void pceLCDDispStart()
 }
 
 void initSDL() {
-	SDL_Window *window = SDL_CreateWindow(
+	window = SDL_CreateWindow(
 		"Spout",
 		SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 		SDL_WIDTH * 3, SDL_HEIGHT * 3,
@@ -72,9 +73,9 @@ void initSDL() {
 		SDL_SetPaletteColors(layer->format->palette, pltTbl, 0, sizeof(pltTbl));
 	}
 
-	texture = SDL_CreateTextureFromSurface(render, layer);
+	texture = SDL_CreateTexture(render, SDL_PIXELFORMAT_ABGR8888, SDL_TEXTUREACCESS_STREAMING, SDL_WIDTH, SDL_HEIGHT);
 	if (texture == NULL) {
-		SDL_Log("SDL_CreateTextureFromSurface failed: %s", SDL_GetError());
+		SDL_Log("SDL_CreateTexture failed: %s", SDL_GetError());
 		exit(EXIT_FAILURE);
 	}
 }
@@ -83,7 +84,7 @@ void pceLCDTrans() {
 	int x, y;
 	unsigned char *vbi, *bi;
 
-	bi = layer->pixels;
+	bi = (unsigned char *) layer->pixels;
 	for(y = 0; y < SDL_HEIGHT; y ++) {
 		vbi = vBuffer + (y / ZOOM) * 128;
 		for(x = 0; x < SDL_WIDTH; x ++) {
@@ -104,7 +105,7 @@ int pcePadGet() {
 	static int pad = 0;
 	int i = 0, op = pad & 0x00ff;
 
-	unsigned int k[] = {
+	int k[] = {
 	#ifndef __EMSCRIPTEN__
 		SDL_SCANCODE_UP,	SDL_SCANCODE_DOWN,	SDL_SCANCODE_LEFT,	SDL_SCANCODE_RIGHT,
 		SDL_SCANCODE_KP_8,	SDL_SCANCODE_KP_2,	SDL_SCANCODE_KP_4,	SDL_SCANCODE_KP_6,
@@ -357,5 +358,12 @@ int main(int argc, char *argv[])
 #endif
 
 	pceAppExit();
+
+	SDL_DestroyTexture(texture);
+	SDL_FreeSurface(layer);
+	SDL_FreeSurface(video);
+	SDL_DestroyRenderer(render);
+	SDL_DestroyWindow(window);
+
 	return 0;
 }
