@@ -19,7 +19,6 @@ SDL_Surface *video;
 SDL_Surface *layer;
 SDL_Renderer *render;
 SDL_Texture *texture;
-SDL_Rect layerRect;
 
 unsigned char *vBuffer = NULL;
 
@@ -32,8 +31,6 @@ void pceLCDDispStart()
 }
 
 void initSDL() {
-	SDL_PixelFormat *pfrm;
-
 	SDL_Window *window = SDL_CreateWindow(
 		"Spout",
 		SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
@@ -65,11 +62,6 @@ void initSDL() {
 		exit(EXIT_FAILURE);
 	}
 
-	layerRect.x = 0;
-	layerRect.y = 0;
-	layerRect.w = SDL_WIDTH;
-	layerRect.h = SDL_HEIGHT;
-
 	{
 		static SDL_Color pltTbl[4] = {
 			{255, 255, 255},
@@ -100,19 +92,19 @@ void pceLCDTrans() {
 		bi += layer->pitch - SDL_WIDTH;
 	}
 
-	SDL_BlitSurface(layer, NULL, video, &layerRect);
-	SDL_UpdateTexture(texture, &layerRect, video->pixels, video->pitch);
+	SDL_BlitSurface(layer, NULL, video, NULL);
+	SDL_UpdateTexture(texture, NULL, video->pixels, video->pitch);
 	SDL_RenderCopy(render, texture, NULL, NULL);
 	SDL_RenderPresent(render);
 }
 
-const unsigned char *keys;
+const unsigned char *keys = NULL;
 
 int pcePadGet() {
 	static int pad = 0;
 	int i = 0, op = pad & 0x00ff;
 
-	int k[] = {
+	unsigned int k[] = {
 	#ifndef __EMSCRIPTEN__
 		SDL_SCANCODE_UP,	SDL_SCANCODE_DOWN,	SDL_SCANCODE_LEFT,	SDL_SCANCODE_RIGHT,
 		SDL_SCANCODE_KP_8,	SDL_SCANCODE_KP_2,	SDL_SCANCODE_KP_4,	SDL_SCANCODE_KP_6,
@@ -170,13 +162,13 @@ unsigned char *pceLCDSetBuffer(unsigned char *pbuff)
 
 int font_posX = 0, font_posY = 0, font_width = 4, font_height = 6;
 unsigned char font_fgcolor = 3, font_bgcolor = 0, font_bgclear = 0;
-const char *font_adr = FONT6;
+const char *font_adr = (const char *) FONT6;
 
 void pceFontSetType(int type)
 {
 	const int width[] = {5, 8, 4};
 	const int height[] = {10, 16, 6};
-	const char* adr[] ={FONT6, FONT16, FONT6};
+	const char* adr[] ={ (const char *) FONT6, (const char *) FONT16, (const char *) FONT6 };
 
 	type &= 3;
 	font_width = width[type];
@@ -216,7 +208,7 @@ int pceFontPrintf(const char *fmt, ...)
 	vsprintf(c, fmt, argp);
 	va_end(argp);
 
-	pC = c;
+	pC = (unsigned char *) c;
 	while(*pC) {
 		int i, x, y;
 		const unsigned char *sAdr;
@@ -225,7 +217,7 @@ int pceFontPrintf(const char *fmt, ...)
 		} else {
 			i = 0;
 		}
-		sAdr = font_adr + (i & 15) + (i >> 4) * 16 * 16;
+		sAdr = (unsigned char *) font_adr + (i & 15) + (i >> 4) * 16 * 16;
 		for(y = 0; y < font_height; y ++) {
 			unsigned char c = *sAdr;
 			for(x = 0; x < font_width; x ++) {
@@ -278,6 +270,7 @@ static void sync_idbfs(void) {
 		FS.syncfs(function (err) { assert(!err); });
 	);
 }
+#endif
 
 void read_file(void) {
 	FILEACC fa;
@@ -286,7 +279,6 @@ void read_file(void) {
 		pceFileClose(&fa);
 	}
 }
-#endif
 
 int pceFileReadSct(FILEACC *pfa, void *ptr, int sct, int len)
 {
@@ -312,14 +304,14 @@ long nextTick = 0;
 
 static void main_loop(void) {
 	SDL_Event event;
-	long wait;
 	int cnt = 0;
 
 	SDL_PollEvent(&event);
 	keys = SDL_GetKeyboardState(NULL);
 
-	wait = nextTick - SDL_GetTicks();
 #ifndef __EMSCRIPTEN__
+	long wait;
+	wait = nextTick - SDL_GetTicks();
 	if(wait > 0) {
 		SDL_Delay(wait);
 	}

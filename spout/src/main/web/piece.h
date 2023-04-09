@@ -26,18 +26,15 @@
 #define pcesprintf sprintf
 
 #define CPU_SPEED_NORMAL 0
-#define pceCPUSetSpeed
 
 #define FILEACC int
 #define FOMD_RD 0
 #define FOMD_WR 1
-#define pceFileCreate
 
 #define pceTimerGetCount SDL_GetTicks
 
 #define PP_MODE_SINGLE 0
 #define PP_MODE_REPEAT 1
-#define pcePadSetTrigMode
 
 int pceFontPrintf(const char *fmt, ... );
 void pceFontSetTxColor(int color);

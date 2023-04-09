@@ -3,11 +3,11 @@
 all: linux
 
 linux:
-	gcc -O2 spout.c piece.c -o Spout `sdl2-config --cflags --libs`
+	gcc -Wall -pedantic -O2 spout.c piece.c -o Spout `sdl2-config --cflags --libs`
 	strip -s Spout
 
 web:
-	emcc -O2 spout.c piece.c \
+	emcc -Wall -O2 spout.c piece.c \
 			-s USE_SDL=2 \
 			-s EXPORTED_FUNCTIONS=_main,_read_file \
 			-s EXPORTED_RUNTIME_METHODS=ccall \

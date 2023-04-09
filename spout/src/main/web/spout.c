@@ -76,11 +76,7 @@ void pceAppInit(void)
 
 	pceLCDDispStart();
 
-	pceCPUSetSpeed(CPU_SPEED_NORMAL);
-
 	read_file();
-
-	pcePadSetTrigMode(PP_MODE_SINGLE);
 
 	srand(pceTimerGetCount());
 }
@@ -116,10 +112,6 @@ void pceAppProc(int cnt)
 				hiScore[1] = height;
 				if(!pceFileOpen(&fa, "spout.sco", FOMD_WR)) {
 					pceFileWriteSct(&fa, (void *)hiScore, 0, 8);
-				} else if(!pceFileCreate("spout.sco", 8)) {
-					if(!pceFileOpen(&fa, "spout.sco", FOMD_WR)) {
-						pceFileWriteSct(&fa, (void *)hiScore, 0, 8);
-					}
 				}
 				pceFileClose(&fa);
 			}
@@ -708,7 +700,7 @@ void pceAppProc(int cnt)
 
 void pceAppExit( void )
 {
-	pceCPUSetSpeed(CPU_SPEED_NORMAL);
+
 }
 
 void spout(int t, int x, int y)
